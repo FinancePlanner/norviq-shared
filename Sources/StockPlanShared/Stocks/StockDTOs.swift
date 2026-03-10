@@ -108,29 +108,76 @@ public struct ResearchNoteResponse: Codable, Sendable, Equatable {
     }
 }
 
-public struct TargetRequest: Codable, Sendable, Equatable {
+public enum ValuationScenario: String, Codable, Sendable {
+    case bear
+    case base
+    case bull
+}
+
+public struct ScenarioTargetRequest: Codable, Sendable, Equatable {
     public let symbol: String
-    public let scenario: String
+    public let scenario: ValuationScenario
+    public let lowPrice: Double
+    public let highPrice: Double
     public let targetPrice: Double
     public let targetDate: String?
     public let rationale: String?
 
     public init(
         symbol: String,
-        scenario: String,
+        scenario: ValuationScenario,
+        lowPrice: Double,
+        highPrice: Double,
         targetPrice: Double,
         targetDate: String?,
         rationale: String?
     ) {
         self.symbol = symbol
         self.scenario = scenario
+        self.lowPrice = lowPrice
+        self.highPrice = highPrice
         self.targetPrice = targetPrice
         self.targetDate = targetDate
         self.rationale = rationale
     }
 }
 
-public struct TargetResponse: Codable, Sendable, Equatable {
+public struct PriceRange: Codable, Sendable, Equatable {
+    public let low: Double
+    public let high: Double
+
+    public init(low: Double, high: Double) {
+        self.low = low
+        self.high = high
+    }
+}
+
+public struct StockValuationRequest: Codable, Sendable, Equatable {
+    public let symbol: String
+    public let bearCase: PriceRange
+    public let baseCase: PriceRange
+    public let bullCase: PriceRange
+    public let rationale: String?
+    public let targetDate: String?
+
+    public init(
+        symbol: String,
+        bearCase: PriceRange,
+        baseCase: PriceRange,
+        bullCase: PriceRange,
+        rationale: String?,
+        targetDate: String?
+    ) {
+        self.symbol = symbol
+        self.bearCase = bearCase
+        self.baseCase = baseCase
+        self.bullCase = bullCase
+        self.rationale = rationale
+        self.targetDate = targetDate
+    }
+}
+
+public struct ScenarioTargetResponse: Codable, Sendable, Equatable {
     public let id: String
     public let symbol: String
     public let scenario: String
@@ -186,7 +233,6 @@ public struct StockNews: Codable, Sendable, Equatable {
 }
 
 // MARK: - Bulk Import
-
 public struct BulkStockRequest: Codable, Sendable, Equatable {
     public let stocks: [StockRequest]
 
