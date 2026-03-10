@@ -108,39 +108,39 @@ public struct ResearchNoteResponse: Codable, Sendable, Equatable {
     }
 }
 
-public enum ValuationScenario: String, Codable, Sendable {
-    case bear
-    case base
-    case bull
-}
+// public enum ValuationScenario: String, Codable, Sendable {
+//     case bear
+//     case base
+//     case bull
+// }
 
-public struct ScenarioTargetRequest: Codable, Sendable, Equatable {
-    public let symbol: String
-    public let scenario: ValuationScenario
-    public let lowPrice: Double
-    public let highPrice: Double
-    public let targetPrice: Double
-    public let targetDate: String?
-    public let rationale: String?
+// public struct ScenarioTargetRequest: Codable, Sendable, Equatable {
+//     public let symbol: String
+//     public let scenario: ValuationScenario
+//     public let lowPrice: Double
+//     public let highPrice: Double
+//     public let targetPrice: Double
+//     public let targetDate: String?
+//     public let rationale: String?
 
-    public init(
-        symbol: String,
-        scenario: ValuationScenario,
-        lowPrice: Double,
-        highPrice: Double,
-        targetPrice: Double,
-        targetDate: String?,
-        rationale: String?
-    ) {
-        self.symbol = symbol
-        self.scenario = scenario
-        self.lowPrice = lowPrice
-        self.highPrice = highPrice
-        self.targetPrice = targetPrice
-        self.targetDate = targetDate
-        self.rationale = rationale
-    }
-}
+//     public init(
+//         symbol: String,
+//         scenario: ValuationScenario,
+//         lowPrice: Double,
+//         highPrice: Double,
+//         targetPrice: Double,
+//         targetDate: String?,
+//         rationale: String?
+//     ) {
+//         self.symbol = symbol
+//         self.scenario = scenario
+//         self.lowPrice = lowPrice
+//         self.highPrice = highPrice
+//         self.targetPrice = targetPrice
+//         self.targetDate = targetDate
+//         self.rationale = rationale
+//     }
+// }
 
 public struct PriceRange: Codable, Sendable, Equatable {
     public let low: Double
