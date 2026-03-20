@@ -324,7 +324,7 @@ public struct BulkStockResponse: Codable, Sendable, Equatable {
     }
 }
 
-struct StockValuationDraft: Sendable, Equatable {
+public struct StockValuationDraft: Sendable, Equatable {
   let bearLow: Double
   let bearHigh: Double
   let baseLow: Double
