@@ -37,21 +37,80 @@ public struct StockResponse: Codable, Sendable, Equatable {
     }
 }
 
+public enum WatchlistStatus: String, Codable, Sendable, CaseIterable {
+    case active
+    case researching
+    case waiting
+    case ready
+    case archived
+}
+
 public struct WatchlistItemRequest: Codable, Sendable, Equatable {
     public let symbol: String
+    public let note: String?
+    public let status: WatchlistStatus?
+    public let nextReviewAt: String?
 
-    public init(symbol: String) {
+    public init(
+        symbol: String,
+        note: String? = nil,
+        status: WatchlistStatus? = nil,
+        nextReviewAt: String? = nil
+    ) {
         self.symbol = symbol
+        self.note = note
+        self.status = status
+        self.nextReviewAt = nextReviewAt
+    }
+}
+
+public struct WatchlistItemUpdateRequest: Codable, Sendable, Equatable {
+    public let note: String?
+    public let status: WatchlistStatus?
+    public let lastReviewedAt: String?
+    public let nextReviewAt: String?
+
+    public init(
+        note: String? = nil,
+        status: WatchlistStatus? = nil,
+        lastReviewedAt: String? = nil,
+        nextReviewAt: String? = nil
+    ) {
+        self.note = note
+        self.status = status
+        self.lastReviewedAt = lastReviewedAt
+        self.nextReviewAt = nextReviewAt
     }
 }
 
 public struct WatchlistItemResponse: Codable, Sendable, Equatable {
     public let id: String
     public let symbol: String
+    public let note: String?
+    public let status: WatchlistStatus
+    public let createdAt: String?
+    public let updatedAt: String?
+    public let lastReviewedAt: String?
+    public let nextReviewAt: String?
 
-    public init(id: String, symbol: String) {
+    public init(
+        id: String,
+        symbol: String,
+        note: String?,
+        status: WatchlistStatus,
+        createdAt: String? = nil,
+        updatedAt: String? = nil,
+        lastReviewedAt: String? = nil,
+        nextReviewAt: String? = nil
+    ) {
         self.id = id
         self.symbol = symbol
+        self.note = note
+        self.status = status
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+        self.lastReviewedAt = lastReviewedAt
+        self.nextReviewAt = nextReviewAt
     }
 }
 
@@ -263,4 +322,15 @@ public struct BulkStockResponse: Codable, Sendable, Equatable {
         self.failed = failed
         self.results = results
     }
+}
+
+struct StockValuationDraft: Sendable, Equatable {
+  let bearLow: Double
+  let bearHigh: Double
+  let baseLow: Double
+  let baseHigh: Double
+  let bullLow: Double
+  let bullHigh: Double
+  let rationale: String?
+  let targetDate: String?
 }
