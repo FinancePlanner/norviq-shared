@@ -325,12 +325,32 @@ public struct BulkStockResponse: Codable, Sendable, Equatable {
 }
 
 public struct StockValuationDraft: Sendable, Equatable {
-  public let bearLow: Double
-  public let bearHigh: Double
-  public let baseLow: Double
-  public let baseHigh: Double
-  public let bullLow: Double
-  public let bullHigh: Double
-  public let rationale: String?
-  public let targetDate: String?
+    public let bearLow: Double
+    public let bearHigh: Double
+    public let baseLow: Double
+    public let baseHigh: Double
+    public let bullLow: Double
+    public let bullHigh: Double
+    public let rationale: String?
+    public let targetDate: String?
+
+    public init(
+        bearLow: Double,
+        bearHigh: Double,
+        baseLow: Double,
+        baseHigh: Double,
+        bullLow: Double,
+        bullHigh: Double,
+        rationale: String? = nil,
+        targetDate: String? = nil
+    ) {
+        self.bearLow = bearLow
+        self.bearHigh = bearHigh
+        self.baseLow = baseLow
+        self.baseHigh = baseHigh
+        self.bullLow = bullLow
+        self.bullHigh = bullHigh
+        self.rationale = rationale
+        self.targetDate = targetDate
+    }
 }
