@@ -43,3 +43,8 @@ public struct APIEnvelope<T: Codable & Sendable>: Codable, Sendable {
 }
 
 extension APIEnvelope: Equatable where T: Equatable {}
+
+public struct EmptyAPIResponse: Codable, Sendable, Equatable {
+    public init() {}
+}
+

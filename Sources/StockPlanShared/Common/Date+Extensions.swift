@@ -71,4 +71,67 @@ public enum SharedDateDecoder {
             )
         )
     }
+
+    public static func decodeDate(from decoder: Decoder) throws -> Date {
+        let container = try decoder.singleValueContainer()
+
+        if let date = try? container.decode(Date.self) {
+            return date
+        }
+
+        if let stringValue = try? container.decode(String.self) {
+            if let parsed = ISO8601DateFormatter().date(from: stringValue) {
+                return parsed
+            }
+
+            let fractionalFormatter = ISO8601DateFormatter()
+            fractionalFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let parsed = fractionalFormatter.date(from: stringValue) {
+                return parsed
+            }
+
+            if let parsed = DateFormatter.yyyyMMdd.date(from: stringValue) {
+                return parsed
+            }
+
+            if let referenceSeconds = Double(stringValue) {
+                return Date(timeIntervalSinceReferenceDate: referenceSeconds)
+            }
+        }
+
+        if let referenceSeconds = try? container.decode(Double.self) {
+            return Date(timeIntervalSinceReferenceDate: referenceSeconds)
+        }
+
+        if let referenceSeconds = try? container.decode(Int.self) {
+            return Date(timeIntervalSinceReferenceDate: Double(referenceSeconds))
+        }
+
+        throw DecodingError.dataCorruptedError(
+            in: container,
+            debugDescription: "Date must be an ISO8601 string or seconds since Apple reference date"
+        )
+    }
 }
+
+extension JSONDecoder {
+    public static var stockPlanShared: JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .custom { decoder in
+            try SharedDateDecoder.decodeDate(from: decoder)
+        }
+        return decoder
+    }
+}
+
+extension JSONEncoder {
+    public static var stockPlanShared: JSONEncoder {
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        encoder.dateEncodingStrategy = .iso8601
+        return encoder
+    }
+}
+
+

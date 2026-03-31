@@ -17,39 +17,63 @@ public struct StockDetailsResponse: Codable, Sendable, Equatable {
 public struct QuoteResponse: Codable, Sendable, Equatable {
     public let symbol: String
     public let currency: String
-    public let c: Double
-    public let d: Double?
-    public let dp: Double?
-    public let h: Double?
-    public let l: Double?
-    public let o: Double?
-    public let pc: Double?
-    public let t: Int
+    public let currentPrice: Double
+    public let change: Double?
+    public let percentChange: Double?
+    public let high: Double?
+    public let low: Double?
+    public let open: Double?
+    public let previousClose: Double?
+    public let timestamp: Double
+
+    enum CodingKeys: String, CodingKey {
+        case symbol, currency
+        case currentPrice = "c"
+        case change = "d"
+        case percentChange = "dp"
+        case high = "h"
+        case low = "l"
+        case open = "o"
+        case previousClose = "pc"
+        case timestamp = "t"
+    }
 
     public init(
         symbol: String,
         currency: String,
-        c: Double,
-        d: Double? = nil,
-        dp: Double? = nil,
-        h: Double? = nil,
-        l: Double? = nil,
-        o: Double? = nil,
-        pc: Double? = nil,
-        t: Int
+        currentPrice: Double,
+        change: Double? = nil,
+        percentChange: Double? = nil,
+        high: Double? = nil,
+        low: Double? = nil,
+        open: Double? = nil,
+        previousClose: Double? = nil,
+        timestamp: Double
     ) {
+
         self.symbol = symbol
         self.currency = currency
-        self.c = c
-        self.d = d
-        self.dp = dp
-        self.h = h
-        self.l = l
-        self.o = o
-        self.pc = pc
-        self.t = t
+        self.currentPrice = currentPrice
+        self.change = change
+        self.percentChange = percentChange
+        self.high = high
+        self.low = low
+        self.open = open
+        self.previousClose = previousClose
+        self.timestamp = timestamp
+    }
+
+    public var isPositiveSession: Bool {
+        (change ?? 0) >= 0
+    }
+
+    public var rangeProgress: Double {
+        guard let high, let low, high > low else { return 0.5 }
+        let progress = (currentPrice - low) / (high - low)
+        return min(max(progress, 0), 1)
     }
 }
+
 
 public struct CompanyProfileResponse: Codable, Sendable, Equatable {
     public let country: String?
