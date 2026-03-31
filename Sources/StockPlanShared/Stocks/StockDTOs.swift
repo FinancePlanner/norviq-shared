@@ -261,6 +261,30 @@ public struct ScenarioTargetResponse: Codable, Sendable, Equatable {
     }
 }
 
+public typealias TargetResponse = ScenarioTargetResponse
+
+public struct TargetRequest: Codable, Sendable, Equatable {
+    public let symbol: String
+    public let scenario: String
+    public let targetPrice: Double
+    public let targetDate: String?
+    public let rationale: String?
+
+    public init(
+        symbol: String,
+        scenario: String,
+        targetPrice: Double,
+        targetDate: String? = nil,
+        rationale: String? = nil
+    ) {
+        self.symbol = symbol
+        self.scenario = scenario
+        self.targetPrice = targetPrice
+        self.targetDate = targetDate
+        self.rationale = rationale
+    }
+}
+
 public struct StockHistory: Codable, Sendable, Equatable {
     public let date: String
     public let open: Double
@@ -324,7 +348,7 @@ public struct BulkStockResponse: Codable, Sendable, Equatable {
     }
 }
 
-public struct StockValuationDraft: Sendable, Equatable {
+public struct StockValuationDraft: Codable, Sendable, Equatable {
     public let bearLow: Double
     public let bearHigh: Double
     public let baseLow: Double
@@ -354,3 +378,4 @@ public struct StockValuationDraft: Sendable, Equatable {
         self.targetDate = targetDate
     }
 }
+

@@ -23,6 +23,20 @@ public struct AuthRegisterRequest: Codable, Sendable, Equatable {
         self.lastName = lastName
         self.dateOfBirth = dateOfBirth
     }
+
+    private enum CodingKeys: String, CodingKey {
+        case username, password, email, firstName, lastName, dateOfBirth
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        username = try container.decode(String.self, forKey: .username)
+        password = try container.decode(String.self, forKey: .password)
+        email = try container.decode(String.self, forKey: .email)
+        firstName = try container.decode(String.self, forKey: .firstName)
+        lastName = try container.decode(String.self, forKey: .lastName)
+        dateOfBirth = try SharedDateDecoder.decodeDate(from: container, forKey: .dateOfBirth)
+    }
 }
 
 public struct AuthLoginRequest: Codable, Sendable, Equatable {
@@ -138,3 +152,4 @@ public struct AuthRefreshRequest: Codable, Sendable, Equatable {
         self.refreshToken = refreshToken
     }
 }
+
