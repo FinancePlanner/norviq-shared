@@ -31,10 +31,6 @@ extension DateFormatter {
 
 public enum SharedDateDecoder {
     public static func decodeDate<K: CodingKey>(from container: KeyedDecodingContainer<K>, forKey key: K) throws -> Date {
-        if let date = try? container.decode(Date.self, forKey: key) {
-            return date
-        }
-
         if let stringValue = try? container.decode(String.self, forKey: key) {
             if let parsed = ISO8601DateFormatter().date(from: stringValue) {
                 return parsed
@@ -74,10 +70,6 @@ public enum SharedDateDecoder {
 
     public static func decodeDate(from decoder: Decoder) throws -> Date {
         let container = try decoder.singleValueContainer()
-
-        if let date = try? container.decode(Date.self) {
-            return date
-        }
 
         if let stringValue = try? container.decode(String.self) {
             if let parsed = ISO8601DateFormatter().date(from: stringValue) {
@@ -133,5 +125,4 @@ extension JSONEncoder {
         return encoder
     }
 }
-
 

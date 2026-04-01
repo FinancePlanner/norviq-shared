@@ -75,6 +75,50 @@ import Testing
     #expect(decoded == payload)
 }
 
+@Test func stockPlanSharedDecoderDecodesAuthResponseEncodedAsReferenceDateNumber() throws {
+    let payload = AuthResponse(
+        token: "jwt-token",
+        userId: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
+        expiresIn: 604800,
+        refreshToken: "refresh-token",
+        refreshExpiresIn: 2_592_000,
+        username: "valid_user",
+        email: "user@example.com",
+        firstName: "Jane",
+        lastName: "Doe",
+        dateOfBirth: Date(timeIntervalSince1970: 946_684_800)
+    )
+
+    let encoded = try JSONEncoder().encode(payload)
+    let decoded = try JSONDecoder.stockPlanShared.decode(AuthResponse.self, from: encoded)
+
+    #expect(decoded == payload)
+}
+
+@Test func stockPlanSharedDecoderDecodesSnakeCaseDBStyleDateString() throws {
+    let payload = """
+    {
+      "token": "jwt-token",
+      "user_id": "00000000-0000-0000-0000-000000000001",
+      "expires_in": 604800,
+      "refresh_token": "refresh-token",
+      "refresh_expires_in": 2592000,
+      "username": "valid_user",
+      "email": "user@example.com",
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "date_of_birth": "2000-01-01"
+    }
+    """.data(using: .utf8)!
+
+    let decoded = try JSONDecoder.stockPlanShared.decode(AuthResponse.self, from: payload)
+
+    #expect(decoded.userId == UUID(uuidString: "00000000-0000-0000-0000-000000000001")!)
+    #expect(decoded.firstName == "Jane")
+    #expect(decoded.lastName == "Doe")
+    #expect(decoded.dateOfBirth == DateFormatter.yyyyMMdd.date(from: "2000-01-01"))
+}
+
 @Test func bulkStockRequestRoundTripJSON() throws {
     let payload = BulkStockRequest(stocks: [
         StockRequest(
