@@ -188,3 +188,88 @@ public struct QuoteBatchResponse: Codable, Sendable, Equatable {
         self.quotes = quotes
     }
 }
+
+public enum BasicFinancialMetricValue: Codable, Sendable, Equatable {
+    case number(Double)
+    case string(String)
+    case bool(Bool)
+    case null
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+
+        if container.decodeNil() {
+            self = .null
+            return
+        }
+
+        if let value = try? container.decode(Bool.self) {
+            self = .bool(value)
+            return
+        }
+
+        if let value = try? container.decode(Double.self) {
+            self = .number(value)
+            return
+        }
+
+        if let value = try? container.decode(String.self) {
+            self = .string(value)
+            return
+        }
+
+        throw DecodingError.dataCorruptedError(
+            in: container,
+            debugDescription: "Unsupported basic financial metric value."
+        )
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+
+        switch self {
+        case .number(let value):
+            try container.encode(value)
+        case .string(let value):
+            try container.encode(value)
+        case .bool(let value):
+            try container.encode(value)
+        case .null:
+            try container.encodeNil()
+        }
+    }
+}
+
+public struct BasicFinancialSeriesPoint: Codable, Sendable, Equatable {
+    public let period: String
+    public let value: Double
+
+    enum CodingKeys: String, CodingKey {
+        case period
+        case value = "v"
+    }
+
+    public init(period: String, value: Double) {
+        self.period = period
+        self.value = value
+    }
+}
+
+public struct BasicFinancialsResponse: Codable, Sendable, Equatable {
+    public let symbol: String
+    public let metricType: String
+    public let metric: [String: BasicFinancialMetricValue]
+    public let series: [String: [String: [BasicFinancialSeriesPoint]]]
+
+    public init(
+        symbol: String,
+        metricType: String,
+        metric: [String: BasicFinancialMetricValue],
+        series: [String: [String: [BasicFinancialSeriesPoint]]]
+    ) {
+        self.symbol = symbol
+        self.metricType = metricType
+        self.metric = metric
+        self.series = series
+    }
+}
