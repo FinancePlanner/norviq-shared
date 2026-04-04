@@ -1,5 +1,7 @@
 import Foundation
 
+// MARK: - Cryptocurrency List
+
 public struct CryptoAssetResponse: Codable, Sendable, Equatable, Identifiable {
     public var id: String { symbol }
     public let symbol: String
@@ -25,6 +27,8 @@ public struct CryptoAssetResponse: Codable, Sendable, Equatable, Identifiable {
         self.totalSupply = totalSupply
     }
 }
+
+// MARK: - Full Cryptocurrency Quote
 
 public struct CryptoQuoteResponse: Codable, Sendable, Equatable, Identifiable {
     public var id: String { symbol }
@@ -85,6 +89,92 @@ public struct CryptoQuoteResponse: Codable, Sendable, Equatable, Identifiable {
     }
 }
 
+// MARK: - Cryptocurrency Short Quote
+
+public struct CryptoQuoteShortResponse: Codable, Sendable, Equatable, Identifiable {
+    public var id: String { symbol }
+    public let symbol: String
+    public let price: Double
+    public let change: Double
+    public let volume: Double?
+
+    public init(
+        symbol: String,
+        price: Double,
+        change: Double,
+        volume: Double? = nil
+    ) {
+        self.symbol = symbol
+        self.price = price
+        self.change = change
+        self.volume = volume
+    }
+}
+
+// MARK: - Historical Light Chart (EOD)
+
+public struct CryptoHistoricalLightPoint: Codable, Sendable, Equatable, Identifiable {
+    public var id: String { "\(symbol)-\(date)" }
+    public let symbol: String
+    public let date: String
+    public let price: Double
+    public let volume: Double?
+
+    public init(
+        symbol: String,
+        date: String,
+        price: Double,
+        volume: Double? = nil
+    ) {
+        self.symbol = symbol
+        self.date = date
+        self.price = price
+        self.volume = volume
+    }
+}
+
+// MARK: - Historical Full Chart (EOD)
+
+public struct CryptoHistoricalFullPoint: Codable, Sendable, Equatable, Identifiable {
+    public var id: String { "\(symbol)-\(date)" }
+    public let symbol: String
+    public let date: String
+    public let open: Double
+    public let high: Double
+    public let low: Double
+    public let close: Double
+    public let volume: Double?
+    public let change: Double?
+    public let changePercent: Double?
+    public let vwap: Double?
+
+    public init(
+        symbol: String,
+        date: String,
+        open: Double,
+        high: Double,
+        low: Double,
+        close: Double,
+        volume: Double? = nil,
+        change: Double? = nil,
+        changePercent: Double? = nil,
+        vwap: Double? = nil
+    ) {
+        self.symbol = symbol
+        self.date = date
+        self.open = open
+        self.high = high
+        self.low = low
+        self.close = close
+        self.volume = volume
+        self.change = change
+        self.changePercent = changePercent
+        self.vwap = vwap
+    }
+}
+
+// MARK: - Intraday Historical Point (1min, 5min, 1hour)
+
 public struct CryptoHistoricalPoint: Codable, Sendable, Equatable, Identifiable {
     public var id: String { date }
     public let date: String
@@ -108,5 +198,54 @@ public struct CryptoHistoricalPoint: Codable, Sendable, Equatable, Identifiable 
         self.high = high
         self.close = close
         self.volume = volume
+    }
+}
+
+// MARK: - Portfolio DTOs
+
+public struct CryptoPortfolioItemRequest: Codable, Sendable, Equatable {
+    public let symbol: String
+    public let name: String
+    public let quantity: Double
+    public let averageBuyPrice: Double
+
+    public init(
+        symbol: String,
+        name: String,
+        quantity: Double,
+        averageBuyPrice: Double
+    ) {
+        self.symbol = symbol
+        self.name = name
+        self.quantity = quantity
+        self.averageBuyPrice = averageBuyPrice
+    }
+}
+
+public struct CryptoPortfolioItemResponse: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let symbol: String
+    public let name: String
+    public let quantity: Double
+    public let averageBuyPrice: Double
+    public let createdAt: String?
+    public let updatedAt: String?
+
+    public init(
+        id: String,
+        symbol: String,
+        name: String,
+        quantity: Double,
+        averageBuyPrice: Double,
+        createdAt: String? = nil,
+        updatedAt: String? = nil
+    ) {
+        self.id = id
+        self.symbol = symbol
+        self.name = name
+        self.quantity = quantity
+        self.averageBuyPrice = averageBuyPrice
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
     }
 }
