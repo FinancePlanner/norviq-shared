@@ -16,7 +16,7 @@ public struct StockRequest: Codable, Sendable, Equatable {
     }
 }
 
-public struct StockResponse: Codable, Sendable, Equatable {
+public struct StockResponse: Codable, Sendable, Equatable, Identifiable {
     public let id: String
     public let symbol: String
     public let shares: Double

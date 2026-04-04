@@ -18,7 +18,7 @@ public struct NewsItemRequest: Codable, Sendable, Equatable {
     }
 }
 
-public struct NewsItemResponse: Codable, Sendable, Equatable {
+public struct NewsItemResponse: Codable, Sendable, Equatable, Identifiable {
     public let id: String
     public let symbol: String
     public let headline: String
