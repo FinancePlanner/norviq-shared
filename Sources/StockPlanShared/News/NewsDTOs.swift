@@ -24,6 +24,7 @@ public struct NewsItemResponse: Codable, Sendable, Equatable, Identifiable {
     public let headline: String
     public let source: String?
     public let url: String?
+    public let imageUrl: String?
     public let summary: String?
     public let publishedAt: String
     public let createdAt: String?
@@ -35,6 +36,7 @@ public struct NewsItemResponse: Codable, Sendable, Equatable, Identifiable {
         headline: String,
         source: String? = nil,
         url: String? = nil,
+        imageUrl: String? = nil,
         summary: String? = nil,
         publishedAt: String,
         createdAt: String? = nil,
@@ -45,6 +47,7 @@ public struct NewsItemResponse: Codable, Sendable, Equatable, Identifiable {
         self.headline = headline
         self.source = source
         self.url = url
+        self.imageUrl = imageUrl
         self.summary = summary
         self.publishedAt = publishedAt
         self.createdAt = createdAt
