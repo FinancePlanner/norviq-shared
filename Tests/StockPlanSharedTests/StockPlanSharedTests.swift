@@ -17,8 +17,6 @@ import Testing
         username: "valid_user",
         password: "Password123",
         email: "user@example.com",
-        firstName: "Jane",
-        lastName: "Doe",
         dateOfBirth: Date(timeIntervalSince1970: 946_684_800)
     )
 
@@ -62,8 +60,6 @@ import Testing
         refreshExpiresIn: 2_592_000,
         username: "valid_user",
         email: "user@example.com",
-        firstName: "Jane",
-        lastName: "Doe",
         dateOfBirth: Date(timeIntervalSince1970: 946_684_800)
     )
 
@@ -84,8 +80,6 @@ import Testing
         refreshExpiresIn: 2_592_000,
         username: "valid_user",
         email: "user@example.com",
-        firstName: "Jane",
-        lastName: "Doe",
         dateOfBirth: Date(timeIntervalSince1970: 946_684_800)
     )
 
@@ -105,8 +99,6 @@ import Testing
       "refresh_expires_in": 2592000,
       "username": "valid_user",
       "email": "user@example.com",
-      "first_name": "Jane",
-      "last_name": "Doe",
       "date_of_birth": "2000-01-01"
     }
     """.data(using: .utf8)!
@@ -114,8 +106,6 @@ import Testing
     let decoded = try JSONDecoder.stockPlanShared.decode(AuthResponse.self, from: payload)
 
     #expect(decoded.userId == UUID(uuidString: "00000000-0000-0000-0000-000000000001")!)
-    #expect(decoded.firstName == "Jane")
-    #expect(decoded.lastName == "Doe")
     #expect(decoded.dateOfBirth == DateFormatter.yyyyMMdd.date(from: "2000-01-01"))
 }
 
@@ -171,9 +161,7 @@ import Testing
         bio: "Investor",
         avatarURL: URL(string: "https://example.com/avatar.png"),
         bannerAvatarURL: URL(string: "https://example.com/banner.png"),
-        username: "investor_1",
-        firstName: "Jane",
-        lastName: "Doe"
+        username: "investor_1"
     )
     let payload = GetUserProfileResponse(userProfile: profile)
 
@@ -190,9 +178,7 @@ import Testing
         bio: "Long-term investor",
         avatarURL: nil,
         bannerAvatarURL: nil,
-        username: "valueinvestor",
-        firstName: "John",
-        lastName: "Smith"
+        username: "valueinvestor"
     )
     let payload = UpdateUserProfileRequest(userProfile: profile)
 
