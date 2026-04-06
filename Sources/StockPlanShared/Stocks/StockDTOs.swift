@@ -1,18 +1,26 @@
 import Foundation
 
+public enum AssetCategory: String, Codable, Sendable, CaseIterable {
+    case stock
+    case etf
+    case crypto
+}
+
 public struct StockRequest: Codable, Sendable, Equatable {
     public let symbol: String
     public let shares: Double
     public let buyPrice: Double
     public let buyDate: String
     public let notes: String?
+    public let category: AssetCategory
 
-    public init(symbol: String, shares: Double, buyPrice: Double, buyDate: String, notes: String?) {
+    public init(symbol: String, shares: Double, buyPrice: Double, buyDate: String, notes: String?, category: AssetCategory = .stock) {
         self.symbol = symbol
         self.shares = shares
         self.buyPrice = buyPrice
         self.buyDate = buyDate
         self.notes = notes
+        self.category = category
     }
 }
 
@@ -23,10 +31,11 @@ public struct StockResponse: Codable, Sendable, Equatable, Identifiable {
     public let buyPrice: Double
     public let buyDate: String
     public let notes: String?
+    public let category: AssetCategory
 
     public init(
         id: String, symbol: String, shares: Double, buyPrice: Double, buyDate: String,
-        notes: String?
+        notes: String?, category: AssetCategory = .stock
     ) {
         self.id = id
         self.symbol = symbol
@@ -34,6 +43,7 @@ public struct StockResponse: Codable, Sendable, Equatable, Identifiable {
         self.buyPrice = buyPrice
         self.buyDate = buyDate
         self.notes = notes
+        self.category = category
     }
 }
 
