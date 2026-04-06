@@ -7,8 +7,6 @@ public struct UserProfile: Codable, Sendable, Equatable {
     public var avatarURL: URL?
     public var bannerAvatarURL: URL?
     public var username: String?
-    public var firstName: String?
-    public var lastName: String?
 
     public init(
         id: String,
@@ -16,19 +14,14 @@ public struct UserProfile: Codable, Sendable, Equatable {
         bio: String? = nil,
         avatarURL: URL? = nil,
         bannerAvatarURL: URL? = nil,
-        username: String? = nil,
-        firstName: String? = nil,
-        lastName: String? = nil
+        username: String? = nil
     ) {
-
         self.id = id
         self.email = email
         self.bio = bio
         self.avatarURL = avatarURL
         self.bannerAvatarURL = bannerAvatarURL
         self.username = username
-        self.firstName = firstName
-        self.lastName = lastName
     }
 }
 

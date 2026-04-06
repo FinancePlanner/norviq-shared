@@ -4,28 +4,22 @@ public struct AuthRegisterRequest: Codable, Sendable, Equatable {
     public let username: String
     public let password: String
     public let email: String
-    public let firstName: String
-    public let lastName: String
     public let dateOfBirth: Date
 
     public init(
         username: String,
         password: String,
         email: String,
-        firstName: String,
-        lastName: String,
         dateOfBirth: Date
     ) {
         self.username = username
         self.password = password
         self.email = email
-        self.firstName = firstName
-        self.lastName = lastName
         self.dateOfBirth = dateOfBirth
     }
 
     private enum CodingKeys: String, CodingKey {
-        case username, password, email, firstName, lastName, dateOfBirth
+        case username, password, email, dateOfBirth
     }
 
     public init(from decoder: Decoder) throws {
@@ -33,8 +27,6 @@ public struct AuthRegisterRequest: Codable, Sendable, Equatable {
         username = try container.decode(String.self, forKey: .username)
         password = try container.decode(String.self, forKey: .password)
         email = try container.decode(String.self, forKey: .email)
-        firstName = try container.decode(String.self, forKey: .firstName)
-        lastName = try container.decode(String.self, forKey: .lastName)
         dateOfBirth = try SharedDateDecoder.decodeDate(from: container, forKey: .dateOfBirth)
     }
 }
@@ -57,8 +49,6 @@ public struct AuthResponse: Codable, Sendable, Equatable {
     public let refreshExpiresIn: Int
     public let username: String
     public let email: String
-    public let firstName: String
-    public let lastName: String
     public let dateOfBirth: Date
 
     public init(
@@ -69,8 +59,6 @@ public struct AuthResponse: Codable, Sendable, Equatable {
         refreshExpiresIn: Int,
         username: String,
         email: String,
-        firstName: String,
-        lastName: String,
         dateOfBirth: Date
     ) {
         self.token = token
@@ -80,8 +68,6 @@ public struct AuthResponse: Codable, Sendable, Equatable {
         self.refreshExpiresIn = refreshExpiresIn
         self.username = username
         self.email = email
-        self.firstName = firstName
-        self.lastName = lastName
         self.dateOfBirth = dateOfBirth
     }
 }
@@ -94,23 +80,17 @@ public struct AuthUserResponse: Codable, Sendable, Equatable {
     public let id: String
     public let username: String
     public let email: String
-    public let firstName: String
-    public let lastName: String
     public let dateOfBirth: Date
 
     public init(
         id: String,
         username: String,
         email: String,
-        firstName: String,
-        lastName: String,
         dateOfBirth: Date
     ) {
         self.id = id
         self.username = username
         self.email = email
-        self.firstName = firstName
-        self.lastName = lastName
         self.dateOfBirth = dateOfBirth
     }
 }
@@ -152,4 +132,3 @@ public struct AuthRefreshRequest: Codable, Sendable, Equatable {
         self.refreshToken = refreshToken
     }
 }
-
