@@ -86,7 +86,8 @@ public struct StockStatisticsSummaryDTO: Codable, Sendable, Equatable {
     }
 }
 
-public struct StockAllocationDTO: Codable, Sendable, Equatable {
+public struct StockAllocationDTO: Codable, Sendable, Equatable, Identifiable {
+    public var id: String { symbol }
     public let symbol: String
     public let value: Double
     public let weightPercent: Double
@@ -98,7 +99,8 @@ public struct StockAllocationDTO: Codable, Sendable, Equatable {
     }
 }
 
-public struct SectorAllocationDTO: Codable, Sendable, Equatable {
+public struct SectorAllocationDTO: Codable, Sendable, Equatable, Identifiable {
+    public var id: String { sector }
     public let sector: String
     public let value: Double
     public let weightPercent: Double
