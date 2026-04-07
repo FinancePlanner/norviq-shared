@@ -6,7 +6,6 @@ public enum BudgetPillar: String, Codable, Sendable, CaseIterable {
     case fundamentals
     case futureYou
     case fun
-    case icon
 }
 
 // MARK: - Budget Snapshot
