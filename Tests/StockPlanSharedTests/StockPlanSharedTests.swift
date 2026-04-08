@@ -42,6 +42,32 @@ import Testing
     #expect(decoded == payload)
 }
 
+@Test func goalStatusUpdateRequestRoundTripJSON() throws {
+    let payload = GoalStatusUpdateRequest(status: .completed, source: .manual)
+
+    let encoded = try JSONEncoder().encode(payload)
+    let decoded = try JSONDecoder().decode(GoalStatusUpdateRequest.self, from: encoded)
+
+    #expect(decoded == payload)
+}
+
+@Test func goalResponseRoundTripJSON() throws {
+    let payload = GoalResponse(
+        id: "goal-id",
+        title: "Review watchlist before earnings",
+        status: .pending,
+        statusUpdatedBy: .manual,
+        completedAt: nil,
+        createdAt: "2026-04-08T10:00:00Z",
+        updatedAt: "2026-04-08T10:00:00Z"
+    )
+
+    let encoded = try JSONEncoder().encode(payload)
+    let decoded = try JSONDecoder().decode(GoalResponse.self, from: encoded)
+
+    #expect(decoded == payload)
+}
+
 @Test func apiSuccessRoundTripJSON() throws {
     let payload = APISuccess(success: true)
 

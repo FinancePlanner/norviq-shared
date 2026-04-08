@@ -51,6 +51,16 @@ public struct DashboardAllocationDTO: Codable, Sendable, Equatable {
 
 // MARK: - Goals
 
+public enum GoalStatus: String, Codable, Sendable, Equatable, CaseIterable {
+    case pending
+    case completed
+}
+
+public enum GoalStatusSource: String, Codable, Sendable, Equatable, CaseIterable {
+    case manual
+    case system
+}
+
 public struct GoalRequest: Codable, Sendable, Equatable {
     public let title: String
     
@@ -59,15 +69,39 @@ public struct GoalRequest: Codable, Sendable, Equatable {
     }
 }
 
+public struct GoalStatusUpdateRequest: Codable, Sendable, Equatable {
+    public let status: GoalStatus
+    public let source: GoalStatusSource
+
+    public init(status: GoalStatus, source: GoalStatusSource = .manual) {
+        self.status = status
+        self.source = source
+    }
+}
+
 public struct GoalResponse: Codable, Sendable, Equatable, Identifiable {
     public let id: String
     public let title: String
+    public let status: GoalStatus
+    public let statusUpdatedBy: GoalStatusSource?
+    public let completedAt: String?
     public let createdAt: String?
     public let updatedAt: String?
     
-    public init(id: String, title: String, createdAt: String? = nil, updatedAt: String? = nil) {
+    public init(
+        id: String,
+        title: String,
+        status: GoalStatus = .pending,
+        statusUpdatedBy: GoalStatusSource? = nil,
+        completedAt: String? = nil,
+        createdAt: String? = nil,
+        updatedAt: String? = nil
+    ) {
         self.id = id
         self.title = title
+        self.status = status
+        self.statusUpdatedBy = statusUpdatedBy
+        self.completedAt = completedAt
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
@@ -80,11 +114,38 @@ public struct DashboardInsightsResponse: Codable, Sendable, Equatable {
     public let budgetStreak: Int
     public let watchlistCount: Int
     public let cashBuffer: Double
+    public let financialHealth: DashboardFinancialHealthDTO
     
-    public init(savingsRate: Double, budgetStreak: Int, watchlistCount: Int, cashBuffer: Double) {
+    public init(
+        savingsRate: Double,
+        budgetStreak: Int,
+        watchlistCount: Int,
+        cashBuffer: Double,
+        financialHealth: DashboardFinancialHealthDTO
+    ) {
         self.savingsRate = savingsRate
         self.budgetStreak = budgetStreak
         self.watchlistCount = watchlistCount
         self.cashBuffer = cashBuffer
+        self.financialHealth = financialHealth
+    }
+}
+
+public enum FinancialHealthStatus: String, Codable, Sendable, Equatable, CaseIterable {
+    case atRisk
+    case needsAttention
+    case healthy
+    case excellent
+}
+
+public struct DashboardFinancialHealthDTO: Codable, Sendable, Equatable {
+    public let score: Int
+    public let maxScore: Int
+    public let status: FinancialHealthStatus
+
+    public init(score: Int, maxScore: Int, status: FinancialHealthStatus) {
+        self.score = score
+        self.maxScore = maxScore
+        self.status = status
     }
 }

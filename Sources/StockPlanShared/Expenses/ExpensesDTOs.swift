@@ -8,6 +8,27 @@ public enum BudgetPillar: String, Codable, Sendable, CaseIterable {
     case fun
 }
 
+public enum ExpenseSplitMode: String, Codable, Sendable, CaseIterable {
+    case personal
+    case shared
+}
+
+public struct HouseholdPartnerProfileResponse: Codable, Sendable, Equatable {
+    public let displayName: String?
+
+    public init(displayName: String? = nil) {
+        self.displayName = displayName
+    }
+}
+
+public struct HouseholdPartnerProfileRequest: Codable, Sendable, Equatable {
+    public let displayName: String?
+
+    public init(displayName: String? = nil) {
+        self.displayName = displayName
+    }
+}
+
 // MARK: - Budget Snapshot
 
 public struct BudgetSnapshotRequest: Codable, Sendable, Equatable {
@@ -54,12 +75,23 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
     public let title: String
     public let plannedAmount: Double
     public let pillar: BudgetPillar
+    public let splitMode: ExpenseSplitMode
+    public let userSharePercent: Double
 
-    public init(snapshotId: String, title: String, plannedAmount: Double, pillar: BudgetPillar) {
+    public init(
+        snapshotId: String,
+        title: String,
+        plannedAmount: Double,
+        pillar: BudgetPillar,
+        splitMode: ExpenseSplitMode = .personal,
+        userSharePercent: Double = 100
+    ) {
         self.snapshotId = snapshotId
         self.title = title
         self.plannedAmount = plannedAmount
         self.pillar = pillar
+        self.splitMode = splitMode
+        self.userSharePercent = userSharePercent
     }
 }
 
@@ -69,6 +101,8 @@ public struct BudgetPlanItemResponse: Codable, Sendable, Equatable, Identifiable
     public let title: String
     public let plannedAmount: Double
     public let pillar: BudgetPillar
+    public let splitMode: ExpenseSplitMode
+    public let userSharePercent: Double
     public let createdAt: String?
     public let updatedAt: String?
 
@@ -78,6 +112,8 @@ public struct BudgetPlanItemResponse: Codable, Sendable, Equatable, Identifiable
         title: String,
         plannedAmount: Double,
         pillar: BudgetPillar,
+        splitMode: ExpenseSplitMode = .personal,
+        userSharePercent: Double = 100,
         createdAt: String? = nil,
         updatedAt: String? = nil
     ) {
@@ -86,6 +122,8 @@ public struct BudgetPlanItemResponse: Codable, Sendable, Equatable, Identifiable
         self.title = title
         self.plannedAmount = plannedAmount
         self.pillar = pillar
+        self.splitMode = splitMode
+        self.userSharePercent = userSharePercent
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
@@ -99,16 +137,25 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
     public let pillar: BudgetPillar
     public let occurredOn: String  // YYYY-MM-DD
     public let linkedPlanItemId: String?
+    public let splitMode: ExpenseSplitMode
+    public let userSharePercent: Double
 
     public init(
-        title: String, amount: Double, pillar: BudgetPillar, occurredOn: String,
-        linkedPlanItemId: String? = nil
+        title: String,
+        amount: Double,
+        pillar: BudgetPillar,
+        occurredOn: String,
+        linkedPlanItemId: String? = nil,
+        splitMode: ExpenseSplitMode = .personal,
+        userSharePercent: Double = 100
     ) {
         self.title = title
         self.amount = amount
         self.pillar = pillar
         self.occurredOn = occurredOn
         self.linkedPlanItemId = linkedPlanItemId
+        self.splitMode = splitMode
+        self.userSharePercent = userSharePercent
     }
 }
 
@@ -119,6 +166,8 @@ public struct ExpenseResponse: Codable, Sendable, Equatable, Identifiable {
     public let pillar: BudgetPillar
     public let occurredOn: String  // YYYY-MM-DD
     public let linkedPlanItemId: String?
+    public let splitMode: ExpenseSplitMode
+    public let userSharePercent: Double
     public let createdAt: String?
     public let updatedAt: String?
 
@@ -129,6 +178,8 @@ public struct ExpenseResponse: Codable, Sendable, Equatable, Identifiable {
         pillar: BudgetPillar,
         occurredOn: String,
         linkedPlanItemId: String? = nil,
+        splitMode: ExpenseSplitMode = .personal,
+        userSharePercent: Double = 100,
         createdAt: String? = nil,
         updatedAt: String? = nil
     ) {
@@ -138,6 +189,8 @@ public struct ExpenseResponse: Codable, Sendable, Equatable, Identifiable {
         self.pillar = pillar
         self.occurredOn = occurredOn
         self.linkedPlanItemId = linkedPlanItemId
+        self.splitMode = splitMode
+        self.userSharePercent = userSharePercent
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
@@ -169,19 +222,47 @@ public struct BudgetMonthSummaryResponse: Codable, Sendable, Equatable {
     public let planned: Double
     public let actual: Double
     public let salary: Double
+    public let myPlanned: Double
+    public let partnerPlanned: Double
+    public let myActual: Double
+    public let partnerActual: Double
     public let pillarActuals: [String: Double]
     public let pillarPlans: [String: Double]
+    public let myPillarActuals: [String: Double]
+    public let partnerPillarActuals: [String: Double]
+    public let myPillarPlans: [String: Double]
+    public let partnerPillarPlans: [String: Double]
 
     public init(
-        monthStart: String, planned: Double, actual: Double, salary: Double,
-        pillarActuals: [String: Double], pillarPlans: [String: Double]
+        monthStart: String,
+        planned: Double,
+        actual: Double,
+        salary: Double,
+        myPlanned: Double = 0,
+        partnerPlanned: Double = 0,
+        myActual: Double = 0,
+        partnerActual: Double = 0,
+        pillarActuals: [String: Double],
+        pillarPlans: [String: Double],
+        myPillarActuals: [String: Double] = [:],
+        partnerPillarActuals: [String: Double] = [:],
+        myPillarPlans: [String: Double] = [:],
+        partnerPillarPlans: [String: Double] = [:]
     ) {
         self.monthStart = monthStart
         self.planned = planned
         self.actual = actual
         self.salary = salary
+        self.myPlanned = myPlanned
+        self.partnerPlanned = partnerPlanned
+        self.myActual = myActual
+        self.partnerActual = partnerActual
         self.pillarActuals = pillarActuals
         self.pillarPlans = pillarPlans
+        self.myPillarActuals = myPillarActuals
+        self.partnerPillarActuals = partnerPillarActuals
+        self.myPillarPlans = myPillarPlans
+        self.partnerPillarPlans = partnerPillarPlans
     }
 }
 
@@ -190,11 +271,28 @@ public struct BudgetYearSummaryResponse: Codable, Sendable, Equatable {
     public let planned: Double
     public let actual: Double
     public let salary: Double
+    public let myPlanned: Double
+    public let partnerPlanned: Double
+    public let myActual: Double
+    public let partnerActual: Double
 
-    public init(year: Int, planned: Double, actual: Double, salary: Double) {
+    public init(
+        year: Int,
+        planned: Double,
+        actual: Double,
+        salary: Double,
+        myPlanned: Double = 0,
+        partnerPlanned: Double = 0,
+        myActual: Double = 0,
+        partnerActual: Double = 0
+    ) {
         self.year = year
         self.planned = planned
         self.actual = actual
         self.salary = salary
+        self.myPlanned = myPlanned
+        self.partnerPlanned = partnerPlanned
+        self.myActual = myActual
+        self.partnerActual = partnerActual
     }
 }
