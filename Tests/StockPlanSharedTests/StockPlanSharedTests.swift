@@ -222,3 +222,74 @@ import Testing
 
     #expect(decoded == payload)
 }
+
+@Test func reportsCashFlowPointResponseRoundTripJSON() throws {
+    let payload = ReportsCashFlowPointResponse(
+        monthStart: "2026-04-01",
+        income: 3000,
+        expenses: 2200,
+        net: 800,
+        savingsRate: 26.67
+    )
+
+    let encoded = try JSONEncoder().encode(payload)
+    let decoded = try JSONDecoder().decode(ReportsCashFlowPointResponse.self, from: encoded)
+
+    #expect(decoded == payload)
+}
+
+@Test func reportsOverviewResponseRoundTripJSON() throws {
+    let payload = ReportsOverviewResponse(
+        generatedAt: "2026-04-08T10:00:00Z",
+        portfolioStatistics: ImportedStocksStatisticsDTO(
+            totalPositions: 0,
+            totalMarketValue: 0,
+            totalCostBasis: 0,
+            totalUnrealizedPnl: 0,
+            totalRealizedPnl: 0,
+            stockSummaries: [],
+            stockAllocations: [],
+            sectorAllocations: [],
+            calendarPerformance: []
+        ),
+        monthlySummaries: [],
+        yearlySummaries: [],
+        latestMonthSummary: nil,
+        latestPillarSummaries: [],
+        cashFlow: [
+            ReportsCashFlowPointResponse(
+                monthStart: "2026-04-01",
+                income: 3000,
+                expenses: 2000,
+                net: 1000,
+                savingsRate: 33.33
+            )
+        ]
+    )
+
+    let encoded = try JSONEncoder().encode(payload)
+    let decoded = try JSONDecoder().decode(ReportsOverviewResponse.self, from: encoded)
+
+    #expect(decoded == payload)
+}
+
+@Test func reportSuggestionResponseRoundTripJSON() throws {
+    let payload = ReportSuggestionResponse(
+        id: "overspend-2026-04-01-18",
+        title: "Spending exceeded plan",
+        message: "You spent 18% above plan this month.",
+        severity: .high,
+        category: .overspend,
+        monthStart: "2026-04-01",
+        recommendedSavings: 320,
+        detailPayload: [
+            "planned": "1800.00",
+            "actual": "2120.00",
+        ]
+    )
+
+    let encoded = try JSONEncoder().encode(payload)
+    let decoded = try JSONDecoder().decode(ReportSuggestionResponse.self, from: encoded)
+
+    #expect(decoded == payload)
+}

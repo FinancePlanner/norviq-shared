@@ -296,3 +296,107 @@ public struct BudgetYearSummaryResponse: Codable, Sendable, Equatable {
         self.partnerActual = partnerActual
     }
 }
+
+public struct ReportsCashFlowPointResponse: Codable, Sendable, Equatable, Identifiable {
+    public var id: String { monthStart }
+    public let monthStart: String
+    public let income: Double
+    public let expenses: Double
+    public let net: Double
+    public let savingsRate: Double
+
+    public init(
+        monthStart: String,
+        income: Double,
+        expenses: Double,
+        net: Double,
+        savingsRate: Double
+    ) {
+        self.monthStart = monthStart
+        self.income = income
+        self.expenses = expenses
+        self.net = net
+        self.savingsRate = savingsRate
+    }
+}
+
+public struct ReportsOverviewResponse: Codable, Sendable, Equatable {
+    public let generatedAt: String
+    public let portfolioStatistics: ImportedStocksStatisticsDTO
+    public let monthlySummaries: [BudgetMonthSummaryResponse]
+    public let yearlySummaries: [BudgetYearSummaryResponse]
+    public let latestMonthSummary: BudgetMonthSummaryResponse?
+    public let latestPillarSummaries: [PillarPlanningSummaryResponse]
+    public let cashFlow: [ReportsCashFlowPointResponse]
+
+    public init(
+        generatedAt: String,
+        portfolioStatistics: ImportedStocksStatisticsDTO,
+        monthlySummaries: [BudgetMonthSummaryResponse],
+        yearlySummaries: [BudgetYearSummaryResponse],
+        latestMonthSummary: BudgetMonthSummaryResponse?,
+        latestPillarSummaries: [PillarPlanningSummaryResponse],
+        cashFlow: [ReportsCashFlowPointResponse]
+    ) {
+        self.generatedAt = generatedAt
+        self.portfolioStatistics = portfolioStatistics
+        self.monthlySummaries = monthlySummaries
+        self.yearlySummaries = yearlySummaries
+        self.latestMonthSummary = latestMonthSummary
+        self.latestPillarSummaries = latestPillarSummaries
+        self.cashFlow = cashFlow
+    }
+}
+
+public enum ReportSuggestionSeverity: String, Codable, Sendable, CaseIterable {
+    case low
+    case medium
+    case high
+}
+
+public enum ReportSuggestionCategory: String, Codable, Sendable, CaseIterable {
+    case overspend
+    case unplannedSpend
+    case savingsTrend
+}
+
+public struct ReportSuggestionResponse: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let title: String
+    public let message: String
+    public let severity: ReportSuggestionSeverity
+    public let category: ReportSuggestionCategory
+    public let monthStart: String
+    public let recommendedSavings: Double
+    public let detailPayload: [String: String]
+
+    public init(
+        id: String,
+        title: String,
+        message: String,
+        severity: ReportSuggestionSeverity,
+        category: ReportSuggestionCategory,
+        monthStart: String,
+        recommendedSavings: Double,
+        detailPayload: [String: String] = [:]
+    ) {
+        self.id = id
+        self.title = title
+        self.message = message
+        self.severity = severity
+        self.category = category
+        self.monthStart = monthStart
+        self.recommendedSavings = recommendedSavings
+        self.detailPayload = detailPayload
+    }
+}
+
+public struct ReportSuggestionsResponse: Codable, Sendable, Equatable {
+    public let generatedAt: String
+    public let suggestions: [ReportSuggestionResponse]
+
+    public init(generatedAt: String, suggestions: [ReportSuggestionResponse]) {
+        self.generatedAt = generatedAt
+        self.suggestions = suggestions
+    }
+}
