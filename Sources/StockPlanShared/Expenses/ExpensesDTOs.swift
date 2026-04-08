@@ -78,6 +78,15 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
     public let splitMode: ExpenseSplitMode
     public let userSharePercent: Double
 
+    private enum CodingKeys: String, CodingKey {
+        case snapshotId
+        case title
+        case plannedAmount
+        case pillar
+        case splitMode
+        case userSharePercent
+    }
+
     public init(
         snapshotId: String,
         title: String,
@@ -92,6 +101,16 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
         self.pillar = pillar
         self.splitMode = splitMode
         self.userSharePercent = userSharePercent
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.snapshotId = try container.decode(String.self, forKey: .snapshotId)
+        self.title = try container.decode(String.self, forKey: .title)
+        self.plannedAmount = try container.decode(Double.self, forKey: .plannedAmount)
+        self.pillar = try container.decode(BudgetPillar.self, forKey: .pillar)
+        self.splitMode = try container.decodeIfPresent(ExpenseSplitMode.self, forKey: .splitMode) ?? .personal
+        self.userSharePercent = try container.decodeIfPresent(Double.self, forKey: .userSharePercent) ?? 100
     }
 }
 
@@ -140,6 +159,16 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
     public let splitMode: ExpenseSplitMode
     public let userSharePercent: Double
 
+    private enum CodingKeys: String, CodingKey {
+        case title
+        case amount
+        case pillar
+        case occurredOn
+        case linkedPlanItemId
+        case splitMode
+        case userSharePercent
+    }
+
     public init(
         title: String,
         amount: Double,
@@ -156,6 +185,17 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
         self.linkedPlanItemId = linkedPlanItemId
         self.splitMode = splitMode
         self.userSharePercent = userSharePercent
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.title = try container.decode(String.self, forKey: .title)
+        self.amount = try container.decode(Double.self, forKey: .amount)
+        self.pillar = try container.decode(BudgetPillar.self, forKey: .pillar)
+        self.occurredOn = try container.decode(String.self, forKey: .occurredOn)
+        self.linkedPlanItemId = try container.decodeIfPresent(String.self, forKey: .linkedPlanItemId)
+        self.splitMode = try container.decodeIfPresent(ExpenseSplitMode.self, forKey: .splitMode) ?? .personal
+        self.userSharePercent = try container.decodeIfPresent(Double.self, forKey: .userSharePercent) ?? 100
     }
 }
 
