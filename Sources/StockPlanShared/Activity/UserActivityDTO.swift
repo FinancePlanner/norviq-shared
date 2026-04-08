@@ -5,6 +5,7 @@ public enum UserActivityType: String, Codable, Sendable, CaseIterable {
     case expenseRecorded = "expense_recorded"
     case stockUpdated = "stock_updated"
     case expenseUpdated = "expense_updated"
+    case newsViewed = "news_viewed"
 }
 
 public struct UserActivityResponse: Codable, Sendable, Equatable, Identifiable {
