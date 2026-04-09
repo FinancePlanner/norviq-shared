@@ -85,6 +85,16 @@ public struct FeedbackRequest: Codable, Sendable, Equatable {
     }
 }
 
+public struct FeedbackResponse: Codable, Sendable, Equatable {
+    public let success: Bool
+    public let message: String?
+
+    public init(success: Bool = true, message: String? = nil) {
+        self.success = success
+        self.message = message
+    }
+}
+
 public struct UpdateUsernameRequest: Codable, Sendable, Equatable {
     public let username: String
 
