@@ -78,7 +78,7 @@ public struct DeleteUserProfileResponse: Codable, Sendable, Equatable {
 public struct FeedbackRequest: Codable, Sendable, Equatable {
     public let topic: String
     public let message: String
-    
+
     public init(topic: String, message: String) {
         self.topic = topic
         self.message = message
@@ -88,7 +88,7 @@ public struct FeedbackRequest: Codable, Sendable, Equatable {
 public struct FeedbackResponse: Codable, Sendable, Equatable {
     public let success: Bool
     public let message: String?
-    
+
     public init(success: Bool = true, message: String? = nil) {
         self.success = success
         self.message = message

@@ -128,8 +128,7 @@ public struct PriceBarResponse: Codable, Sendable, Equatable {
     public let close: Double
     public let volume: Int?
 
-    public init(date: String, open: Double, high: Double, low: Double, close: Double, volume: Int?)
-    {
+    public init(date: String, open: Double, high: Double, low: Double, close: Double, volume: Int?) {
         self.date = date
         self.open = open
         self.high = high

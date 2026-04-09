@@ -8,7 +8,7 @@ extension DateFormatter {
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX"
         return formatter
-    } ()
+    }()
 
     public static let iso8601Standard: DateFormatter = {
         let formatter = DateFormatter()
@@ -17,7 +17,7 @@ extension DateFormatter {
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
         return formatter
-    } ()
+    }()
 
     public static let yyyyMMdd: DateFormatter = {
         let formatter = DateFormatter()
@@ -26,7 +26,7 @@ extension DateFormatter {
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
-    } ()
+    }()
 }
 
 public enum SharedDateDecoder {
@@ -125,4 +125,3 @@ extension JSONEncoder {
         return encoder
     }
 }
-

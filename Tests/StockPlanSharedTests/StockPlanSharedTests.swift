@@ -140,7 +140,7 @@ import Testing
         StockRequest(
             symbol: "AAPL", shares: 10.5, buyPrice: 150.25, buyDate: "2026-01-10", notes: "First"),
         StockRequest(
-            symbol: "MSFT", shares: 5, buyPrice: 300.00, buyDate: "2026-02-15", notes: nil),
+            symbol: "MSFT", shares: 5, buyPrice: 300.00, buyDate: "2026-02-15", notes: nil)
     ])
 
     let encoded = try JSONEncoder().encode(payload)
@@ -160,7 +160,7 @@ import Testing
                     id: "id-1", symbol: "AAPL", shares: 10.5, buyPrice: 150.25,
                     buyDate: "2026-01-10", notes: nil)
             ),
-            BulkStockResultItem(index: 1, error: "Invalid buyDate. Expected YYYY-MM-DD."),
+            BulkStockResultItem(index: 1, error: "Invalid buyDate. Expected YYYY-MM-DD.")
         ]
     )
 
@@ -284,7 +284,7 @@ import Testing
         recommendedSavings: 320,
         detailPayload: [
             "planned": "1800.00",
-            "actual": "2120.00",
+            "actual": "2120.00"
         ]
     )
 

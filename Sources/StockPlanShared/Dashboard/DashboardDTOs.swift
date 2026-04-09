@@ -63,7 +63,7 @@ public enum GoalStatusSource: String, Codable, Sendable, Equatable, CaseIterable
 
 public struct GoalRequest: Codable, Sendable, Equatable {
     public let title: String
-    
+
     public init(title: String) {
         self.title = title
     }
@@ -87,7 +87,7 @@ public struct GoalResponse: Codable, Sendable, Equatable, Identifiable {
     public let completedAt: String?
     public let createdAt: String?
     public let updatedAt: String?
-    
+
     public init(
         id: String,
         title: String,
@@ -115,7 +115,7 @@ public struct DashboardInsightsResponse: Codable, Sendable, Equatable {
     public let watchlistCount: Int
     public let cashBuffer: Double
     public let financialHealth: DashboardFinancialHealthDTO
-    
+
     public init(
         savingsRate: Double,
         budgetStreak: Int,

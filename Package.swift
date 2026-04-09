@@ -5,13 +5,13 @@ let package = Package(
     name: "StockPlanShared",
     platforms: [
         .iOS(.v17),
-        .macOS(.v13),
+        .macOS(.v13)
     ],
     products: [
         .library(
             name: "StockPlanShared",
             targets: ["StockPlanShared"]
-        ),
+        )
     ],
     targets: [
         .target(
@@ -20,6 +20,6 @@ let package = Package(
         .testTarget(
             name: "StockPlanSharedTests",
             dependencies: ["StockPlanShared"]
-        ),
+        )
     ]
 )
