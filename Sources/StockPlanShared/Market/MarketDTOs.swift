@@ -1,5 +1,4 @@
 import Foundation
-import Vapor
 
 public struct StockDetailsResponse: Codable, Sendable, Equatable {
     public let symbol: String
