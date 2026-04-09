@@ -132,3 +132,43 @@ public struct AuthRefreshRequest: Codable, Sendable, Equatable {
         self.refreshToken = refreshToken
     }
 }
+
+public enum OAuthProvider: String, Codable, Sendable {
+    case apple
+    case google
+    case x
+}
+
+public struct OAuthStartRequest: Codable, Sendable, Equatable {
+    public let redirectURI: String
+
+    public init(redirectURI: String) {
+        self.redirectURI = redirectURI
+    }
+}
+
+public struct OAuthStartResponse: Codable, Sendable, Equatable {
+    public let flowId: UUID
+    public let authorizationURL: String
+    public let expiresIn: Int
+
+    public init(flowId: UUID, authorizationURL: String, expiresIn: Int) {
+        self.flowId = flowId
+        self.authorizationURL = authorizationURL
+        self.expiresIn = expiresIn
+    }
+}
+
+public struct OAuthExchangeRequest: Codable, Sendable, Equatable {
+    public let flowId: UUID
+    public let code: String
+    public let state: String
+    public let redirectURI: String
+
+    public init(flowId: UUID, code: String, state: String, redirectURI: String) {
+        self.flowId = flowId
+        self.code = code
+        self.state = state
+        self.redirectURI = redirectURI
+    }
+}
