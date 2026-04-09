@@ -220,6 +220,13 @@ public struct CryptoPortfolioItemRequest: Codable, Sendable, Equatable {
         self.quantity = quantity
         self.averageBuyPrice = averageBuyPrice
     }
+
+    private enum CodingKeys: String, CodingKey {
+        case symbol
+        case name
+        case quantity
+        case averageBuyPrice = "average_buy_price"
+    }
 }
 
 public struct CryptoPortfolioItemResponse: Codable, Sendable, Equatable, Identifiable {
