@@ -45,6 +45,12 @@ public struct BudgetSnapshotRequest: Codable, Sendable, Equatable {
         self.netSalary = netSalary
         self.targetShares = targetShares
     }
+    
+    private enum CodingKeys: String, CodingKey {
+        case monthStart = "month_start"
+        case netSalary = "net_salary"
+        case targetShares = "target_shares"
+    }
 }
 
 public struct BudgetSnapshotResponse: Codable, Sendable, Equatable, Identifiable {
@@ -69,15 +75,6 @@ public struct BudgetSnapshotResponse: Codable, Sendable, Equatable, Identifiable
         self.targetShares = targetShares
         self.createdAt = createdAt
         self.updatedAt = updatedAt
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case monthStart = "month_start"
-        case netSalary = "net_salary"
-        case targetShares = "target_shares"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
     }
 }
 
@@ -159,18 +156,6 @@ public struct BudgetPlanItemResponse: Codable, Sendable, Equatable, Identifiable
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
-
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case snapshotId = "snapshot_id"
-        case title
-        case plannedAmount = "planned_amount"
-        case pillar
-        case splitMode = "split_mode"
-        case userSharePercent = "user_share_percent"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
-    }
 }
 
 // MARK: - Expense
@@ -188,10 +173,10 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
         case title
         case amount
         case pillar
-        case occurredOn
-        case linkedPlanItemId
-        case splitMode
-        case userSharePercent
+        case occurredOn = "occurred_on"
+        case linkedPlanItemId = "linked_plan_item_id"
+        case splitMode = "split_mode"
+        case userSharePercent = "user_share_percent"
     }
 
     public init(
@@ -259,19 +244,6 @@ public struct ExpenseResponse: Codable, Sendable, Equatable, Identifiable {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
-
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case title
-        case amount
-        case pillar
-        case occurredOn = "occurred_on"
-        case linkedPlanItemId = "linked_plan_item_id"
-        case splitMode = "split_mode"
-        case userSharePercent = "user_share_percent"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
-    }
 }
 
 // MARK: - Reports
@@ -292,14 +264,6 @@ public struct PillarPlanningSummaryResponse: Codable, Sendable, Equatable {
         self.plannedAmount = plannedAmount
         self.actualAmount = actualAmount
         self.unplannedActualAmount = unplannedActualAmount
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case pillar
-        case targetAmount = "target_amount"
-        case plannedAmount = "planned_amount"
-        case actualAmount = "actual_amount"
-        case unplannedActualAmount = "unplanned_actual_amount"
     }
 }
 
@@ -350,23 +314,6 @@ public struct BudgetMonthSummaryResponse: Codable, Sendable, Equatable {
         self.myPillarPlans = myPillarPlans
         self.partnerPillarPlans = partnerPillarPlans
     }
-
-    private enum CodingKeys: String, CodingKey {
-        case monthStart = "month_start"
-        case planned
-        case actual
-        case salary
-        case myPlanned = "my_planned"
-        case partnerPlanned = "partner_planned"
-        case myActual = "my_actual"
-        case partnerActual = "partner_actual"
-        case pillarActuals = "pillar_actuals"
-        case pillarPlans = "pillar_plans"
-        case myPillarActuals = "my_pillar_actuals"
-        case partnerPillarActuals = "partner_pillar_actuals"
-        case myPillarPlans = "my_pillar_plans"
-        case partnerPillarPlans = "partner_pillar_plans"
-    }
 }
 
 public struct BudgetYearSummaryResponse: Codable, Sendable, Equatable {
@@ -398,17 +345,6 @@ public struct BudgetYearSummaryResponse: Codable, Sendable, Equatable {
         self.myActual = myActual
         self.partnerActual = partnerActual
     }
-
-    private enum CodingKeys: String, CodingKey {
-        case year
-        case planned
-        case actual
-        case salary
-        case myPlanned = "my_planned"
-        case partnerPlanned = "partner_planned"
-        case myActual = "my_actual"
-        case partnerActual = "partner_actual"
-    }
 }
 
 public struct ReportsCashFlowPointResponse: Codable, Sendable, Equatable, Identifiable {
@@ -431,14 +367,6 @@ public struct ReportsCashFlowPointResponse: Codable, Sendable, Equatable, Identi
         self.expenses = expenses
         self.net = net
         self.savingsRate = savingsRate
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case monthStart = "month_start"
-        case income
-        case expenses
-        case net
-        case savingsRate = "savings_rate"
     }
 }
 
@@ -467,16 +395,6 @@ public struct ReportsOverviewResponse: Codable, Sendable, Equatable {
         self.latestMonthSummary = latestMonthSummary
         self.latestPillarSummaries = latestPillarSummaries
         self.cashFlow = cashFlow
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case generatedAt = "generated_at"
-        case portfolioStatistics = "portfolio_statistics"
-        case monthlySummaries = "monthly_summaries"
-        case yearlySummaries = "yearly_summaries"
-        case latestMonthSummary = "latest_month_summary"
-        case latestPillarSummaries = "latest_pillar_summaries"
-        case cashFlow = "cash_flow"
     }
 }
 
@@ -521,17 +439,6 @@ public struct ReportSuggestionResponse: Codable, Sendable, Equatable, Identifiab
         self.recommendedSavings = recommendedSavings
         self.detailPayload = detailPayload
     }
-
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case title
-        case message
-        case severity
-        case category
-        case monthStart = "month_start"
-        case recommendedSavings = "recommended_savings"
-        case detailPayload = "detail_payload"
-    }
 }
 
 public struct ReportSuggestionsResponse: Codable, Sendable, Equatable {
@@ -541,10 +448,5 @@ public struct ReportSuggestionsResponse: Codable, Sendable, Equatable {
     public init(generatedAt: String, suggestions: [ReportSuggestionResponse]) {
         self.generatedAt = generatedAt
         self.suggestions = suggestions
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case generatedAt = "generated_at"
-        case suggestions
     }
 }
