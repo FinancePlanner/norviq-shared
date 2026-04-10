@@ -15,7 +15,8 @@ import Testing
 @Test func authRegisterRequestRoundTripJSON() throws {
     let payload = AuthRegisterRequest(
         username: "valid_user",
-        password: "Password123",
+        password: "Password123!",
+        confirmPassword: "Password123!",
         email: "user@example.com",
         dateOfBirth: Date(timeIntervalSince1970: 946_684_800)
     )

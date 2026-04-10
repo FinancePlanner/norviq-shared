@@ -3,29 +3,33 @@ import Foundation
 public struct AuthRegisterRequest: Codable, Sendable, Equatable {
     public let username: String
     public let password: String
+    public let confirmPassword: String
     public let email: String
     public let dateOfBirth: Date
 
     public init(
         username: String,
         password: String,
+        confirmPassword: String,
         email: String,
         dateOfBirth: Date
     ) {
         self.username = username
         self.password = password
+        self.confirmPassword = confirmPassword
         self.email = email
         self.dateOfBirth = dateOfBirth
     }
 
     private enum CodingKeys: String, CodingKey {
-        case username, password, email, dateOfBirth
+        case username, password, confirmPassword, email, dateOfBirth
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         username = try container.decode(String.self, forKey: .username)
         password = try container.decode(String.self, forKey: .password)
+        confirmPassword = try container.decode(String.self, forKey: .confirmPassword)
         email = try container.decode(String.self, forKey: .email)
         dateOfBirth = try SharedDateDecoder.decodeDate(from: container, forKey: .dateOfBirth)
     }
