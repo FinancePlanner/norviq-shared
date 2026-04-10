@@ -24,6 +24,18 @@ public struct StockRequest: Codable, Sendable, Equatable {
     }
 }
 
+public struct SellStockRequest: Codable, Sendable, Equatable {
+    public let sharesToSell: Double
+    public let sellPrice: Double
+    public let sellDate: String
+
+    public init(sharesToSell: Double, sellPrice: Double, sellDate: String) {
+        self.sharesToSell = sharesToSell
+        self.sellPrice = sellPrice
+        self.sellDate = sellDate
+    }
+}
+
 public struct StockResponse: Codable, Sendable, Equatable, Identifiable {
     public let id: String
     public let symbol: String
