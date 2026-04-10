@@ -93,6 +93,25 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
         self.splitMode = splitMode
         self.userSharePercent = userSharePercent
     }
+
+    enum CodingKeys: String, CodingKey {
+        case snapshotId
+        case title
+        case plannedAmount
+        case pillar
+        case splitMode
+        case userSharePercent
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        snapshotId = try container.decode(String.self, forKey: .snapshotId)
+        title = try container.decode(String.self, forKey: .title)
+        plannedAmount = try container.decode(Double.self, forKey: .plannedAmount)
+        pillar = try container.decode(BudgetPillar.self, forKey: .pillar)
+        splitMode = try container.decodeIfPresent(ExpenseSplitMode.self, forKey: .splitMode) ?? .personal
+        userSharePercent = try container.decodeIfPresent(Double.self, forKey: .userSharePercent) ?? 100
+    }
 }
 
 public struct BudgetPlanItemResponse: Codable, Sendable, Equatable, Identifiable {
@@ -156,6 +175,27 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
         self.linkedPlanItemId = linkedPlanItemId
         self.splitMode = splitMode
         self.userSharePercent = userSharePercent
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case title
+        case amount
+        case pillar
+        case occurredOn
+        case linkedPlanItemId
+        case splitMode
+        case userSharePercent
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        title = try container.decode(String.self, forKey: .title)
+        amount = try container.decode(Double.self, forKey: .amount)
+        pillar = try container.decode(BudgetPillar.self, forKey: .pillar)
+        occurredOn = try container.decode(String.self, forKey: .occurredOn)
+        linkedPlanItemId = try container.decodeIfPresent(String.self, forKey: .linkedPlanItemId)
+        splitMode = try container.decodeIfPresent(ExpenseSplitMode.self, forKey: .splitMode) ?? .personal
+        userSharePercent = try container.decodeIfPresent(Double.self, forKey: .userSharePercent) ?? 100
     }
 }
 

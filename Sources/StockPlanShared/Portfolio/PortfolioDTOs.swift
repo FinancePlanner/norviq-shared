@@ -18,6 +18,7 @@ public struct PortfolioSummaryResponse: Codable, Sendable, Equatable {
     public let totalCost: Double
     public let unrealizedPnl: Double
     public let realizedPnl: Double
+    public let cashBalance: Double
     public let allocation: [AllocationItem]
 
     public init(
@@ -26,6 +27,7 @@ public struct PortfolioSummaryResponse: Codable, Sendable, Equatable {
         totalCost: Double,
         unrealizedPnl: Double,
         realizedPnl: Double,
+        cashBalance: Double = 0,
         allocation: [AllocationItem]
     ) {
         self.baseCurrency = baseCurrency
@@ -33,7 +35,29 @@ public struct PortfolioSummaryResponse: Codable, Sendable, Equatable {
         self.totalCost = totalCost
         self.unrealizedPnl = unrealizedPnl
         self.realizedPnl = realizedPnl
+        self.cashBalance = cashBalance
         self.allocation = allocation
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case baseCurrency
+        case totalValue
+        case totalCost
+        case unrealizedPnl
+        case realizedPnl
+        case cashBalance
+        case allocation
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        baseCurrency = try container.decode(String.self, forKey: .baseCurrency)
+        totalValue = try container.decode(Double.self, forKey: .totalValue)
+        totalCost = try container.decode(Double.self, forKey: .totalCost)
+        unrealizedPnl = try container.decode(Double.self, forKey: .unrealizedPnl)
+        realizedPnl = try container.decode(Double.self, forKey: .realizedPnl)
+        cashBalance = try container.decodeIfPresent(Double.self, forKey: .cashBalance) ?? 0
+        allocation = try container.decode([AllocationItem].self, forKey: .allocation)
     }
 }
 
