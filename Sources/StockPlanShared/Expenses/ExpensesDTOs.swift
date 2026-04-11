@@ -45,15 +45,22 @@ public struct BudgetPillar: RawRepresentable, Codable, Sendable, CaseIterable, H
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return "" }
 
-        let cleaned = trimmed
-            .replacingOccurrences(of: "[^A-Za-z0-9]+", with: " ", options: .regularExpression)
-            .split(separator: " ")
-            .map(String.init)
+        let normalized: String
+        if trimmed.range(of: "[^A-Za-z0-9]", options: .regularExpression) == nil {
+            let first = String(trimmed.prefix(1)).lowercased()
+            let rest = String(trimmed.dropFirst())
+            normalized = first + rest
+        } else {
+            let cleaned = trimmed
+                .replacingOccurrences(of: "[^A-Za-z0-9]+", with: " ", options: .regularExpression)
+                .split(separator: " ")
+                .map(String.init)
 
-        guard let firstWord = cleaned.first else { return "" }
-        let normalized = ([firstWord.lowercased()] + cleaned.dropFirst().map {
-            $0.prefix(1).uppercased() + $0.dropFirst().lowercased()
-        }).joined()
+            guard let firstWord = cleaned.first else { return "" }
+            normalized = ([firstWord.lowercased()] + cleaned.dropFirst().map {
+                $0.prefix(1).uppercased() + $0.dropFirst().lowercased()
+            }).joined()
+        }
 
         switch normalized.lowercased() {
         case "fundamentals":

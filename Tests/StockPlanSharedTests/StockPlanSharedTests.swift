@@ -294,3 +294,27 @@ import Testing
 
     #expect(decoded == payload)
 }
+
+@Test func budgetPillarSupportsCustomValues() throws {
+    let pillar = try #require(BudgetPillar(rawValue: "Nuclear Theme"))
+    #expect(pillar.rawValue == "nuclearTheme")
+
+    let encoded = try JSONEncoder().encode(pillar)
+    let decoded = try JSONDecoder().decode(BudgetPillar.self, from: encoded)
+    #expect(decoded == pillar)
+}
+
+@Test func expenseRequestRoundTripWithCustomPillar() throws {
+    let pillar = try #require(BudgetPillar(rawValue: "Semi Conductors"))
+    let payload = ExpenseRequest(
+        title: "ASML buy",
+        amount: 120,
+        pillar: pillar,
+        occurredOn: "2026-04-11"
+    )
+
+    let encoded = try JSONEncoder().encode(payload)
+    let decoded = try JSONDecoder().decode(ExpenseRequest.self, from: encoded)
+    #expect(decoded == payload)
+    #expect(decoded.pillar.rawValue == "semiConductors")
+}
