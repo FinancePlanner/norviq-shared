@@ -6,6 +6,66 @@ public enum AssetCategory: String, Codable, Sendable, CaseIterable {
     case crypto
 }
 
+public struct PortfolioListRequest: Codable, Sendable, Equatable {
+    public let name: String
+
+    public init(name: String) {
+        self.name = name
+    }
+}
+
+public struct PortfolioListResponse: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let name: String
+    public let isDefault: Bool
+    public let createdAt: String?
+    public let updatedAt: String?
+
+    public init(
+        id: String,
+        name: String,
+        isDefault: Bool,
+        createdAt: String? = nil,
+        updatedAt: String? = nil
+    ) {
+        self.id = id
+        self.name = name
+        self.isDefault = isDefault
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+}
+
+public struct WatchlistListRequest: Codable, Sendable, Equatable {
+    public let name: String
+
+    public init(name: String) {
+        self.name = name
+    }
+}
+
+public struct WatchlistListResponse: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let name: String
+    public let isDefault: Bool
+    public let createdAt: String?
+    public let updatedAt: String?
+
+    public init(
+        id: String,
+        name: String,
+        isDefault: Bool,
+        createdAt: String? = nil,
+        updatedAt: String? = nil
+    ) {
+        self.id = id
+        self.name = name
+        self.isDefault = isDefault
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+}
+
 public struct StockRequest: Codable, Sendable, Equatable {
     public let symbol: String
     public let shares: Double
@@ -13,14 +73,24 @@ public struct StockRequest: Codable, Sendable, Equatable {
     public let buyDate: String
     public let notes: String?
     public let category: AssetCategory
+    public let portfolioListId: String?
 
-    public init(symbol: String, shares: Double, buyPrice: Double, buyDate: String, notes: String?, category: AssetCategory = .stock) {
+    public init(
+        symbol: String,
+        shares: Double,
+        buyPrice: Double,
+        buyDate: String,
+        notes: String?,
+        category: AssetCategory = .stock,
+        portfolioListId: String? = nil
+    ) {
         self.symbol = symbol
         self.shares = shares
         self.buyPrice = buyPrice
         self.buyDate = buyDate
         self.notes = notes
         self.category = category
+        self.portfolioListId = portfolioListId
     }
 }
 
@@ -44,10 +114,11 @@ public struct StockResponse: Codable, Sendable, Equatable, Identifiable {
     public let buyDate: String
     public let notes: String?
     public let category: AssetCategory
+    public let portfolioListId: String?
 
     public init(
         id: String, symbol: String, shares: Double, buyPrice: Double, buyDate: String,
-        notes: String?, category: AssetCategory = .stock
+        notes: String?, category: AssetCategory = .stock, portfolioListId: String? = nil
     ) {
         self.id = id
         self.symbol = symbol
@@ -56,6 +127,7 @@ public struct StockResponse: Codable, Sendable, Equatable, Identifiable {
         self.buyDate = buyDate
         self.notes = notes
         self.category = category
+        self.portfolioListId = portfolioListId
     }
 }
 
@@ -72,17 +144,20 @@ public struct WatchlistItemRequest: Codable, Sendable, Equatable {
     public let note: String?
     public let status: WatchlistStatus?
     public let nextReviewAt: String?
+    public let watchlistListId: String?
 
     public init(
         symbol: String,
         note: String? = nil,
         status: WatchlistStatus? = nil,
-        nextReviewAt: String? = nil
+        nextReviewAt: String? = nil,
+        watchlistListId: String? = nil
     ) {
         self.symbol = symbol
         self.note = note
         self.status = status
         self.nextReviewAt = nextReviewAt
+        self.watchlistListId = watchlistListId
     }
 }
 
@@ -91,17 +166,20 @@ public struct WatchlistItemUpdateRequest: Codable, Sendable, Equatable {
     public let status: WatchlistStatus?
     public let lastReviewedAt: String?
     public let nextReviewAt: String?
+    public let watchlistListId: String?
 
     public init(
         note: String? = nil,
         status: WatchlistStatus? = nil,
         lastReviewedAt: String? = nil,
-        nextReviewAt: String? = nil
+        nextReviewAt: String? = nil,
+        watchlistListId: String? = nil
     ) {
         self.note = note
         self.status = status
         self.lastReviewedAt = lastReviewedAt
         self.nextReviewAt = nextReviewAt
+        self.watchlistListId = watchlistListId
     }
 }
 
@@ -114,6 +192,7 @@ public struct WatchlistItemResponse: Codable, Sendable, Equatable {
     public let updatedAt: String?
     public let lastReviewedAt: String?
     public let nextReviewAt: String?
+    public let watchlistListId: String?
 
     public init(
         id: String,
@@ -123,7 +202,8 @@ public struct WatchlistItemResponse: Codable, Sendable, Equatable {
         createdAt: String? = nil,
         updatedAt: String? = nil,
         lastReviewedAt: String? = nil,
-        nextReviewAt: String? = nil
+        nextReviewAt: String? = nil,
+        watchlistListId: String? = nil
     ) {
         self.id = id
         self.symbol = symbol
@@ -133,6 +213,7 @@ public struct WatchlistItemResponse: Codable, Sendable, Equatable {
         self.updatedAt = updatedAt
         self.lastReviewedAt = lastReviewedAt
         self.nextReviewAt = nextReviewAt
+        self.watchlistListId = watchlistListId
     }
 }
 
