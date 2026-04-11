@@ -2,10 +2,70 @@ import Foundation
 
 // MARK: - Pillar Enum
 
-public enum BudgetPillar: String, Codable, Sendable, CaseIterable {
-    case fundamentals
-    case futureYou
-    case fun
+public struct BudgetPillar: RawRepresentable, Codable, Sendable, CaseIterable, Hashable, ExpressibleByStringLiteral {
+    public let rawValue: String
+
+    public static let fundamentals = BudgetPillar(rawValue: "fundamentals")!
+    public static let futureYou = BudgetPillar(rawValue: "futureYou")!
+    public static let fun = BudgetPillar(rawValue: "fun")!
+
+    public static var allCases: [BudgetPillar] {
+        [fundamentals, futureYou, fun]
+    }
+
+    public var isStandard: Bool {
+        Self.allCases.contains(self)
+    }
+
+    public init?(rawValue: String) {
+        let canonical = Self.canonicalKey(from: rawValue)
+        guard !canonical.isEmpty else { return nil }
+        self.rawValue = canonical
+    }
+
+    public init(stringLiteral value: StringLiteralType) {
+        self = BudgetPillar(rawValue: value) ?? .fundamentals
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let value = try container.decode(String.self)
+        guard let pillar = BudgetPillar(rawValue: value) else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid pillar value.")
+        }
+        self = pillar
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
+    private static func canonicalKey(from value: String) -> String {
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return "" }
+
+        let cleaned = trimmed
+            .replacingOccurrences(of: "[^A-Za-z0-9]+", with: " ", options: .regularExpression)
+            .split(separator: " ")
+            .map(String.init)
+
+        guard let firstWord = cleaned.first else { return "" }
+        let normalized = ([firstWord.lowercased()] + cleaned.dropFirst().map {
+            $0.prefix(1).uppercased() + $0.dropFirst().lowercased()
+        }).joined()
+
+        switch normalized.lowercased() {
+        case "fundamentals":
+            return fundamentals.rawValue
+        case "futureyou":
+            return futureYou.rawValue
+        case "fun":
+            return fun.rawValue
+        default:
+            return normalized
+        }
+    }
 }
 
 public enum ExpenseSplitMode: String, Codable, Sendable, CaseIterable {
