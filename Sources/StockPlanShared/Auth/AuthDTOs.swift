@@ -45,6 +45,80 @@ public struct AuthLoginRequest: Codable, Sendable, Equatable {
     }
 }
 
+public enum AuthMFAChannel: String, Codable, Sendable, Equatable {
+    case email
+    case sms
+}
+
+public struct AuthMFAChallengeResponse: Codable, Sendable, Equatable {
+    public let challengeId: UUID
+    public let channel: AuthMFAChannel
+    public let maskedDestination: String
+    public let expiresIn: Int
+    public let resendAvailableIn: Int
+
+    public init(
+        challengeId: UUID,
+        channel: AuthMFAChannel,
+        maskedDestination: String,
+        expiresIn: Int,
+        resendAvailableIn: Int
+    ) {
+        self.challengeId = challengeId
+        self.channel = channel
+        self.maskedDestination = maskedDestination
+        self.expiresIn = expiresIn
+        self.resendAvailableIn = resendAvailableIn
+    }
+}
+
+public struct AuthMFAVerifyRequest: Codable, Sendable, Equatable {
+    public let challengeId: UUID
+    public let code: String
+
+    public init(challengeId: UUID, code: String) {
+        self.challengeId = challengeId
+        self.code = code
+    }
+}
+
+public struct AuthMFAResendRequest: Codable, Sendable, Equatable {
+    public let challengeId: UUID
+
+    public init(challengeId: UUID) {
+        self.challengeId = challengeId
+    }
+}
+
+public enum AuthLoginOutcomeStatus: String, Codable, Sendable, Equatable {
+    case authenticated
+    case mfaRequired
+}
+
+public struct AuthLoginOutcome: Codable, Sendable, Equatable {
+    public let status: AuthLoginOutcomeStatus
+    public let auth: AuthResponse?
+    public let mfa: AuthMFAChallengeResponse?
+
+    public init(
+        status: AuthLoginOutcomeStatus,
+        auth: AuthResponse? = nil,
+        mfa: AuthMFAChallengeResponse? = nil
+    ) {
+        self.status = status
+        self.auth = auth
+        self.mfa = mfa
+    }
+
+    public static func authenticated(_ auth: AuthResponse) -> AuthLoginOutcome {
+        AuthLoginOutcome(status: .authenticated, auth: auth, mfa: nil)
+    }
+
+    public static func mfaRequired(_ challenge: AuthMFAChallengeResponse) -> AuthLoginOutcome {
+        AuthLoginOutcome(status: .mfaRequired, auth: nil, mfa: challenge)
+    }
+}
+
 public struct AuthResponse: Codable, Sendable, Equatable {
     public let token: String
     public let userId: UUID
