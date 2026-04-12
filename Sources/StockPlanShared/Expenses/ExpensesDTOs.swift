@@ -5,9 +5,9 @@ import Foundation
 public struct BudgetPillar: RawRepresentable, Codable, Sendable, CaseIterable, Hashable, ExpressibleByStringLiteral {
     public let rawValue: String
 
-    public static let fundamentals = BudgetPillar(rawValue: "fundamentals")!
-    public static let futureYou = BudgetPillar(rawValue: "futureYou")!
-    public static let fun = BudgetPillar(rawValue: "fun")!
+    public static let fundamentals = BudgetPillar(uncheckedRawValue: "fundamentals")
+    public static let futureYou = BudgetPillar(uncheckedRawValue: "futureYou")
+    public static let fun = BudgetPillar(uncheckedRawValue: "fun")
 
     public static var allCases: [BudgetPillar] {
         [fundamentals, futureYou, fun]
@@ -24,7 +24,7 @@ public struct BudgetPillar: RawRepresentable, Codable, Sendable, CaseIterable, H
     }
 
     public init(stringLiteral value: StringLiteralType) {
-        self = BudgetPillar(rawValue: value) ?? .fundamentals
+        self = BudgetPillar(rawValue: value) ?? BudgetPillar(uncheckedRawValue: "fundamentals")
     }
 
     public init(from decoder: any Decoder) throws {
@@ -64,14 +64,18 @@ public struct BudgetPillar: RawRepresentable, Codable, Sendable, CaseIterable, H
 
         switch normalized.lowercased() {
         case "fundamentals":
-            return fundamentals.rawValue
+            return "fundamentals"
         case "futureyou":
-            return futureYou.rawValue
+            return "futureYou"
         case "fun":
-            return fun.rawValue
+            return "fun"
         default:
             return normalized
         }
+    }
+
+    private init(uncheckedRawValue: String) {
+        self.rawValue = uncheckedRawValue
     }
 }
 
