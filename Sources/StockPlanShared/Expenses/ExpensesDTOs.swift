@@ -84,6 +84,101 @@ public enum ExpenseSplitMode: String, Codable, Sendable, CaseIterable {
     case shared
 }
 
+public enum RecurringFrequency: String, Codable, Sendable, CaseIterable {
+    case weekly
+    case monthly
+}
+
+// MARK: - Expense Category
+
+public struct ExpenseCategoryRequest: Codable, Sendable, Equatable {
+    public let name: String
+    public let pillar: BudgetPillar?
+
+    public init(name: String, pillar: BudgetPillar? = nil) {
+        self.name = name
+        self.pillar = pillar
+    }
+}
+
+public struct ExpenseCategoryResponse: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let name: String
+    public let pillar: BudgetPillar?
+    public let isDefault: Bool
+
+    public init(id: String, name: String, pillar: BudgetPillar? = nil, isDefault: Bool = false) {
+        self.id = id
+        self.name = name
+        self.pillar = pillar
+        self.isDefault = isDefault
+    }
+}
+
+// MARK: - Recurring Template
+
+public struct RecurringTemplateRequest: Codable, Sendable, Equatable {
+    public let title: String
+    public let amount: Double
+    public let pillar: BudgetPillar
+    public let categoryId: String?
+    public let frequency: RecurringFrequency
+    public let splitMode: ExpenseSplitMode
+    public let userSharePercent: Double
+
+    public init(
+        title: String,
+        amount: Double,
+        pillar: BudgetPillar,
+        categoryId: String? = nil,
+        frequency: RecurringFrequency = .monthly,
+        splitMode: ExpenseSplitMode = .personal,
+        userSharePercent: Double = 100
+    ) {
+        self.title = title
+        self.amount = amount
+        self.pillar = pillar
+        self.categoryId = categoryId
+        self.frequency = frequency
+        self.splitMode = splitMode
+        self.userSharePercent = userSharePercent
+    }
+}
+
+public struct RecurringTemplateResponse: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let title: String
+    public let amount: Double
+    public let pillar: BudgetPillar
+    public let categoryId: String?
+    public let frequency: RecurringFrequency
+    public let splitMode: ExpenseSplitMode
+    public let userSharePercent: Double
+    public let createdAt: String?
+
+    public init(
+        id: String,
+        title: String,
+        amount: Double,
+        pillar: BudgetPillar,
+        categoryId: String? = nil,
+        frequency: RecurringFrequency = .monthly,
+        splitMode: ExpenseSplitMode = .personal,
+        userSharePercent: Double = 100,
+        createdAt: String? = nil
+    ) {
+        self.id = id
+        self.title = title
+        self.amount = amount
+        self.pillar = pillar
+        self.categoryId = categoryId
+        self.frequency = frequency
+        self.splitMode = splitMode
+        self.userSharePercent = userSharePercent
+        self.createdAt = createdAt
+    }
+}
+
 public struct HouseholdPartnerProfileResponse: Codable, Sendable, Equatable {
     public let displayName: String?
 
@@ -146,6 +241,7 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
     public let title: String
     public let plannedAmount: Double
     public let pillar: BudgetPillar
+    public let categoryId: String?
     public let splitMode: ExpenseSplitMode
     public let userSharePercent: Double
 
@@ -154,6 +250,7 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
         title: String,
         plannedAmount: Double,
         pillar: BudgetPillar,
+        categoryId: String? = nil,
         splitMode: ExpenseSplitMode = .personal,
         userSharePercent: Double = 100
     ) {
@@ -161,6 +258,7 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
         self.title = title
         self.plannedAmount = plannedAmount
         self.pillar = pillar
+        self.categoryId = categoryId
         self.splitMode = splitMode
         self.userSharePercent = userSharePercent
     }
@@ -170,6 +268,7 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
         case title
         case plannedAmount
         case pillar
+        case categoryId
         case splitMode
         case userSharePercent
     }
@@ -180,6 +279,7 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
         title = try container.decode(String.self, forKey: .title)
         plannedAmount = try container.decode(Double.self, forKey: .plannedAmount)
         pillar = try container.decode(BudgetPillar.self, forKey: .pillar)
+        categoryId = try container.decodeIfPresent(String.self, forKey: .categoryId)
         splitMode = try container.decodeIfPresent(ExpenseSplitMode.self, forKey: .splitMode) ?? .personal
         userSharePercent = try container.decodeIfPresent(Double.self, forKey: .userSharePercent) ?? 100
     }
@@ -191,6 +291,7 @@ public struct BudgetPlanItemResponse: Codable, Sendable, Equatable, Identifiable
     public let title: String
     public let plannedAmount: Double
     public let pillar: BudgetPillar
+    public let categoryId: String?
     public let splitMode: ExpenseSplitMode
     public let userSharePercent: Double
     public let createdAt: String?
@@ -202,6 +303,7 @@ public struct BudgetPlanItemResponse: Codable, Sendable, Equatable, Identifiable
         title: String,
         plannedAmount: Double,
         pillar: BudgetPillar,
+        categoryId: String? = nil,
         splitMode: ExpenseSplitMode = .personal,
         userSharePercent: Double = 100,
         createdAt: String? = nil,
@@ -212,6 +314,7 @@ public struct BudgetPlanItemResponse: Codable, Sendable, Equatable, Identifiable
         self.title = title
         self.plannedAmount = plannedAmount
         self.pillar = pillar
+        self.categoryId = categoryId
         self.splitMode = splitMode
         self.userSharePercent = userSharePercent
         self.createdAt = createdAt
@@ -227,8 +330,12 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
     public let pillar: BudgetPillar
     public let occurredOn: String  // YYYY-MM-DD
     public let linkedPlanItemId: String?
+    public let categoryId: String?
     public let splitMode: ExpenseSplitMode
     public let userSharePercent: Double
+    public let foreignAmount: Double?
+    public let foreignCurrency: String?
+    public let exchangeRate: Double?
 
     public init(
         title: String,
@@ -236,16 +343,24 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
         pillar: BudgetPillar,
         occurredOn: String,
         linkedPlanItemId: String? = nil,
+        categoryId: String? = nil,
         splitMode: ExpenseSplitMode = .personal,
-        userSharePercent: Double = 100
+        userSharePercent: Double = 100,
+        foreignAmount: Double? = nil,
+        foreignCurrency: String? = nil,
+        exchangeRate: Double? = nil
     ) {
         self.title = title
         self.amount = amount
         self.pillar = pillar
         self.occurredOn = occurredOn
         self.linkedPlanItemId = linkedPlanItemId
+        self.categoryId = categoryId
         self.splitMode = splitMode
         self.userSharePercent = userSharePercent
+        self.foreignAmount = foreignAmount
+        self.foreignCurrency = foreignCurrency
+        self.exchangeRate = exchangeRate
     }
 
     enum CodingKeys: String, CodingKey {
@@ -254,8 +369,12 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
         case pillar
         case occurredOn
         case linkedPlanItemId
+        case categoryId
         case splitMode
         case userSharePercent
+        case foreignAmount
+        case foreignCurrency
+        case exchangeRate
     }
 
     public init(from decoder: any Decoder) throws {
@@ -265,8 +384,12 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
         pillar = try container.decode(BudgetPillar.self, forKey: .pillar)
         occurredOn = try container.decode(String.self, forKey: .occurredOn)
         linkedPlanItemId = try container.decodeIfPresent(String.self, forKey: .linkedPlanItemId)
+        categoryId = try container.decodeIfPresent(String.self, forKey: .categoryId)
         splitMode = try container.decodeIfPresent(ExpenseSplitMode.self, forKey: .splitMode) ?? .personal
         userSharePercent = try container.decodeIfPresent(Double.self, forKey: .userSharePercent) ?? 100
+        foreignAmount = try container.decodeIfPresent(Double.self, forKey: .foreignAmount)
+        foreignCurrency = try container.decodeIfPresent(String.self, forKey: .foreignCurrency)
+        exchangeRate = try container.decodeIfPresent(Double.self, forKey: .exchangeRate)
     }
 }
 
@@ -277,8 +400,12 @@ public struct ExpenseResponse: Codable, Sendable, Equatable, Identifiable {
     public let pillar: BudgetPillar
     public let occurredOn: String  // YYYY-MM-DD
     public let linkedPlanItemId: String?
+    public let categoryId: String?
     public let splitMode: ExpenseSplitMode
     public let userSharePercent: Double
+    public let foreignAmount: Double?
+    public let foreignCurrency: String?
+    public let exchangeRate: Double?
     public let createdAt: String?
     public let updatedAt: String?
 
@@ -289,8 +416,12 @@ public struct ExpenseResponse: Codable, Sendable, Equatable, Identifiable {
         pillar: BudgetPillar,
         occurredOn: String,
         linkedPlanItemId: String? = nil,
+        categoryId: String? = nil,
         splitMode: ExpenseSplitMode = .personal,
         userSharePercent: Double = 100,
+        foreignAmount: Double? = nil,
+        foreignCurrency: String? = nil,
+        exchangeRate: Double? = nil,
         createdAt: String? = nil,
         updatedAt: String? = nil
     ) {
@@ -300,8 +431,12 @@ public struct ExpenseResponse: Codable, Sendable, Equatable, Identifiable {
         self.pillar = pillar
         self.occurredOn = occurredOn
         self.linkedPlanItemId = linkedPlanItemId
+        self.categoryId = categoryId
         self.splitMode = splitMode
         self.userSharePercent = userSharePercent
+        self.foreignAmount = foreignAmount
+        self.foreignCurrency = foreignCurrency
+        self.exchangeRate = exchangeRate
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
