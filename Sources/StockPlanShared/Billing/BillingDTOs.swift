@@ -7,6 +7,8 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
     public let subscription: BillingSubscriptionDTO?
     public let features: [BillingFeatureDTO]
     public let usage: [BillingUsageDTO]
+    public let trialDaysRemaining: Int?
+    public let isTrialActive: Bool
     public let generatedAt: Date
 
     public init(
@@ -16,6 +18,8 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
         subscription: BillingSubscriptionDTO?,
         features: [BillingFeatureDTO],
         usage: [BillingUsageDTO],
+        trialDaysRemaining: Int? = nil,
+        isTrialActive: Bool = false,
         generatedAt: Date
     ) {
         self.plan = plan
@@ -24,6 +28,8 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
         self.subscription = subscription
         self.features = features
         self.usage = usage
+        self.trialDaysRemaining = trialDaysRemaining
+        self.isTrialActive = isTrialActive
         self.generatedAt = generatedAt
     }
 }
