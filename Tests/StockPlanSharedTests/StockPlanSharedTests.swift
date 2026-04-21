@@ -318,3 +318,117 @@ import Testing
     #expect(decoded == payload)
     #expect(decoded.pillar.rawValue == "semiConductors")
 }
+
+@Test func billingContextResponseRoundTripJSON() throws {
+    let generatedAt = Date(timeIntervalSince1970: 1_776_700_800)
+    let periodStart = Date(timeIntervalSince1970: 1_774_108_800)
+    let subscription = BillingSubscriptionDTO(
+        provider: "revenuecat",
+        productId: "premium_monthly",
+        plan: "premium",
+        status: "active",
+        periodStartedAt: periodStart,
+        periodEndsAt: Date(timeIntervalSince1970: 1_779_292_800),
+        trialEndsAt: nil,
+        gracePeriodEndsAt: nil,
+        cancelledAt: nil,
+        isTrial: false,
+        isInGracePeriod: false,
+        hasBillingIssue: false,
+        isCancelledButActive: false,
+        renewsOrExpiresAt: Date(timeIntervalSince1970: 1_779_292_800)
+    )
+    let payload = BillingContextResponse(
+        plan: "premium",
+        entitlementLevel: "premium",
+        isPremium: true,
+        subscription: subscription,
+        features: [
+            BillingFeatureDTO(
+                key: "advancedResearch",
+                title: "Advanced stock research",
+                available: true,
+                requiredPlan: nil,
+                reason: nil,
+                limit: nil,
+                used: nil,
+                remaining: nil
+            )
+        ],
+        usage: [
+            BillingUsageDTO(
+                key: "csvImports",
+                used: 2,
+                limit: 10,
+                remaining: 8,
+                periodStart: periodStart
+            )
+        ],
+        generatedAt: generatedAt
+    )
+
+    let encoded = try JSONEncoder.stockPlanShared.encode(payload)
+    let decoded = try JSONDecoder.stockPlanShared.decode(BillingContextResponse.self, from: encoded)
+
+    #expect(decoded == payload)
+}
+
+@Test func billingContextResponseDecodesBackendJSON() throws {
+    let payload = """
+    {
+      "plan": "free",
+      "entitlementLevel": "free",
+      "isPremium": false,
+      "subscription": null,
+      "features": [
+        {
+          "key": "advancedResearch",
+          "title": "Advanced stock research",
+          "available": false,
+          "requiredPlan": "premium",
+          "reason": "Upgrade to Premium to use Advanced stock research.",
+          "limit": null,
+          "used": null,
+          "remaining": null
+        }
+      ],
+      "usage": [
+        {
+          "key": "csvImports",
+          "used": 1,
+          "limit": 3,
+          "remaining": 2,
+          "periodStart": "2026-04-01T00:00:00Z"
+        }
+      ],
+      "generatedAt": "2026-04-21T12:00:00Z"
+    }
+    """.data(using: .utf8)!
+
+    let decoded = try JSONDecoder.stockPlanShared.decode(BillingContextResponse.self, from: payload)
+
+    #expect(decoded.plan == "free")
+    #expect(decoded.entitlementLevel == "free")
+    #expect(decoded.isPremium == false)
+    #expect(decoded.subscription == nil)
+    #expect(decoded.features.first?.requiredPlan == "premium")
+    #expect(decoded.usage.first?.remaining == 2)
+}
+
+@Test func billingUpgradeRequiredResponseRoundTripJSON() throws {
+    let payload = BillingUpgradeRequiredResponse(
+        success: false,
+        code: "upgrade_required",
+        error: "Upgrade to Premium to create more target alerts.",
+        feature: "targetAlerts",
+        plan: "free",
+        requiredPlan: "premium",
+        limit: 3,
+        current: 3
+    )
+
+    let encoded = try JSONEncoder().encode(payload)
+    let decoded = try JSONDecoder().decode(BillingUpgradeRequiredResponse.self, from: encoded)
+
+    #expect(decoded == payload)
+}
