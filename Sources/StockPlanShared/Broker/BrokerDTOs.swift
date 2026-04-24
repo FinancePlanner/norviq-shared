@@ -86,3 +86,22 @@ public struct BrokerConnectStartResponse: Codable, Sendable, Equatable {
         self.expiresIn = expiresIn
     }
 }
+
+public struct BrokerSyncStatusResponse: Codable, Sendable, Equatable {
+    public let status: String
+    public let lastSyncedAt: Date?
+    public let isStale: Bool
+    public let statusDetail: String?
+
+    public init(
+        status: String,
+        lastSyncedAt: Date? = nil,
+        isStale: Bool,
+        statusDetail: String? = nil
+    ) {
+        self.status = status
+        self.lastSyncedAt = lastSyncedAt
+        self.isStale = isStale
+        self.statusDetail = statusDetail
+    }
+}
