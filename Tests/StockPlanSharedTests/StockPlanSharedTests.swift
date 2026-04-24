@@ -324,8 +324,8 @@ import Testing
     let periodStart = Date(timeIntervalSince1970: 1_774_108_800)
     let subscription = BillingSubscriptionDTO(
         provider: "revenuecat",
-        productId: "premium_monthly",
-        plan: "premium",
+        productId: "pro_monthly",
+        plan: "pro",
         status: "active",
         periodStartedAt: periodStart,
         periodEndsAt: Date(timeIntervalSince1970: 1_779_292_800),
@@ -339,8 +339,9 @@ import Testing
         renewsOrExpiresAt: Date(timeIntervalSince1970: 1_779_292_800)
     )
     let payload = BillingContextResponse(
-        plan: "premium",
-        entitlementLevel: "premium",
+        plan: "pro",
+        entitlementLevel: "pro",
+        isPro: true,
         isPremium: true,
         subscription: subscription,
         features: [
@@ -378,6 +379,7 @@ import Testing
     {
       "plan": "free",
       "entitlementLevel": "free",
+      "isPro": false,
       "isPremium": false,
       "subscription": null,
       "features": [
@@ -385,8 +387,8 @@ import Testing
           "key": "advancedResearch",
           "title": "Advanced stock research",
           "available": false,
-          "requiredPlan": "premium",
-          "reason": "Upgrade to Premium to use Advanced stock research.",
+          "requiredPlan": "pro",
+          "reason": "Upgrade to Pro to use Advanced stock research.",
           "limit": null,
           "used": null,
           "remaining": null
@@ -409,9 +411,10 @@ import Testing
 
     #expect(decoded.plan == "free")
     #expect(decoded.entitlementLevel == "free")
+    #expect(decoded.isPro == false)
     #expect(decoded.isPremium == false)
     #expect(decoded.subscription == nil)
-    #expect(decoded.features.first?.requiredPlan == "premium")
+    #expect(decoded.features.first?.requiredPlan == "pro")
     #expect(decoded.usage.first?.remaining == 2)
 }
 
@@ -419,10 +422,10 @@ import Testing
     let payload = BillingUpgradeRequiredResponse(
         success: false,
         code: "upgrade_required",
-        error: "Upgrade to Premium to create more target alerts.",
+        error: "Upgrade to Pro to create more target alerts.",
         feature: "targetAlerts",
         plan: "free",
-        requiredPlan: "premium",
+        requiredPlan: "pro",
         limit: 3,
         current: 3
     )

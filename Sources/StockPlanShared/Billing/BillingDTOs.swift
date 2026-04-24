@@ -3,6 +3,7 @@ import Foundation
 public struct BillingContextResponse: Codable, Sendable, Equatable {
     public let plan: String
     public let entitlementLevel: String
+    public let isPro: Bool
     public let isPremium: Bool
     public let subscription: BillingSubscriptionDTO?
     public let features: [BillingFeatureDTO]
@@ -14,6 +15,7 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
     public init(
         plan: String,
         entitlementLevel: String,
+        isPro: Bool? = nil,
         isPremium: Bool,
         subscription: BillingSubscriptionDTO?,
         features: [BillingFeatureDTO],
@@ -24,6 +26,7 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
     ) {
         self.plan = plan
         self.entitlementLevel = entitlementLevel
+        self.isPro = isPro ?? isPremium
         self.isPremium = isPremium
         self.subscription = subscription
         self.features = features
@@ -31,6 +34,33 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
         self.trialDaysRemaining = trialDaysRemaining
         self.isTrialActive = isTrialActive
         self.generatedAt = generatedAt
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case plan
+        case entitlementLevel
+        case isPro
+        case isPremium
+        case subscription
+        case features
+        case usage
+        case trialDaysRemaining
+        case isTrialActive
+        case generatedAt
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        plan = try container.decode(String.self, forKey: .plan)
+        entitlementLevel = try container.decode(String.self, forKey: .entitlementLevel)
+        isPremium = try container.decode(Bool.self, forKey: .isPremium)
+        isPro = try container.decodeIfPresent(Bool.self, forKey: .isPro) ?? isPremium
+        subscription = try container.decodeIfPresent(BillingSubscriptionDTO.self, forKey: .subscription)
+        features = try container.decode([BillingFeatureDTO].self, forKey: .features)
+        usage = try container.decode([BillingUsageDTO].self, forKey: .usage)
+        trialDaysRemaining = try container.decodeIfPresent(Int.self, forKey: .trialDaysRemaining)
+        isTrialActive = try container.decodeIfPresent(Bool.self, forKey: .isTrialActive) ?? false
+        generatedAt = try container.decode(Date.self, forKey: .generatedAt)
     }
 }
 
