@@ -115,10 +115,12 @@ public struct StockResponse: Codable, Sendable, Equatable, Identifiable {
     public let notes: String?
     public let category: AssetCategory
     public let portfolioListId: String?
+    public let createdAt: String  // ISO8601 timestamp for pagination
 
     public init(
         id: String, symbol: String, shares: Double, buyPrice: Double, buyDate: String,
-        notes: String?, category: AssetCategory = .stock, portfolioListId: String? = nil
+        notes: String?, category: AssetCategory = .stock, portfolioListId: String? = nil,
+        createdAt: String
     ) {
         self.id = id
         self.symbol = symbol
@@ -128,6 +130,7 @@ public struct StockResponse: Codable, Sendable, Equatable, Identifiable {
         self.notes = notes
         self.category = category
         self.portfolioListId = portfolioListId
+        self.createdAt = createdAt
     }
 }
 

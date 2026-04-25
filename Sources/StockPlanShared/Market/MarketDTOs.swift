@@ -88,6 +88,7 @@ public struct CompanyProfileResponse: Codable, Sendable, Equatable {
     public let shareOutstanding: Double?
     public let ticker: String?
     public let weburl: String?
+    public let lastUpdated: String?  // ISO8601 timestamp for caching
 
     public init(
         country: String?,
@@ -102,7 +103,8 @@ public struct CompanyProfileResponse: Codable, Sendable, Equatable {
         phone: String?,
         shareOutstanding: Double?,
         ticker: String?,
-        weburl: String?
+        weburl: String?,
+        lastUpdated: String? = nil
     ) {
         self.country = country
         self.currency = currency
@@ -117,6 +119,7 @@ public struct CompanyProfileResponse: Codable, Sendable, Equatable {
         self.shareOutstanding = shareOutstanding
         self.ticker = ticker
         self.weburl = weburl
+        self.lastUpdated = lastUpdated
     }
 }
 
