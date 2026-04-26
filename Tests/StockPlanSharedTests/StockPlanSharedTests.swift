@@ -34,7 +34,8 @@ import Testing
         shares: 10,
         buyPrice: 150.25,
         buyDate: "2026-01-10",
-        notes: "Starter position"
+        notes: "Starter position",
+        createdAt: "2026-01-10T00:00:00Z"
     )
 
     let encoded = try JSONEncoder().encode(payload)
@@ -159,7 +160,7 @@ import Testing
                 index: 0,
                 stock: StockResponse(
                     id: "id-1", symbol: "AAPL", shares: 10.5, buyPrice: 150.25,
-                    buyDate: "2026-01-10", notes: nil)
+                    buyDate: "2026-01-10", notes: nil, createdAt: "2026-01-10T00:00:00Z")
             ),
             BulkStockResultItem(index: 1, error: "Invalid buyDate. Expected YYYY-MM-DD.")
         ]
