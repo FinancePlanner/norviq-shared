@@ -70,3 +70,23 @@ public struct PushDeviceDeactivateRequest: Codable, Sendable, Equatable {
         self.deviceToken = deviceToken
     }
 }
+
+public struct EarningsNotificationPreferencesResponse: Codable, Sendable, Equatable {
+    public let enabled: Bool
+    public let leadDays: [Int]
+    public let scope: String
+
+    public init(enabled: Bool, leadDays: [Int] = [7, 1], scope: String = "portfolio_and_watchlist") {
+        self.enabled = enabled
+        self.leadDays = leadDays
+        self.scope = scope
+    }
+}
+
+public struct UpdateEarningsNotificationPreferencesRequest: Codable, Sendable, Equatable {
+    public let enabled: Bool
+
+    public init(enabled: Bool) {
+        self.enabled = enabled
+    }
+}
