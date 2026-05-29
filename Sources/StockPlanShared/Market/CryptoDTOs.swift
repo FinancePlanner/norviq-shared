@@ -256,3 +256,52 @@ public struct CryptoPortfolioItemResponse: Codable, Sendable, Equatable, Identif
         self.updatedAt = updatedAt
     }
 }
+
+// MARK: - Watchlist DTOs
+
+public struct CryptoWatchlistItemRequest: Codable, Sendable, Equatable {
+    public let symbol: String
+    public let name: String
+    public let note: String?
+    public let status: WatchlistStatus?
+
+    public init(
+        symbol: String,
+        name: String,
+        note: String? = nil,
+        status: WatchlistStatus? = nil
+    ) {
+        self.symbol = symbol
+        self.name = name
+        self.note = note
+        self.status = status
+    }
+}
+
+public struct CryptoWatchlistItemResponse: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let symbol: String
+    public let name: String
+    public let note: String?
+    public let status: WatchlistStatus
+    public let createdAt: String?
+    public let updatedAt: String?
+
+    public init(
+        id: String,
+        symbol: String,
+        name: String,
+        note: String? = nil,
+        status: WatchlistStatus,
+        createdAt: String? = nil,
+        updatedAt: String? = nil
+    ) {
+        self.id = id
+        self.symbol = symbol
+        self.name = name
+        self.note = note
+        self.status = status
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+}
