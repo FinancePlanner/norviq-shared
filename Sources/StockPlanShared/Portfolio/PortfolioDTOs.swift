@@ -81,6 +81,73 @@ public struct PortfolioPerformanceResponse: Codable, Sendable, Equatable {
     }
 }
 
+public struct PortfolioSectorHoldingContribution: Codable, Sendable, Equatable, Identifiable {
+    public var id: String { symbol }
+    public let symbol: String
+    public let value: Double
+    public let weightPercent: Double
+
+    public init(symbol: String, value: Double, weightPercent: Double) {
+        self.symbol = symbol
+        self.value = value
+        self.weightPercent = weightPercent
+    }
+}
+
+public struct PortfolioSectorExposureItem: Codable, Sendable, Equatable, Identifiable {
+    public var id: String { sector }
+    public let sector: String
+    public let value: Double
+    public let weightPercent: Double
+    public let benchmarkWeightPercent: Double?
+    public let overweightPercent: Double?
+    public let holdings: [PortfolioSectorHoldingContribution]
+
+    public init(
+        sector: String,
+        value: Double,
+        weightPercent: Double,
+        benchmarkWeightPercent: Double?,
+        overweightPercent: Double?,
+        holdings: [PortfolioSectorHoldingContribution]
+    ) {
+        self.sector = sector
+        self.value = value
+        self.weightPercent = weightPercent
+        self.benchmarkWeightPercent = benchmarkWeightPercent
+        self.overweightPercent = overweightPercent
+        self.holdings = holdings
+    }
+}
+
+public struct PortfolioSectorExposureResponse: Codable, Sendable, Equatable {
+    public let baseCurrency: String
+    public let totalValue: Double
+    public let investedValue: Double
+    public let cashBalance: Double
+    public let benchmarkName: String
+    public let benchmarkAsOf: String
+    public let sectors: [PortfolioSectorExposureItem]
+
+    public init(
+        baseCurrency: String,
+        totalValue: Double,
+        investedValue: Double,
+        cashBalance: Double,
+        benchmarkName: String,
+        benchmarkAsOf: String,
+        sectors: [PortfolioSectorExposureItem]
+    ) {
+        self.baseCurrency = baseCurrency
+        self.totalValue = totalValue
+        self.investedValue = investedValue
+        self.cashBalance = cashBalance
+        self.benchmarkName = benchmarkName
+        self.benchmarkAsOf = benchmarkAsOf
+        self.sectors = sectors
+    }
+}
+
 public struct TransactionResponse: Codable, Sendable, Equatable {
     public let id: String
     public let accountId: String
