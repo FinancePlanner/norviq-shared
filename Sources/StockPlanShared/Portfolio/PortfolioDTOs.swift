@@ -296,3 +296,41 @@ public struct PnlResponse: Codable, Sendable, Equatable {
         self.items = items
     }
 }
+
+public struct DividendProjectedItem: Codable, Sendable, Equatable {
+    public let symbol: String
+    public let exDividendDate: String
+    public let paymentDate: String
+    public let amountPerShare: Double
+    public let projectedTotal: Double
+
+    public init(symbol: String, exDividendDate: String, paymentDate: String, amountPerShare: Double, projectedTotal: Double) {
+        self.symbol = symbol
+        self.exDividendDate = exDividendDate
+        self.paymentDate = paymentDate
+        self.amountPerShare = amountPerShare
+        self.projectedTotal = projectedTotal
+    }
+}
+
+public struct DividendMonthlyBreakdown: Codable, Sendable, Equatable {
+    public let month: String
+    public let amount: Double
+
+    public init(month: String, amount: Double) {
+        self.month = month
+        self.amount = amount
+    }
+}
+
+public struct PortfolioDividendsResponse: Codable, Sendable, Equatable {
+    public let annualProjectedIncome: Double
+    public let upcomingDividends: [DividendProjectedItem]
+    public let monthlyBreakdown: [DividendMonthlyBreakdown]
+
+    public init(annualProjectedIncome: Double, upcomingDividends: [DividendProjectedItem], monthlyBreakdown: [DividendMonthlyBreakdown]) {
+        self.annualProjectedIncome = annualProjectedIncome
+        self.upcomingDividends = upcomingDividends
+        self.monthlyBreakdown = monthlyBreakdown
+    }
+}
