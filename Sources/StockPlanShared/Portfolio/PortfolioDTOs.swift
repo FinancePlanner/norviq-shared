@@ -148,6 +148,54 @@ public struct PortfolioSectorExposureResponse: Codable, Sendable, Equatable {
     }
 }
 
+public struct SectorGainItem: Codable, Sendable, Equatable, Identifiable {
+    public var id: String { sector }
+    public let sector: String
+    public let marketValue: Double
+    public let costBasis: Double
+    public let unrealizedPnl: Double
+    public let unrealizedPnlPercent: Double
+    public let weightPercent: Double
+
+    public init(
+        sector: String,
+        marketValue: Double,
+        costBasis: Double,
+        unrealizedPnl: Double,
+        unrealizedPnlPercent: Double,
+        weightPercent: Double
+    ) {
+        self.sector = sector
+        self.marketValue = marketValue
+        self.costBasis = costBasis
+        self.unrealizedPnl = unrealizedPnl
+        self.unrealizedPnlPercent = unrealizedPnlPercent
+        self.weightPercent = weightPercent
+    }
+}
+
+public struct SectorGainsResponse: Codable, Sendable, Equatable {
+    public let baseCurrency: String
+    public let totalMarketValue: Double
+    public let totalCostBasis: Double
+    public let totalUnrealizedPnl: Double
+    public let sectors: [SectorGainItem]
+
+    public init(
+        baseCurrency: String,
+        totalMarketValue: Double,
+        totalCostBasis: Double,
+        totalUnrealizedPnl: Double,
+        sectors: [SectorGainItem]
+    ) {
+        self.baseCurrency = baseCurrency
+        self.totalMarketValue = totalMarketValue
+        self.totalCostBasis = totalCostBasis
+        self.totalUnrealizedPnl = totalUnrealizedPnl
+        self.sectors = sectors
+    }
+}
+
 public struct TransactionResponse: Codable, Sendable, Equatable {
     public let id: String
     public let accountId: String
