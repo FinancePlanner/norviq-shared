@@ -41,3 +41,17 @@ public struct UserActivityResponse: Codable, Sendable, Equatable, Identifiable {
         self.createdAt = createdAt
     }
 }
+
+public struct NewsViewRequest: Codable, Sendable, Equatable {
+    public let newsId: UUID?
+    public let symbol: String?
+    public let headline: String
+    public let url: String?
+
+    public init(newsId: UUID? = nil, symbol: String? = nil, headline: String, url: String? = nil) {
+        self.newsId = newsId
+        self.symbol = symbol
+        self.headline = headline
+        self.url = url
+    }
+}
