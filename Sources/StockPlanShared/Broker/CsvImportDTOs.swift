@@ -84,3 +84,63 @@ public struct CsvImportCommitResponse: Codable, Sendable, Equatable {
         self.importedLotsCount = importedLotsCount
     }
 }
+
+public struct WatchlistCsvImportPreviewItem: Codable, Sendable, Equatable {
+    public let line: Int
+    public let symbol: String
+    public let note: String?
+    public let status: WatchlistStatus?
+    public let existingItemId: String?
+    public let willUpdateExisting: Bool
+
+    public init(
+        line: Int,
+        symbol: String,
+        note: String? = nil,
+        status: WatchlistStatus? = nil,
+        existingItemId: String? = nil,
+        willUpdateExisting: Bool = false
+    ) {
+        self.line = line
+        self.symbol = symbol
+        self.note = note
+        self.status = status
+        self.existingItemId = existingItemId
+        self.willUpdateExisting = willUpdateExisting
+    }
+}
+
+public struct WatchlistCsvImportPreviewResponse: Codable, Sendable, Equatable {
+    public let watchlistListId: String
+    public let items: [WatchlistCsvImportPreviewItem]
+    public let errors: [CsvImportPreviewError]
+
+    public init(
+        watchlistListId: String,
+        items: [WatchlistCsvImportPreviewItem],
+        errors: [CsvImportPreviewError]
+    ) {
+        self.watchlistListId = watchlistListId
+        self.items = items
+        self.errors = errors
+    }
+}
+
+public struct WatchlistCsvImportCommitResponse: Codable, Sendable, Equatable {
+    public let watchlistListId: String
+    public let inserted: [WatchlistItemResponse]
+    public let updated: [WatchlistItemResponse]
+    public let errors: [CsvImportPreviewError]
+
+    public init(
+        watchlistListId: String,
+        inserted: [WatchlistItemResponse],
+        updated: [WatchlistItemResponse],
+        errors: [CsvImportPreviewError]
+    ) {
+        self.watchlistListId = watchlistListId
+        self.inserted = inserted
+        self.updated = updated
+        self.errors = errors
+    }
+}
