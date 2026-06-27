@@ -83,7 +83,7 @@ public struct BadgeProgressResponse: Codable, Sendable, Equatable, Identifiable 
 public struct BadgesListResponse: Codable, Sendable, Equatable {
     public let badges: [BadgeProgressResponse]
     public let totalEarnedTiers: Int
-    public let totalAvailableTiers: Int // 7 badges × 3 tiers = 21
+    public let totalAvailableTiers: Int
 
     public init(badges: [BadgeProgressResponse], totalEarnedTiers: Int, totalAvailableTiers: Int) {
         self.badges = badges
