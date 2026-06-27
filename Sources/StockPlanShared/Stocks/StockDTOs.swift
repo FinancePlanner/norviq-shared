@@ -383,14 +383,27 @@ public struct StockNews: Codable, Sendable, Equatable, Identifiable {
     public let imageURL: String?
     public let source: String?
     public let summary: String?
+    public let newsId: String?
+    public let symbol: String?
 
-    public init(title: String, url: String, date: String, imageURL: String? = nil, source: String? = nil, summary: String? = nil) {
+    public init(
+        title: String,
+        url: String,
+        date: String,
+        imageURL: String? = nil,
+        source: String? = nil,
+        summary: String? = nil,
+        newsId: String? = nil,
+        symbol: String? = nil
+    ) {
         self.title = title
         self.url = url
         self.date = date
         self.imageURL = imageURL
         self.source = source
         self.summary = summary
+        self.newsId = newsId
+        self.symbol = symbol
     }
 }
 
