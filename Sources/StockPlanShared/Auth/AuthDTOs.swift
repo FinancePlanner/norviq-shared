@@ -217,6 +217,50 @@ public enum OAuthProvider: String, Codable, Sendable {
     case x
 }
 
+public struct OAuthLinkedAccount: Codable, Sendable, Equatable {
+    public let provider: OAuthProvider
+    public let connected: Bool
+    public let email: String?
+    public let emailVerified: Bool
+    public let connectedAt: Date?
+
+    public init(
+        provider: OAuthProvider,
+        connected: Bool,
+        email: String? = nil,
+        emailVerified: Bool,
+        connectedAt: Date? = nil
+    ) {
+        self.provider = provider
+        self.connected = connected
+        self.email = email
+        self.emailVerified = emailVerified
+        self.connectedAt = connectedAt
+    }
+}
+
+public struct OAuthLinkedAccountsResponse: Codable, Sendable, Equatable {
+    public let accounts: [OAuthLinkedAccount]
+
+    public init(accounts: [OAuthLinkedAccount]) {
+        self.accounts = accounts
+    }
+}
+
+public struct OAuthLinkResponse: Codable, Sendable, Equatable {
+    public let provider: OAuthProvider
+    public let connected: Bool
+    public let email: String?
+    public let message: String
+
+    public init(provider: OAuthProvider, connected: Bool, email: String? = nil, message: String) {
+        self.provider = provider
+        self.connected = connected
+        self.email = email
+        self.message = message
+    }
+}
+
 public struct OAuthStartRequest: Codable, Sendable, Equatable {
     public let redirectURI: String
 
