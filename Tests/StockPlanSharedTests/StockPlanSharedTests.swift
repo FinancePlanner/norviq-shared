@@ -137,6 +137,33 @@ import Testing
     #expect(decoded.dateOfBirth == DateFormatter.yyyyMMdd.date(from: "2000-01-01"))
 }
 
+@Test func stockPlanSharedDecoderDecodesSnakeCaseOAuthDTOs() throws {
+    let startPayload = """
+    {
+      "flow_id": "00000000-0000-0000-0000-000000000002",
+      "authorization_url": "https://oauth.example.test/auth",
+      "expires_in": 600
+    }
+    """.data(using: .utf8)!
+
+    let start = try JSONDecoder.stockPlanShared.decode(OAuthStartResponse.self, from: startPayload)
+    #expect(start.flowId == UUID(uuidString: "00000000-0000-0000-0000-000000000002")!)
+    #expect(start.authorizationURL == "https://oauth.example.test/auth")
+    #expect(start.expiresIn == 600)
+
+    let exchangePayload = """
+    {
+      "flow_id": "00000000-0000-0000-0000-000000000002",
+      "code": "code-123",
+      "state": "state-123",
+      "redirect_uri": "norviqa://oauth/callback"
+    }
+    """.data(using: .utf8)!
+
+    let exchange = try JSONDecoder.stockPlanShared.decode(OAuthExchangeRequest.self, from: exchangePayload)
+    #expect(exchange.redirectURI == "norviqa://oauth/callback")
+}
+
 @Test func bulkStockRequestRoundTripJSON() throws {
     let payload = BulkStockRequest(stocks: [
         StockRequest(

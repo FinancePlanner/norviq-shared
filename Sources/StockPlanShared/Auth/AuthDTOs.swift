@@ -267,6 +267,31 @@ public struct OAuthStartRequest: Codable, Sendable, Equatable {
     public init(redirectURI: String) {
         self.redirectURI = redirectURI
     }
+
+    private enum CodingKeys: String, CodingKey {
+        case redirectURI
+        case redirectUri
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if let redirectURI = try container.decodeIfPresent(String.self, forKey: .redirectURI)
+            ?? container.decodeIfPresent(String.self, forKey: .redirectUri)
+        {
+            self.redirectURI = redirectURI
+            return
+        }
+
+        throw DecodingError.keyNotFound(
+            CodingKeys.redirectURI,
+            .init(codingPath: decoder.codingPath, debugDescription: "Missing redirectURI")
+        )
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(redirectURI, forKey: .redirectURI)
+    }
 }
 
 public struct OAuthStartResponse: Codable, Sendable, Equatable {
@@ -278,6 +303,36 @@ public struct OAuthStartResponse: Codable, Sendable, Equatable {
         self.flowId = flowId
         self.authorizationURL = authorizationURL
         self.expiresIn = expiresIn
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case flowId
+        case authorizationURL
+        case authorizationUrl
+        case expiresIn
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        flowId = try container.decode(UUID.self, forKey: .flowId)
+        if let authorizationURL = try container.decodeIfPresent(String.self, forKey: .authorizationURL)
+            ?? container.decodeIfPresent(String.self, forKey: .authorizationUrl)
+        {
+            self.authorizationURL = authorizationURL
+        } else {
+            throw DecodingError.keyNotFound(
+                CodingKeys.authorizationURL,
+                .init(codingPath: decoder.codingPath, debugDescription: "Missing authorizationURL")
+            )
+        }
+        expiresIn = try container.decode(Int.self, forKey: .expiresIn)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(flowId, forKey: .flowId)
+        try container.encode(authorizationURL, forKey: .authorizationURL)
+        try container.encode(expiresIn, forKey: .expiresIn)
     }
 }
 
@@ -292,5 +347,39 @@ public struct OAuthExchangeRequest: Codable, Sendable, Equatable {
         self.code = code
         self.state = state
         self.redirectURI = redirectURI
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case flowId
+        case code
+        case state
+        case redirectURI
+        case redirectUri
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        flowId = try container.decode(UUID.self, forKey: .flowId)
+        code = try container.decode(String.self, forKey: .code)
+        state = try container.decode(String.self, forKey: .state)
+        if let redirectURI = try container.decodeIfPresent(String.self, forKey: .redirectURI)
+            ?? container.decodeIfPresent(String.self, forKey: .redirectUri)
+        {
+            self.redirectURI = redirectURI
+            return
+        }
+
+        throw DecodingError.keyNotFound(
+            CodingKeys.redirectURI,
+            .init(codingPath: decoder.codingPath, debugDescription: "Missing redirectURI")
+        )
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(flowId, forKey: .flowId)
+        try container.encode(code, forKey: .code)
+        try container.encode(state, forKey: .state)
+        try container.encode(redirectURI, forKey: .redirectURI)
     }
 }
