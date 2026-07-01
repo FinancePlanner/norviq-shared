@@ -648,6 +648,130 @@ public struct BalanceSheetStatementResponse: Codable, Sendable, Equatable {
     }
 }
 
+public struct IncomeStatementResponse: Codable, Sendable, Equatable {
+    public let date: String
+    public let symbol: String
+    public let reportedCurrency: String?
+    public let cik: String?
+    public let filingDate: String?
+    public let acceptedDate: String?
+    public let fiscalYear: String?
+    public let period: String?
+    public let revenue: Double?
+    public let costOfRevenue: Double?
+    public let grossProfit: Double?
+    public let researchAndDevelopmentExpenses: Double?
+    public let generalAndAdministrativeExpenses: Double?
+    public let sellingAndMarketingExpenses: Double?
+    public let sellingGeneralAndAdministrativeExpenses: Double?
+    public let otherExpenses: Double?
+    public let operatingExpenses: Double?
+    public let costAndExpenses: Double?
+    public let netInterestIncome: Double?
+    public let interestIncome: Double?
+    public let interestExpense: Double?
+    public let depreciationAndAmortization: Double?
+    public let ebitda: Double?
+    public let ebit: Double?
+    public let nonOperatingIncomeExcludingInterest: Double?
+    public let operatingIncome: Double?
+    public let totalOtherIncomeExpensesNet: Double?
+    public let incomeBeforeTax: Double?
+    public let incomeTaxExpense: Double?
+    public let netIncomeFromContinuingOperations: Double?
+    public let netIncomeFromDiscontinuedOperations: Double?
+    public let otherAdjustmentsToNetIncome: Double?
+    public let netIncome: Double?
+    public let netIncomeDeductions: Double?
+    public let bottomLineNetIncome: Double?
+    public let eps: Double?
+    public let epsDiluted: Double?
+    public let weightedAverageShsOut: Double?
+    public let weightedAverageShsOutDil: Double?
+
+    public init(
+        date: String,
+        symbol: String,
+        reportedCurrency: String?,
+        cik: String?,
+        filingDate: String?,
+        acceptedDate: String?,
+        fiscalYear: String?,
+        period: String?,
+        revenue: Double?,
+        costOfRevenue: Double?,
+        grossProfit: Double?,
+        researchAndDevelopmentExpenses: Double?,
+        generalAndAdministrativeExpenses: Double?,
+        sellingAndMarketingExpenses: Double?,
+        sellingGeneralAndAdministrativeExpenses: Double?,
+        otherExpenses: Double?,
+        operatingExpenses: Double?,
+        costAndExpenses: Double?,
+        netInterestIncome: Double?,
+        interestIncome: Double?,
+        interestExpense: Double?,
+        depreciationAndAmortization: Double?,
+        ebitda: Double?,
+        ebit: Double?,
+        nonOperatingIncomeExcludingInterest: Double?,
+        operatingIncome: Double?,
+        totalOtherIncomeExpensesNet: Double?,
+        incomeBeforeTax: Double?,
+        incomeTaxExpense: Double?,
+        netIncomeFromContinuingOperations: Double?,
+        netIncomeFromDiscontinuedOperations: Double?,
+        otherAdjustmentsToNetIncome: Double?,
+        netIncome: Double?,
+        netIncomeDeductions: Double?,
+        bottomLineNetIncome: Double?,
+        eps: Double?,
+        epsDiluted: Double?,
+        weightedAverageShsOut: Double?,
+        weightedAverageShsOutDil: Double?
+    ) {
+        self.date = date
+        self.symbol = symbol
+        self.reportedCurrency = reportedCurrency
+        self.cik = cik
+        self.filingDate = filingDate
+        self.acceptedDate = acceptedDate
+        self.fiscalYear = fiscalYear
+        self.period = period
+        self.revenue = revenue
+        self.costOfRevenue = costOfRevenue
+        self.grossProfit = grossProfit
+        self.researchAndDevelopmentExpenses = researchAndDevelopmentExpenses
+        self.generalAndAdministrativeExpenses = generalAndAdministrativeExpenses
+        self.sellingAndMarketingExpenses = sellingAndMarketingExpenses
+        self.sellingGeneralAndAdministrativeExpenses = sellingGeneralAndAdministrativeExpenses
+        self.otherExpenses = otherExpenses
+        self.operatingExpenses = operatingExpenses
+        self.costAndExpenses = costAndExpenses
+        self.netInterestIncome = netInterestIncome
+        self.interestIncome = interestIncome
+        self.interestExpense = interestExpense
+        self.depreciationAndAmortization = depreciationAndAmortization
+        self.ebitda = ebitda
+        self.ebit = ebit
+        self.nonOperatingIncomeExcludingInterest = nonOperatingIncomeExcludingInterest
+        self.operatingIncome = operatingIncome
+        self.totalOtherIncomeExpensesNet = totalOtherIncomeExpensesNet
+        self.incomeBeforeTax = incomeBeforeTax
+        self.incomeTaxExpense = incomeTaxExpense
+        self.netIncomeFromContinuingOperations = netIncomeFromContinuingOperations
+        self.netIncomeFromDiscontinuedOperations = netIncomeFromDiscontinuedOperations
+        self.otherAdjustmentsToNetIncome = otherAdjustmentsToNetIncome
+        self.netIncome = netIncome
+        self.netIncomeDeductions = netIncomeDeductions
+        self.bottomLineNetIncome = bottomLineNetIncome
+        self.eps = eps
+        self.epsDiluted = epsDiluted
+        self.weightedAverageShsOut = weightedAverageShsOut
+        self.weightedAverageShsOutDil = weightedAverageShsOutDil
+    }
+}
+
 public struct CashFlowStatementResponse: Codable, Sendable, Equatable {
     public let date: String
     public let symbol: String
