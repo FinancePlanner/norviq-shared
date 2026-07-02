@@ -6,6 +6,7 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
     public let isPro: Bool
     public let isPremium: Bool
     public let subscription: BillingSubscriptionDTO?
+    public let planOptions: [BillingPlanOptionDTO]
     public let features: [BillingFeatureDTO]
     public let usage: [BillingUsageDTO]
     public let trialDaysRemaining: Int?
@@ -18,6 +19,7 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
         isPro: Bool? = nil,
         isPremium: Bool,
         subscription: BillingSubscriptionDTO?,
+        planOptions: [BillingPlanOptionDTO] = [],
         features: [BillingFeatureDTO],
         usage: [BillingUsageDTO],
         trialDaysRemaining: Int? = nil,
@@ -29,6 +31,7 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
         self.isPro = isPro ?? isPremium
         self.isPremium = isPremium
         self.subscription = subscription
+        self.planOptions = planOptions
         self.features = features
         self.usage = usage
         self.trialDaysRemaining = trialDaysRemaining
@@ -42,6 +45,7 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
         case isPro
         case isPremium
         case subscription
+        case planOptions
         case features
         case usage
         case trialDaysRemaining
@@ -56,6 +60,7 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
         isPremium = try container.decode(Bool.self, forKey: .isPremium)
         isPro = try container.decodeIfPresent(Bool.self, forKey: .isPro) ?? isPremium
         subscription = try container.decodeIfPresent(BillingSubscriptionDTO.self, forKey: .subscription)
+        planOptions = try container.decodeIfPresent([BillingPlanOptionDTO].self, forKey: .planOptions) ?? []
         features = try container.decode([BillingFeatureDTO].self, forKey: .features)
         usage = try container.decode([BillingUsageDTO].self, forKey: .usage)
         trialDaysRemaining = try container.decodeIfPresent(Int.self, forKey: .trialDaysRemaining)
@@ -64,8 +69,40 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
     }
 }
 
+public struct BillingPlanOptionDTO: Codable, Sendable, Equatable {
+    public let productId: String
+    public let plan: String
+    public let displayName: String
+    public let interval: String
+    public let rank: Int
+    public let badge: String?
+    public let isCurrent: Bool
+    public let changeKind: String
+
+    public init(
+        productId: String,
+        plan: String,
+        displayName: String,
+        interval: String,
+        rank: Int,
+        badge: String?,
+        isCurrent: Bool,
+        changeKind: String
+    ) {
+        self.productId = productId
+        self.plan = plan
+        self.displayName = displayName
+        self.interval = interval
+        self.rank = rank
+        self.badge = badge
+        self.isCurrent = isCurrent
+        self.changeKind = changeKind
+    }
+}
+
 public struct BillingSubscriptionDTO: Codable, Sendable, Equatable {
     public let provider: String
+    public let store: String?
     public let productId: String
     public let plan: String
     public let status: String
@@ -79,9 +116,15 @@ public struct BillingSubscriptionDTO: Codable, Sendable, Equatable {
     public let hasBillingIssue: Bool
     public let isCancelledButActive: Bool
     public let renewsOrExpiresAt: Date?
+    public let willRenew: Bool?
+    public let accessEndsAt: Date?
+    public let pendingProductId: String?
+    public let pendingPlan: String?
+    public let pendingPlanEffectiveAt: Date?
 
     public init(
         provider: String,
+        store: String? = nil,
         productId: String,
         plan: String,
         status: String,
@@ -94,9 +137,15 @@ public struct BillingSubscriptionDTO: Codable, Sendable, Equatable {
         isInGracePeriod: Bool,
         hasBillingIssue: Bool,
         isCancelledButActive: Bool,
-        renewsOrExpiresAt: Date?
+        renewsOrExpiresAt: Date?,
+        willRenew: Bool? = nil,
+        accessEndsAt: Date? = nil,
+        pendingProductId: String? = nil,
+        pendingPlan: String? = nil,
+        pendingPlanEffectiveAt: Date? = nil
     ) {
         self.provider = provider
+        self.store = store
         self.productId = productId
         self.plan = plan
         self.status = status
@@ -110,6 +159,11 @@ public struct BillingSubscriptionDTO: Codable, Sendable, Equatable {
         self.hasBillingIssue = hasBillingIssue
         self.isCancelledButActive = isCancelledButActive
         self.renewsOrExpiresAt = renewsOrExpiresAt
+        self.willRenew = willRenew
+        self.accessEndsAt = accessEndsAt
+        self.pendingProductId = pendingProductId
+        self.pendingPlan = pendingPlan
+        self.pendingPlanEffectiveAt = pendingPlanEffectiveAt
     }
 }
 

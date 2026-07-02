@@ -352,6 +352,7 @@ import Testing
     let periodStart = Date(timeIntervalSince1970: 1_774_108_800)
     let subscription = BillingSubscriptionDTO(
         provider: "revenuecat",
+        store: "app_store",
         productId: "pro_monthly",
         plan: "pro",
         status: "active",
@@ -364,7 +365,12 @@ import Testing
         isInGracePeriod: false,
         hasBillingIssue: false,
         isCancelledButActive: false,
-        renewsOrExpiresAt: Date(timeIntervalSince1970: 1_779_292_800)
+        renewsOrExpiresAt: Date(timeIntervalSince1970: 1_779_292_800),
+        willRenew: true,
+        accessEndsAt: Date(timeIntervalSince1970: 1_779_292_800),
+        pendingProductId: "pro_annual",
+        pendingPlan: "pro_annual",
+        pendingPlanEffectiveAt: Date(timeIntervalSince1970: 1_779_292_800)
     )
     let payload = BillingContextResponse(
         plan: "pro",
@@ -372,6 +378,18 @@ import Testing
         isPro: true,
         isPremium: true,
         subscription: subscription,
+        planOptions: [
+            BillingPlanOptionDTO(
+                productId: "pro_annual",
+                plan: "pro_annual",
+                displayName: "Annual",
+                interval: "annual",
+                rank: 3,
+                badge: "Best value",
+                isCurrent: false,
+                changeKind: "upgrade"
+            )
+        ],
         features: [
             BillingFeatureDTO(
                 key: "advancedResearch",
@@ -442,6 +460,7 @@ import Testing
     #expect(decoded.isPro == false)
     #expect(decoded.isPremium == false)
     #expect(decoded.subscription == nil)
+    #expect(decoded.planOptions.isEmpty)
     #expect(decoded.features.first?.requiredPlan == "pro")
     #expect(decoded.usage.first?.remaining == 2)
 }
