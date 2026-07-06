@@ -11,6 +11,10 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
     public let usage: [BillingUsageDTO]
     public let trialDaysRemaining: Int?
     public let isTrialActive: Bool
+    /// True when the user previously had a free trial that has now ended and they
+    /// are not currently entitled. Drives the "trial ended → subscribe" surfaces.
+    /// Distinguishes an expired-trial user from a never-trialed free user.
+    public let trialExpired: Bool
     public let generatedAt: Date
 
     public init(
@@ -24,6 +28,7 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
         usage: [BillingUsageDTO],
         trialDaysRemaining: Int? = nil,
         isTrialActive: Bool = false,
+        trialExpired: Bool = false,
         generatedAt: Date
     ) {
         self.plan = plan
@@ -36,6 +41,7 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
         self.usage = usage
         self.trialDaysRemaining = trialDaysRemaining
         self.isTrialActive = isTrialActive
+        self.trialExpired = trialExpired
         self.generatedAt = generatedAt
     }
 
@@ -50,6 +56,7 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
         case usage
         case trialDaysRemaining
         case isTrialActive
+        case trialExpired
         case generatedAt
     }
 
@@ -65,6 +72,7 @@ public struct BillingContextResponse: Codable, Sendable, Equatable {
         usage = try container.decode([BillingUsageDTO].self, forKey: .usage)
         trialDaysRemaining = try container.decodeIfPresent(Int.self, forKey: .trialDaysRemaining)
         isTrialActive = try container.decodeIfPresent(Bool.self, forKey: .isTrialActive) ?? false
+        trialExpired = try container.decodeIfPresent(Bool.self, forKey: .trialExpired) ?? false
         generatedAt = try container.decode(Date.self, forKey: .generatedAt)
     }
 }

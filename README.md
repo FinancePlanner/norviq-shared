@@ -43,4 +43,4 @@ Use semantic versioning and tags:
 - `1.0.0` when contracts are stable
 
 For breaking API changes, release a new major version and update backend + iOS together.
-# FinanceShared
+# norviq-shared
