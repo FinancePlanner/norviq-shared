@@ -173,10 +173,14 @@ public struct MacroSeriesPoint: Codable, Sendable, Equatable {
 public struct MacroSeriesResponse: Codable, Sendable, Equatable {
     public let series: String
     public let points: [MacroSeriesPoint]
+    public let country: String?
+    public let unit: String?
 
-    public init(series: String, points: [MacroSeriesPoint]) {
+    public init(series: String, points: [MacroSeriesPoint], country: String? = nil, unit: String? = nil) {
         self.series = series
         self.points = points
+        self.country = country
+        self.unit = unit
     }
 }
 
