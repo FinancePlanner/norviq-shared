@@ -3,7 +3,12 @@ import Foundation
 public enum AssetCategory: String, Codable, Sendable, CaseIterable {
     case stock
     case etf
+    case mutualFund = "mutual_fund"
     case crypto
+    case cash
+    case bond
+    case realEstate = "real_estate"
+    case commodity
 }
 
 public struct PortfolioListRequest: Codable, Sendable, Equatable {
