@@ -20,6 +20,10 @@ public struct PortfolioSummaryResponse: Codable, Sendable, Equatable {
     public let realizedPnl: Double
     public let cashBalance: Double
     public let allocation: [AllocationItem]
+    public let dayChange: Double?
+    public let dayChangePercent: Double?
+    public let unrealizedPnlPercent: Double?
+    public let asOf: String?
 
     public init(
         baseCurrency: String,
@@ -28,7 +32,11 @@ public struct PortfolioSummaryResponse: Codable, Sendable, Equatable {
         unrealizedPnl: Double,
         realizedPnl: Double,
         cashBalance: Double = 0,
-        allocation: [AllocationItem]
+        allocation: [AllocationItem],
+        dayChange: Double? = nil,
+        dayChangePercent: Double? = nil,
+        unrealizedPnlPercent: Double? = nil,
+        asOf: String? = nil
     ) {
         self.baseCurrency = baseCurrency
         self.totalValue = totalValue
@@ -37,6 +45,10 @@ public struct PortfolioSummaryResponse: Codable, Sendable, Equatable {
         self.realizedPnl = realizedPnl
         self.cashBalance = cashBalance
         self.allocation = allocation
+        self.dayChange = dayChange
+        self.dayChangePercent = dayChangePercent
+        self.unrealizedPnlPercent = unrealizedPnlPercent
+        self.asOf = asOf
     }
 
     enum CodingKeys: String, CodingKey {
@@ -47,6 +59,10 @@ public struct PortfolioSummaryResponse: Codable, Sendable, Equatable {
         case realizedPnl
         case cashBalance
         case allocation
+        case dayChange
+        case dayChangePercent
+        case unrealizedPnlPercent
+        case asOf
     }
 
     public init(from decoder: Decoder) throws {
@@ -58,6 +74,10 @@ public struct PortfolioSummaryResponse: Codable, Sendable, Equatable {
         realizedPnl = try container.decode(Double.self, forKey: .realizedPnl)
         cashBalance = try container.decodeIfPresent(Double.self, forKey: .cashBalance) ?? 0
         allocation = try container.decode([AllocationItem].self, forKey: .allocation)
+        dayChange = try container.decodeIfPresent(Double.self, forKey: .dayChange)
+        dayChangePercent = try container.decodeIfPresent(Double.self, forKey: .dayChangePercent)
+        unrealizedPnlPercent = try container.decodeIfPresent(Double.self, forKey: .unrealizedPnlPercent)
+        asOf = try container.decodeIfPresent(String.self, forKey: .asOf)
     }
 }
 
@@ -74,10 +94,25 @@ public struct PerformancePoint: Codable, Sendable, Equatable {
 public struct PortfolioPerformanceResponse: Codable, Sendable, Equatable {
     public let baseCurrency: String
     public let points: [PerformancePoint]
+    public let range: String?
 
-    public init(baseCurrency: String, points: [PerformancePoint]) {
+    public init(baseCurrency: String, points: [PerformancePoint], range: String? = nil) {
         self.baseCurrency = baseCurrency
         self.points = points
+        self.range = range
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case baseCurrency
+        case points
+        case range
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        baseCurrency = try container.decode(String.self, forKey: .baseCurrency)
+        points = try container.decode([PerformancePoint].self, forKey: .points)
+        range = try container.decodeIfPresent(String.self, forKey: .range)
     }
 }
 
@@ -278,12 +313,72 @@ public struct PnlBySymbol: Codable, Sendable, Equatable {
     public let currency: String
     public let realizedPnl: Double
     public let unrealizedPnl: Double
+    public let shares: Double?
+    public let buyPrice: Double?
+    public let costBasis: Double?
+    public let currentPrice: Double?
+    public let marketValue: Double?
+    public let unrealizedPnlPercent: Double?
+    public let dayChange: Double?
+    public let dayChangePercent: Double?
 
-    public init(symbol: String, currency: String, realizedPnl: Double, unrealizedPnl: Double) {
+    public init(
+        symbol: String,
+        currency: String,
+        realizedPnl: Double,
+        unrealizedPnl: Double,
+        shares: Double? = nil,
+        buyPrice: Double? = nil,
+        costBasis: Double? = nil,
+        currentPrice: Double? = nil,
+        marketValue: Double? = nil,
+        unrealizedPnlPercent: Double? = nil,
+        dayChange: Double? = nil,
+        dayChangePercent: Double? = nil
+    ) {
         self.symbol = symbol
         self.currency = currency
         self.realizedPnl = realizedPnl
         self.unrealizedPnl = unrealizedPnl
+        self.shares = shares
+        self.buyPrice = buyPrice
+        self.costBasis = costBasis
+        self.currentPrice = currentPrice
+        self.marketValue = marketValue
+        self.unrealizedPnlPercent = unrealizedPnlPercent
+        self.dayChange = dayChange
+        self.dayChangePercent = dayChangePercent
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case symbol
+        case currency
+        case realizedPnl
+        case unrealizedPnl
+        case shares
+        case buyPrice
+        case costBasis
+        case currentPrice
+        case marketValue
+        case unrealizedPnlPercent
+        case dayChange
+        case dayChangePercent
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        symbol = try container.decode(String.self, forKey: .symbol)
+        currency = try container.decode(String.self, forKey: .currency)
+        realizedPnl = try container.decode(Double.self, forKey: .realizedPnl)
+        unrealizedPnl = try container.decode(Double.self, forKey: .unrealizedPnl)
+        shares = try container.decodeIfPresent(Double.self, forKey: .shares)
+        buyPrice = try container.decodeIfPresent(Double.self, forKey: .buyPrice)
+        costBasis = try container.decodeIfPresent(Double.self, forKey: .costBasis)
+        currentPrice = try container.decodeIfPresent(Double.self, forKey: .currentPrice)
+        marketValue = try container.decodeIfPresent(Double.self, forKey: .marketValue)
+        unrealizedPnlPercent = try container.decodeIfPresent(Double.self, forKey: .unrealizedPnlPercent)
+        dayChange = try container.decodeIfPresent(Double.self, forKey: .dayChange)
+        dayChangePercent = try container.decodeIfPresent(Double.self, forKey: .dayChangePercent)
     }
 }
 
