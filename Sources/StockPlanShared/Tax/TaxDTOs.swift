@@ -175,6 +175,56 @@ public struct TaxProfileResponse: Codable, Sendable, Equatable, Identifiable {
     }
 }
 
+public struct TaxProfileAccountOption: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let displayName: String
+    public let broker: String
+    public let baseCurrency: String
+    public let wrapper: TaxAccountWrapper
+    public let ownerMemberId: String?
+    public let lotSelectionMethod: TaxLotSelectionMethod
+
+    public init(
+        id: String,
+        displayName: String,
+        broker: String,
+        baseCurrency: String,
+        wrapper: TaxAccountWrapper = .unknown,
+        ownerMemberId: String? = nil,
+        lotSelectionMethod: TaxLotSelectionMethod = .jurisdictionDefault
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.broker = broker
+        self.baseCurrency = baseCurrency
+        self.wrapper = wrapper
+        self.ownerMemberId = ownerMemberId
+        self.lotSelectionMethod = lotSelectionMethod
+    }
+}
+
+public struct TaxProfileContextResponse: Codable, Sendable, Equatable {
+    public let jurisdiction: TaxJurisdiction
+    public let taxYear: Int
+    public let defaultReportingCurrency: String
+    public let profile: TaxProfileResponse?
+    public let accounts: [TaxProfileAccountOption]
+
+    public init(
+        jurisdiction: TaxJurisdiction,
+        taxYear: Int,
+        defaultReportingCurrency: String,
+        profile: TaxProfileResponse? = nil,
+        accounts: [TaxProfileAccountOption]
+    ) {
+        self.jurisdiction = jurisdiction
+        self.taxYear = taxYear
+        self.defaultReportingCurrency = defaultReportingCurrency
+        self.profile = profile
+        self.accounts = accounts
+    }
+}
+
 public struct TaxMoney: Codable, Sendable, Equatable {
     public let amount: Decimal
     public let currency: String
