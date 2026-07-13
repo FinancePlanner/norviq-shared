@@ -315,6 +315,15 @@ public struct TaxLossCarryforwardApplicationResponse: Codable, Sendable, Equatab
     }
 }
 
+public enum TaxLossCarryforwardCategory: String, Codable, Sendable, CaseIterable {
+    case stock
+    case generalCapital = "general_capital"
+    case securities
+    case shortTerm = "short_term"
+    case longTerm = "long_term"
+    case unspecified
+}
+
 public struct TaxLossCarryforwardBalanceResponse: Codable, Sendable, Equatable, Identifiable {
     public let id: String
     public let jurisdiction: TaxJurisdiction
@@ -323,6 +332,7 @@ public struct TaxLossCarryforwardBalanceResponse: Codable, Sendable, Equatable, 
     public let originalAmount: TaxMoney
     public let remainingAmount: TaxMoney
     public let ruleVersion: String
+    public let category: TaxLossCarryforwardCategory?
     public let applications: [TaxLossCarryforwardApplicationResponse]
 
     public init(
@@ -333,6 +343,7 @@ public struct TaxLossCarryforwardBalanceResponse: Codable, Sendable, Equatable, 
         originalAmount: TaxMoney,
         remainingAmount: TaxMoney,
         ruleVersion: String,
+        category: TaxLossCarryforwardCategory? = nil,
         applications: [TaxLossCarryforwardApplicationResponse]
     ) {
         self.id = id
@@ -342,6 +353,7 @@ public struct TaxLossCarryforwardBalanceResponse: Codable, Sendable, Equatable, 
         self.originalAmount = originalAmount
         self.remainingAmount = remainingAmount
         self.ruleVersion = ruleVersion
+        self.category = category
         self.applications = applications
     }
 }
