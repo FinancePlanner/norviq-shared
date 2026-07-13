@@ -227,22 +227,42 @@ public enum TaxMarketAdmissionStatus: String, Codable, Sendable, CaseIterable {
     case unknown
 }
 
+public enum TaxFundClassification: String, Codable, Sendable, CaseIterable {
+    case equity
+    case mixed
+    case realEstate = "real_estate"
+    case foreignRealEstate = "foreign_real_estate"
+    case other
+    case unknown
+}
+
+public struct TaxFundClassificationRequest: Codable, Sendable, Equatable {
+    public let classification: TaxFundClassification
+
+    public init(classification: TaxFundClassification) {
+        self.classification = classification
+    }
+}
+
 public struct TaxInstrumentMarketOption: Codable, Sendable, Equatable, Identifiable {
     public let id: String
     public let symbol: String
     public let listingExchange: String?
     public let marketAdmissionStatus: TaxMarketAdmissionStatus
+    public let fundClassification: TaxFundClassification?
 
     public init(
         id: String,
         symbol: String,
         listingExchange: String? = nil,
-        marketAdmissionStatus: TaxMarketAdmissionStatus = .unknown
+        marketAdmissionStatus: TaxMarketAdmissionStatus = .unknown,
+        fundClassification: TaxFundClassification? = nil
     ) {
         self.id = id
         self.symbol = symbol
         self.listingExchange = listingExchange
         self.marketAdmissionStatus = marketAdmissionStatus
+        self.fundClassification = fundClassification
     }
 }
 
