@@ -275,6 +275,73 @@ public struct TaxMoney: Codable, Sendable, Equatable {
     }
 }
 
+public struct TaxLossCarryforwardApplicationResponse: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let targetTaxYear: Int
+    public let amount: TaxMoney
+    public let createdAt: String
+
+    public init(id: String, targetTaxYear: Int, amount: TaxMoney, createdAt: String) {
+        self.id = id
+        self.targetTaxYear = targetTaxYear
+        self.amount = amount
+        self.createdAt = createdAt
+    }
+}
+
+public struct TaxLossCarryforwardBalanceResponse: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let jurisdiction: TaxJurisdiction
+    public let sourceTaxYear: Int
+    public let expiresAfterTaxYear: Int
+    public let originalAmount: TaxMoney
+    public let remainingAmount: TaxMoney
+    public let ruleVersion: String
+    public let applications: [TaxLossCarryforwardApplicationResponse]
+
+    public init(
+        id: String,
+        jurisdiction: TaxJurisdiction,
+        sourceTaxYear: Int,
+        expiresAfterTaxYear: Int,
+        originalAmount: TaxMoney,
+        remainingAmount: TaxMoney,
+        ruleVersion: String,
+        applications: [TaxLossCarryforwardApplicationResponse]
+    ) {
+        self.id = id
+        self.jurisdiction = jurisdiction
+        self.sourceTaxYear = sourceTaxYear
+        self.expiresAfterTaxYear = expiresAfterTaxYear
+        self.originalAmount = originalAmount
+        self.remainingAmount = remainingAmount
+        self.ruleVersion = ruleVersion
+        self.applications = applications
+    }
+}
+
+public struct TaxLossCarryforwardLedgerResponse: Codable, Sendable, Equatable {
+    public let generatedAt: String
+    public let jurisdiction: TaxJurisdiction
+    public let asOfTaxYear: Int
+    public let totalAvailable: TaxMoney
+    public let balances: [TaxLossCarryforwardBalanceResponse]
+
+    public init(
+        generatedAt: String,
+        jurisdiction: TaxJurisdiction,
+        asOfTaxYear: Int,
+        totalAvailable: TaxMoney,
+        balances: [TaxLossCarryforwardBalanceResponse]
+    ) {
+        self.generatedAt = generatedAt
+        self.jurisdiction = jurisdiction
+        self.asOfTaxYear = asOfTaxYear
+        self.totalAvailable = totalAvailable
+        self.balances = balances
+    }
+}
+
 public struct TaxProjectionSummary: Codable, Sendable, Equatable {
     public let realizedEstimatedLiability: TaxMoney
     public let embeddedUnrealizedLiability: TaxMoney
