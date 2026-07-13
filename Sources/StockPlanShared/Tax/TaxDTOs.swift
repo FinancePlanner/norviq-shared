@@ -244,6 +244,90 @@ public struct TaxFundClassificationRequest: Codable, Sendable, Equatable {
     }
 }
 
+public struct TaxFundAnnualHoldingInput: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let beginningMarketValue: Decimal
+    public let endingMarketValue: Decimal
+    public let distributions: Decimal
+    public let acquisitionMonth: Int?
+
+    public init(
+        id: String,
+        beginningMarketValue: Decimal,
+        endingMarketValue: Decimal,
+        distributions: Decimal,
+        acquisitionMonth: Int? = nil
+    ) {
+        self.id = id
+        self.beginningMarketValue = beginningMarketValue
+        self.endingMarketValue = endingMarketValue
+        self.distributions = distributions
+        self.acquisitionMonth = acquisitionMonth
+    }
+}
+
+public struct TaxFundAnnualInputRequest: Codable, Sendable, Equatable {
+    public let accountId: String
+    public let instrumentId: String
+    public let calculationYear: Int
+    public let currency: String
+    public let holdings: [TaxFundAnnualHoldingInput]
+
+    public init(
+        accountId: String,
+        instrumentId: String,
+        calculationYear: Int,
+        currency: String,
+        holdings: [TaxFundAnnualHoldingInput]
+    ) {
+        self.accountId = accountId
+        self.instrumentId = instrumentId
+        self.calculationYear = calculationYear
+        self.currency = currency
+        self.holdings = holdings
+    }
+}
+
+public struct TaxFundAdvanceLumpSumResponse: Codable, Sendable, Equatable {
+    public let accountId: String
+    public let instrumentId: String
+    public let calculationYear: Int
+    public let deemedReceiptTaxYear: Int
+    public let currency: String
+    public let fundClassification: TaxFundClassification
+    public let basisRate: Decimal
+    public let grossAdvanceLumpSum: Decimal
+    public let taxableAdvanceLumpSum: Decimal
+    public let holdings: [TaxFundAnnualHoldingInput]
+    public let updatedAt: String
+
+    public init(
+        accountId: String,
+        instrumentId: String,
+        calculationYear: Int,
+        deemedReceiptTaxYear: Int,
+        currency: String,
+        fundClassification: TaxFundClassification,
+        basisRate: Decimal,
+        grossAdvanceLumpSum: Decimal,
+        taxableAdvanceLumpSum: Decimal,
+        holdings: [TaxFundAnnualHoldingInput],
+        updatedAt: String
+    ) {
+        self.accountId = accountId
+        self.instrumentId = instrumentId
+        self.calculationYear = calculationYear
+        self.deemedReceiptTaxYear = deemedReceiptTaxYear
+        self.currency = currency
+        self.fundClassification = fundClassification
+        self.basisRate = basisRate
+        self.grossAdvanceLumpSum = grossAdvanceLumpSum
+        self.taxableAdvanceLumpSum = taxableAdvanceLumpSum
+        self.holdings = holdings
+        self.updatedAt = updatedAt
+    }
+}
+
 public struct TaxInstrumentMarketOption: Codable, Sendable, Equatable, Identifiable {
     public let id: String
     public let symbol: String
