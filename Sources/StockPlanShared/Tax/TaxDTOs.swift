@@ -135,6 +135,8 @@ public struct TaxProfileRequest: Codable, Sendable, Equatable {
     public let shortTermCapitalGainsRate: Decimal?
     public let longTermCapitalGainsRate: Decimal?
     public let capitalGainsTaxationMode: TaxCapitalGainsTaxationMode?
+    public let remainingCapitalIncomeAllowance: Decimal?
+    public let churchTaxRate: Decimal?
     public let priorShortTermLossCarryover: Decimal
     public let priorLongTermLossCarryover: Decimal
     public let members: [TaxHouseholdMember]
@@ -150,6 +152,8 @@ public struct TaxProfileRequest: Codable, Sendable, Equatable {
         shortTermCapitalGainsRate: Decimal? = nil,
         longTermCapitalGainsRate: Decimal? = nil,
         capitalGainsTaxationMode: TaxCapitalGainsTaxationMode? = nil,
+        remainingCapitalIncomeAllowance: Decimal? = nil,
+        churchTaxRate: Decimal? = nil,
         priorShortTermLossCarryover: Decimal = 0,
         priorLongTermLossCarryover: Decimal = 0,
         members: [TaxHouseholdMember],
@@ -164,6 +168,8 @@ public struct TaxProfileRequest: Codable, Sendable, Equatable {
         self.shortTermCapitalGainsRate = shortTermCapitalGainsRate
         self.longTermCapitalGainsRate = longTermCapitalGainsRate
         self.capitalGainsTaxationMode = capitalGainsTaxationMode
+        self.remainingCapitalIncomeAllowance = remainingCapitalIncomeAllowance
+        self.churchTaxRate = churchTaxRate
         self.priorShortTermLossCarryover = priorShortTermLossCarryover
         self.priorLongTermLossCarryover = priorLongTermLossCarryover
         self.members = members
