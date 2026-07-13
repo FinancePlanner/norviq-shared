@@ -16,6 +16,15 @@ public enum TaxFilingStatus: String, Codable, Sendable, CaseIterable {
     case domesticPartnership = "domestic_partnership"
 }
 
+/// Selects how securities capital gains are taxed when a jurisdiction permits an election.
+/// A nil value on TaxProfileRequest preserves the jurisdiction default for profiles written
+/// by older clients.
+public enum TaxCapitalGainsTaxationMode: String, Codable, Sendable, CaseIterable {
+    case jurisdictionDefault = "jurisdiction_default"
+    case autonomous
+    case aggregateWithIncome = "aggregate_with_income"
+}
+
 public enum TaxAccountWrapper: String, Codable, Sendable, CaseIterable {
     case taxable
     case traditionalIRA = "traditional_ira"
@@ -125,6 +134,7 @@ public struct TaxProfileRequest: Codable, Sendable, Equatable {
     public let marginalIncomeTaxRate: Decimal?
     public let shortTermCapitalGainsRate: Decimal?
     public let longTermCapitalGainsRate: Decimal?
+    public let capitalGainsTaxationMode: TaxCapitalGainsTaxationMode?
     public let priorShortTermLossCarryover: Decimal
     public let priorLongTermLossCarryover: Decimal
     public let members: [TaxHouseholdMember]
@@ -139,6 +149,7 @@ public struct TaxProfileRequest: Codable, Sendable, Equatable {
         marginalIncomeTaxRate: Decimal? = nil,
         shortTermCapitalGainsRate: Decimal? = nil,
         longTermCapitalGainsRate: Decimal? = nil,
+        capitalGainsTaxationMode: TaxCapitalGainsTaxationMode? = nil,
         priorShortTermLossCarryover: Decimal = 0,
         priorLongTermLossCarryover: Decimal = 0,
         members: [TaxHouseholdMember],
@@ -152,6 +163,7 @@ public struct TaxProfileRequest: Codable, Sendable, Equatable {
         self.marginalIncomeTaxRate = marginalIncomeTaxRate
         self.shortTermCapitalGainsRate = shortTermCapitalGainsRate
         self.longTermCapitalGainsRate = longTermCapitalGainsRate
+        self.capitalGainsTaxationMode = capitalGainsTaxationMode
         self.priorShortTermLossCarryover = priorShortTermLossCarryover
         self.priorLongTermLossCarryover = priorLongTermLossCarryover
         self.members = members
