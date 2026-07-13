@@ -89,3 +89,41 @@ public struct AIPendingActionResponse: Codable, Sendable, Equatable {
         self.expiresAt = expiresAt; self.createdAt = createdAt
     }
 }
+
+public enum AIAssistantTurnKind: String, Codable, Sendable {
+    case message
+    case confirmationRequired = "confirmation_required"
+}
+
+public struct AIAssistantTurnResponse: Codable, Sendable, Equatable {
+    public let kind: AIAssistantTurnKind
+    public let conversationId: String
+    public let message: AIMessageResponse
+    public let pendingAction: AIPendingActionResponse?
+
+    public init(
+        kind: AIAssistantTurnKind,
+        conversationId: String,
+        message: AIMessageResponse,
+        pendingAction: AIPendingActionResponse?
+    ) {
+        self.kind = kind
+        self.conversationId = conversationId
+        self.message = message
+        self.pendingAction = pendingAction
+    }
+}
+
+public struct AIConfirmedActionResponse: Codable, Sendable, Equatable {
+    public let actionId: String
+    public let status: AIActionStatus
+    public let resultId: String?
+    public let message: String
+
+    public init(actionId: String, status: AIActionStatus, resultId: String?, message: String) {
+        self.actionId = actionId
+        self.status = status
+        self.resultId = resultId
+        self.message = message
+    }
+}
