@@ -246,6 +246,8 @@ public struct TaxFundClassificationRequest: Codable, Sendable, Equatable {
 
 public struct TaxFundAnnualHoldingInput: Codable, Sendable, Equatable, Identifiable {
     public let id: String
+    public let lotId: String?
+    public let quantity: Decimal?
     public let beginningMarketValue: Decimal
     public let endingMarketValue: Decimal
     public let distributions: Decimal
@@ -253,12 +255,16 @@ public struct TaxFundAnnualHoldingInput: Codable, Sendable, Equatable, Identifia
 
     public init(
         id: String,
+        lotId: String? = nil,
+        quantity: Decimal? = nil,
         beginningMarketValue: Decimal,
         endingMarketValue: Decimal,
         distributions: Decimal,
         acquisitionMonth: Int? = nil
     ) {
         self.id = id
+        self.lotId = lotId
+        self.quantity = quantity
         self.beginningMarketValue = beginningMarketValue
         self.endingMarketValue = endingMarketValue
         self.distributions = distributions
