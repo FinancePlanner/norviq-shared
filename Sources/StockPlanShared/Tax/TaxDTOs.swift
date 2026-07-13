@@ -221,6 +221,31 @@ public struct TaxProfileAccountOption: Codable, Sendable, Equatable, Identifiabl
     }
 }
 
+public struct TaxFundLotOption: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let accountId: String
+    public let instrumentId: String
+    public let openedAt: String
+    public let originalQuantity: Decimal
+    public let remainingQuantity: Decimal
+
+    public init(
+        id: String,
+        accountId: String,
+        instrumentId: String,
+        openedAt: String,
+        originalQuantity: Decimal,
+        remainingQuantity: Decimal
+    ) {
+        self.id = id
+        self.accountId = accountId
+        self.instrumentId = instrumentId
+        self.openedAt = openedAt
+        self.originalQuantity = originalQuantity
+        self.remainingQuantity = remainingQuantity
+    }
+}
+
 public enum TaxMarketAdmissionStatus: String, Codable, Sendable, CaseIterable {
     case regulated
     case unlisted
@@ -363,6 +388,7 @@ public struct TaxProfileContextResponse: Codable, Sendable, Equatable {
     public let profile: TaxProfileResponse?
     public let accounts: [TaxProfileAccountOption]
     public let instruments: [TaxInstrumentMarketOption]?
+    public let fundLots: [TaxFundLotOption]?
 
     public init(
         jurisdiction: TaxJurisdiction,
@@ -370,7 +396,8 @@ public struct TaxProfileContextResponse: Codable, Sendable, Equatable {
         defaultReportingCurrency: String,
         profile: TaxProfileResponse? = nil,
         accounts: [TaxProfileAccountOption],
-        instruments: [TaxInstrumentMarketOption]? = nil
+        instruments: [TaxInstrumentMarketOption]? = nil,
+        fundLots: [TaxFundLotOption]? = nil
     ) {
         self.jurisdiction = jurisdiction
         self.taxYear = taxYear
@@ -378,6 +405,7 @@ public struct TaxProfileContextResponse: Codable, Sendable, Equatable {
         self.profile = profile
         self.accounts = accounts
         self.instruments = instruments
+        self.fundLots = fundLots
     }
 }
 
