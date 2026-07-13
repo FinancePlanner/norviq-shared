@@ -203,25 +203,53 @@ public struct TaxProfileAccountOption: Codable, Sendable, Equatable, Identifiabl
     }
 }
 
+public enum TaxMarketAdmissionStatus: String, Codable, Sendable, CaseIterable {
+    case regulated
+    case unlisted
+    case unknown
+}
+
+public struct TaxInstrumentMarketOption: Codable, Sendable, Equatable, Identifiable {
+    public let id: String
+    public let symbol: String
+    public let listingExchange: String?
+    public let marketAdmissionStatus: TaxMarketAdmissionStatus
+
+    public init(
+        id: String,
+        symbol: String,
+        listingExchange: String? = nil,
+        marketAdmissionStatus: TaxMarketAdmissionStatus = .unknown
+    ) {
+        self.id = id
+        self.symbol = symbol
+        self.listingExchange = listingExchange
+        self.marketAdmissionStatus = marketAdmissionStatus
+    }
+}
+
 public struct TaxProfileContextResponse: Codable, Sendable, Equatable {
     public let jurisdiction: TaxJurisdiction
     public let taxYear: Int
     public let defaultReportingCurrency: String
     public let profile: TaxProfileResponse?
     public let accounts: [TaxProfileAccountOption]
+    public let instruments: [TaxInstrumentMarketOption]?
 
     public init(
         jurisdiction: TaxJurisdiction,
         taxYear: Int,
         defaultReportingCurrency: String,
         profile: TaxProfileResponse? = nil,
-        accounts: [TaxProfileAccountOption]
+        accounts: [TaxProfileAccountOption],
+        instruments: [TaxInstrumentMarketOption]? = nil
     ) {
         self.jurisdiction = jurisdiction
         self.taxYear = taxYear
         self.defaultReportingCurrency = defaultReportingCurrency
         self.profile = profile
         self.accounts = accounts
+        self.instruments = instruments
     }
 }
 
