@@ -53,7 +53,7 @@ public struct NetWorthForecastDefinition: Codable, Equatable, Identifiable, Send
         monthlyIncomeOverride: Double? = nil,
         monthlySpendingOverride: Double? = nil,
         targetAmount: Double? = nil,
-        pathCount: Int = 10_000,
+        pathCount: Int = 10000,
         createdAt: String? = nil,
         updatedAt: String? = nil
     ) {
@@ -80,16 +80,18 @@ public struct NetWorthForecastDefinition: Codable, Equatable, Identifiable, Send
             throw WealthAutomationValidationError.invalidName
         }
         guard baseCurrency.count == 3 else { throw WealthAutomationValidationError.invalidCurrency }
-        guard (1...600).contains(horizonMonths), (100...50_000).contains(pathCount) else {
+        guard (1 ... 600).contains(horizonMonths), (100 ... 50000).contains(pathCount) else {
             throw WealthAutomationValidationError.invalidHorizon
         }
-        guard (-1...10).contains(annualIncomeGrowth), (-1...10).contains(annualSpendingGrowth),
-              (-1...10).contains(inflationAssumption) else {
+        guard (-1 ... 10).contains(annualIncomeGrowth), (-1 ... 10).contains(annualSpendingGrowth),
+              (-1 ... 10).contains(inflationAssumption)
+        else {
             throw WealthAutomationValidationError.invalidGrowthRate
         }
         guard monthlyIncomeOverride.map({ $0 >= 0 }) ?? true,
               monthlySpendingOverride.map({ $0 >= 0 }) ?? true,
-              targetAmount.map({ $0 > 0 }) ?? true else {
+              targetAmount.map({ $0 > 0 }) ?? true
+        else {
             throw WealthAutomationValidationError.invalidAmount
         }
     }
@@ -121,7 +123,7 @@ public struct NetWorthForecastUpsertRequest: Codable, Equatable, Sendable {
         monthlyIncomeOverride: Double? = nil,
         monthlySpendingOverride: Double? = nil,
         targetAmount: Double? = nil,
-        pathCount: Int = 10_000
+        pathCount: Int = 10000
     ) {
         self.name = name
         self.baseCurrency = baseCurrency
@@ -383,11 +385,14 @@ public struct WatchlistScreen: Codable, Equatable, Identifiable, Sendable {
             throw WealthAutomationValidationError.invalidName
         }
         guard !watchlistListIds.isEmpty, !groups.isEmpty, groups.count <= 10,
-              groups.allSatisfy({ !$0.conditions.isEmpty && $0.conditions.count <= 20 }) else {
+              groups.allSatisfy({ !$0.conditions.isEmpty && $0.conditions.count <= 20 })
+        else {
             throw WealthAutomationValidationError.invalidScreen
         }
         for group in groups {
-            for condition in group.conditions { try condition.validate() }
+            for condition in group.conditions {
+                try condition.validate()
+            }
         }
     }
 }
@@ -509,37 +514,46 @@ public struct RebalanceTarget: Codable, Equatable, Identifiable, Sendable {
 public struct RebalancingPolicy: Codable, Equatable, Identifiable, Sendable {
     public let id: String
     public let portfolioListId: String
+    public let baseCurrency: String
     public let cadence: RebalanceCadence
     public let driftThreshold: Double?
     public let targets: [RebalanceTarget]
     public let enabled: Bool
     public let lastConfirmedAt: String?
+    public let lastTriggeredAt: String?
     public let createdAt: String?
     public let updatedAt: String?
 
     public init(
         id: String,
         portfolioListId: String,
+        baseCurrency: String,
         cadence: RebalanceCadence,
         driftThreshold: Double? = nil,
         targets: [RebalanceTarget],
         enabled: Bool = true,
         lastConfirmedAt: String? = nil,
+        lastTriggeredAt: String? = nil,
         createdAt: String? = nil,
         updatedAt: String? = nil
     ) {
         self.id = id
         self.portfolioListId = portfolioListId
+        self.baseCurrency = baseCurrency.uppercased()
         self.cadence = cadence
         self.driftThreshold = driftThreshold
         self.targets = targets
         self.enabled = enabled
         self.lastConfirmedAt = lastConfirmedAt
+        self.lastTriggeredAt = lastTriggeredAt
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
 
     public func validate() throws {
+        guard baseCurrency.count == 3, baseCurrency.allSatisfy(\.isLetter) else {
+            throw WealthAutomationValidationError.invalidCurrency
+        }
         guard cadence != .disabled || driftThreshold != nil else {
             throw WealthAutomationValidationError.missingTrigger
         }
@@ -547,24 +561,34 @@ public struct RebalancingPolicy: Codable, Equatable, Identifiable, Sendable {
             throw WealthAutomationValidationError.invalidAllocation
         }
         guard !targets.isEmpty, abs(targets.reduce(0) { $0 + $1.targetWeight } - 1) < 0.0001,
-              targets.allSatisfy({ $0.targetWeight >= 0 && $0.targetWeight <= 1 }) else {
+              targets.allSatisfy({ $0.targetWeight >= 0 && $0.targetWeight <= 1 })
+        else {
             throw WealthAutomationValidationError.invalidAllocation
         }
         let keys = targets.map { $0.kind == .cash ? "cash" : "symbol:\($0.symbol?.uppercased() ?? "")" }
         guard Set(keys).count == keys.count,
-              targets.allSatisfy({ $0.kind == .cash || !($0.symbol?.isEmpty ?? true) }) else {
+              targets.allSatisfy({ $0.kind == .cash || !($0.symbol?.isEmpty ?? true) })
+        else {
             throw WealthAutomationValidationError.duplicateAllocation
         }
     }
 }
 
 public struct RebalancingPolicyUpsertRequest: Codable, Equatable, Sendable {
+    public let baseCurrency: String
     public let cadence: RebalanceCadence
     public let driftThreshold: Double?
     public let targets: [RebalanceTarget]
     public let enabled: Bool
 
-    public init(cadence: RebalanceCadence, driftThreshold: Double? = nil, targets: [RebalanceTarget], enabled: Bool = true) {
+    public init(
+        baseCurrency: String,
+        cadence: RebalanceCadence,
+        driftThreshold: Double? = nil,
+        targets: [RebalanceTarget],
+        enabled: Bool = true
+    ) {
+        self.baseCurrency = baseCurrency.uppercased()
         self.cadence = cadence
         self.driftThreshold = driftThreshold
         self.targets = targets
@@ -643,6 +667,7 @@ public struct RebalancePreview: Codable, Equatable, Sendable {
 public enum RebalanceEventStatus: String, Codable, CaseIterable, Sendable {
     case pending
     case confirmed
+    case dismissed
 }
 
 public struct RebalanceEvent: Codable, Equatable, Identifiable, Sendable {
@@ -652,6 +677,7 @@ public struct RebalanceEvent: Codable, Equatable, Identifiable, Sendable {
     public let preview: RebalancePreview
     public let createdAt: String
     public let confirmedAt: String?
+    public let dismissedAt: String?
 
     public init(
         id: String,
@@ -659,7 +685,8 @@ public struct RebalanceEvent: Codable, Equatable, Identifiable, Sendable {
         status: RebalanceEventStatus,
         preview: RebalancePreview,
         createdAt: String,
-        confirmedAt: String? = nil
+        confirmedAt: String? = nil,
+        dismissedAt: String? = nil
     ) {
         self.id = id
         self.policyId = policyId
@@ -667,6 +694,7 @@ public struct RebalanceEvent: Codable, Equatable, Identifiable, Sendable {
         self.preview = preview
         self.createdAt = createdAt
         self.confirmedAt = confirmedAt
+        self.dismissedAt = dismissedAt
     }
 }
 
@@ -726,5 +754,7 @@ public struct NotificationInboxPage: Codable, Equatable, Sendable {
 
 public struct NotificationReadRequest: Codable, Equatable, Sendable {
     public let read: Bool
-    public init(read: Bool = true) { self.read = read }
+    public init(read: Bool = true) {
+        self.read = read
+    }
 }

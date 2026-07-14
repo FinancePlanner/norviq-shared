@@ -1,6 +1,6 @@
 import Foundation
-import Testing
 @testable import StockPlanShared
+import Testing
 
 @Suite("Wealth automation contracts")
 struct WealthAutomationDTOTests {
@@ -8,8 +8,8 @@ struct WealthAutomationDTOTests {
     func `forecast derives signed net flow without double counting spending`() throws {
         let defaults = NetWorthForecastDefaults(
             baseCurrency: "EUR",
-            monthlyIncome: 4_000,
-            monthlySpending: 4_500,
+            monthlyIncome: 4000,
+            monthlySpending: 4500,
             cashFlowSource: .plannedBudget
         )
 
@@ -45,19 +45,22 @@ struct WealthAutomationDTOTests {
         let policy = RebalancingPolicy(
             id: "policy",
             portfolioListId: "portfolio",
+            baseCurrency: "eur",
             cadence: .quarterly,
             driftThreshold: 0.05,
             targets: [
                 .init(id: "stock", kind: .symbol, symbol: "ACME", targetWeight: 0.8),
-                .init(id: "cash", kind: .cash, targetWeight: 0.2)
+                .init(id: "cash", kind: .cash, targetWeight: 0.2),
             ]
         )
         try policy.validate()
+        #expect(policy.baseCurrency == "EUR")
 
         #expect(throws: WealthAutomationValidationError.invalidAllocation) {
             try RebalancingPolicy(
                 id: "invalid",
                 portfolioListId: "portfolio",
+                baseCurrency: "EUR",
                 cadence: .quarterly,
                 targets: [.init(id: "stock", kind: .symbol, symbol: "ACME", targetWeight: 0.8)]
             ).validate()
@@ -69,5 +72,26 @@ struct WealthAutomationDTOTests {
         let kinds = NotificationEventKind.allCases
         let data = try JSONEncoder().encode(kinds)
         #expect(try JSONDecoder().decode([NotificationEventKind].self, from: data) == kinds)
+    }
+
+    @Test
+    func `dismissed rebalance events round trip`() throws {
+        let event = RebalanceEvent(
+            id: "event",
+            policyId: "policy",
+            status: .dismissed,
+            preview: .init(
+                portfolioValue: 10000,
+                currency: "EUR",
+                maximumDrift: 0.1,
+                triggerReasons: [.drift],
+                trades: []
+            ),
+            createdAt: "2026-07-14T10:00:00Z",
+            dismissedAt: "2026-07-14T10:05:00Z"
+        )
+
+        let data = try JSONEncoder().encode(event)
+        #expect(try JSONDecoder().decode(RebalanceEvent.self, from: data) == event)
     }
 }
