@@ -21,17 +21,20 @@ public struct PushDeviceRegistrationRequest: Codable, Sendable, Equatable {
     public let platform: PushPlatform
     public let apnsEnvironment: PushAPNSEnvironment
     public let authorizationStatus: PushAuthorizationStatus
+    public let capabilities: [String]?
 
     public init(
         deviceToken: String,
         platform: PushPlatform = .ios,
         apnsEnvironment: PushAPNSEnvironment,
-        authorizationStatus: PushAuthorizationStatus
+        authorizationStatus: PushAuthorizationStatus,
+        capabilities: [String]? = nil
     ) {
         self.deviceToken = deviceToken
         self.platform = platform
         self.apnsEnvironment = apnsEnvironment
         self.authorizationStatus = authorizationStatus
+        self.capabilities = capabilities
     }
 }
 
@@ -43,6 +46,7 @@ public struct PushDeviceRegistrationResponse: Codable, Sendable, Equatable {
     public let authorizationStatus: PushAuthorizationStatus
     public let isActive: Bool
     public let lastSeenAt: String
+    public let capabilities: [String]?
 
     public init(
         id: String,
@@ -51,7 +55,8 @@ public struct PushDeviceRegistrationResponse: Codable, Sendable, Equatable {
         apnsEnvironment: PushAPNSEnvironment,
         authorizationStatus: PushAuthorizationStatus,
         isActive: Bool,
-        lastSeenAt: String
+        lastSeenAt: String,
+        capabilities: [String]? = nil
     ) {
         self.id = id
         self.deviceToken = deviceToken
@@ -60,6 +65,7 @@ public struct PushDeviceRegistrationResponse: Codable, Sendable, Equatable {
         self.authorizationStatus = authorizationStatus
         self.isActive = isActive
         self.lastSeenAt = lastSeenAt
+        self.capabilities = capabilities
     }
 }
 
