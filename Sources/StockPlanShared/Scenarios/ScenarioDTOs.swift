@@ -297,15 +297,37 @@ public struct ScenarioResult: Codable, Equatable, Identifiable, Sendable {
     public let classContributions: [ScenarioContribution]
     public let assumptions: [String: Double]
     public let warnings: [ScenarioDataWarning]
+    /// Portfolio value at the end of the stress window (base currency).
+    public let endingValue: Double?
+    /// Fractional change vs initial snapshot value (e.g. -0.22 for −22%).
+    public let portfolioChangePercent: Double?
+    /// Extra months needed to hit the linked goal after the shock (null if no goal / unreachable).
+    public let goalDelayMonths: Double?
+    /// Monthly contribution required to hit the original target date from the stressed value.
+    public let requiredMonthlyContribution: Double?
+    /// `requiredMonthlyContribution − current monthly contribution`.
+    public let contributionDelta: Double?
+    /// Months until value recovers the pre-shock level (null if never within horizon).
+    public let recoveryMonths: Double?
+    /// Spending reduction needed to free cash for the contribution delta (null if unknown).
+    public let expenseImpactMonthly: Double?
 
     public init(id: String, runId: String, timeline: [ScenarioValuePoint], percentileBands: [ScenarioPercentilePoint] = [],
                 maximumDrawdown: Double, goalProbability: Double? = nil, expectedShortfall: Double? = nil,
                 holdingContributions: [ScenarioContribution] = [], classContributions: [ScenarioContribution] = [],
-                assumptions: [String: Double] = [:], warnings: [ScenarioDataWarning] = []) {
+                assumptions: [String: Double] = [:], warnings: [ScenarioDataWarning] = [],
+                endingValue: Double? = nil, portfolioChangePercent: Double? = nil,
+                goalDelayMonths: Double? = nil, requiredMonthlyContribution: Double? = nil,
+                contributionDelta: Double? = nil, recoveryMonths: Double? = nil,
+                expenseImpactMonthly: Double? = nil) {
         self.id = id; self.runId = runId; self.timeline = timeline; self.percentileBands = percentileBands
         self.maximumDrawdown = maximumDrawdown; self.goalProbability = goalProbability
         self.expectedShortfall = expectedShortfall; self.holdingContributions = holdingContributions
         self.classContributions = classContributions; self.assumptions = assumptions; self.warnings = warnings
+        self.endingValue = endingValue; self.portfolioChangePercent = portfolioChangePercent
+        self.goalDelayMonths = goalDelayMonths; self.requiredMonthlyContribution = requiredMonthlyContribution
+        self.contributionDelta = contributionDelta; self.recoveryMonths = recoveryMonths
+        self.expenseImpactMonthly = expenseImpactMonthly
     }
 }
 

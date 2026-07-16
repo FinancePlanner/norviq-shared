@@ -43,4 +43,37 @@ struct ScenarioDTOTests {
             _ = try ScenarioComparison(results: Array(repeating: result, count: 5))
         }
     }
+
+    @Test
+    func `scenario result impact fields round trip`() throws {
+        let result = ScenarioResult(
+            id: "result", runId: "run", timeline: [.init(elapsedMonths: 0, value: 100_000)],
+            maximumDrawdown: 0.22, endingValue: 78_000, portfolioChangePercent: -0.22,
+            goalDelayMonths: 14, requiredMonthlyContribution: 680, contributionDelta: 180,
+            recoveryMonths: 18, expenseImpactMonthly: 180
+        )
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let data = try encoder.encode(result)
+        let decoded = try decoder.decode(ScenarioResult.self, from: data)
+        #expect(decoded.endingValue == 78_000)
+        #expect(decoded.portfolioChangePercent == -0.22)
+        #expect(decoded.goalDelayMonths == 14)
+        #expect(decoded.requiredMonthlyContribution == 680)
+        #expect(decoded.contributionDelta == 180)
+        #expect(decoded.recoveryMonths == 18)
+        #expect(decoded.expenseImpactMonthly == 180)
+        #expect(decoded.maximumDrawdown == 0.22)
+    }
+
+    @Test
+    func `scenario result decodes without impact fields for backward compatibility`() throws {
+        let json = Data(#"{"id":"r","runId":"run","timeline":[],"percentileBands":[],"maximumDrawdown":0.1,"holdingContributions":[],"classContributions":[],"assumptions":{},"warnings":[]}"#.utf8)
+        let decoded = try JSONDecoder().decode(ScenarioResult.self, from: json)
+        #expect(decoded.maximumDrawdown == 0.1)
+        #expect(decoded.goalDelayMonths == nil)
+        #expect(decoded.endingValue == nil)
+    }
 }
