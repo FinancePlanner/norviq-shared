@@ -321,6 +321,7 @@ public struct PnlBySymbol: Codable, Sendable, Equatable {
     public let unrealizedPnlPercent: Double?
     public let dayChange: Double?
     public let dayChangePercent: Double?
+    public let weightPercent: Double?
 
     public init(
         symbol: String,
@@ -334,7 +335,8 @@ public struct PnlBySymbol: Codable, Sendable, Equatable {
         marketValue: Double? = nil,
         unrealizedPnlPercent: Double? = nil,
         dayChange: Double? = nil,
-        dayChangePercent: Double? = nil
+        dayChangePercent: Double? = nil,
+        weightPercent: Double? = nil
     ) {
         self.symbol = symbol
         self.currency = currency
@@ -348,6 +350,7 @@ public struct PnlBySymbol: Codable, Sendable, Equatable {
         self.unrealizedPnlPercent = unrealizedPnlPercent
         self.dayChange = dayChange
         self.dayChangePercent = dayChangePercent
+        self.weightPercent = weightPercent
     }
 
     enum CodingKeys: String, CodingKey {
@@ -363,6 +366,7 @@ public struct PnlBySymbol: Codable, Sendable, Equatable {
         case unrealizedPnlPercent
         case dayChange
         case dayChangePercent
+        case weightPercent
     }
 
     public init(from decoder: Decoder) throws {
@@ -379,6 +383,7 @@ public struct PnlBySymbol: Codable, Sendable, Equatable {
         unrealizedPnlPercent = try container.decodeIfPresent(Double.self, forKey: .unrealizedPnlPercent)
         dayChange = try container.decodeIfPresent(Double.self, forKey: .dayChange)
         dayChangePercent = try container.decodeIfPresent(Double.self, forKey: .dayChangePercent)
+        weightPercent = try container.decodeIfPresent(Double.self, forKey: .weightPercent)
     }
 }
 
