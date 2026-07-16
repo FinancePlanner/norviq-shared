@@ -201,11 +201,30 @@ public struct BudgetSnapshotRequest: Codable, Sendable, Equatable {
     public let monthStart: String  // YYYY-MM-DD
     public let netSalary: Double
     public let targetShares: [String: Double]  // String key representation of BudgetPillar
+    public let currencyCode: String?
+    public let categoryDriftThreshold: Double?
+    public let totalDriftThreshold: Double?
+    public let alertsEnabled: Bool?
+    public let alertOnUnbudgeted: Bool?
 
-    public init(monthStart: String, netSalary: Double, targetShares: [String: Double]) {
+    public init(
+        monthStart: String,
+        netSalary: Double,
+        targetShares: [String: Double],
+        currencyCode: String? = nil,
+        categoryDriftThreshold: Double? = nil,
+        totalDriftThreshold: Double? = nil,
+        alertsEnabled: Bool? = nil,
+        alertOnUnbudgeted: Bool? = nil
+    ) {
         self.monthStart = monthStart
         self.netSalary = netSalary
         self.targetShares = targetShares
+        self.currencyCode = currencyCode
+        self.categoryDriftThreshold = categoryDriftThreshold
+        self.totalDriftThreshold = totalDriftThreshold
+        self.alertsEnabled = alertsEnabled
+        self.alertOnUnbudgeted = alertOnUnbudgeted
     }
 }
 
@@ -214,6 +233,12 @@ public struct BudgetSnapshotResponse: Codable, Sendable, Equatable, Identifiable
     public let monthStart: String  // YYYY-MM-DD
     public let netSalary: Double
     public let targetShares: [String: Double]
+    public let currencyCode: String
+    public let categoryDriftThreshold: Double
+    public let totalDriftThreshold: Double
+    public let alertsEnabled: Bool
+    public let alertOnUnbudgeted: Bool
+    public let revision: Int
     public let createdAt: String?
     public let updatedAt: String?
 
@@ -222,6 +247,12 @@ public struct BudgetSnapshotResponse: Codable, Sendable, Equatable, Identifiable
         monthStart: String,
         netSalary: Double,
         targetShares: [String: Double],
+        currencyCode: String = "USD",
+        categoryDriftThreshold: Double = 15,
+        totalDriftThreshold: Double = 10,
+        alertsEnabled: Bool = true,
+        alertOnUnbudgeted: Bool = true,
+        revision: Int = 0,
         createdAt: String? = nil,
         updatedAt: String? = nil
     ) {
@@ -229,8 +260,35 @@ public struct BudgetSnapshotResponse: Codable, Sendable, Equatable, Identifiable
         self.monthStart = monthStart
         self.netSalary = netSalary
         self.targetShares = targetShares
+        self.currencyCode = currencyCode
+        self.categoryDriftThreshold = categoryDriftThreshold
+        self.totalDriftThreshold = totalDriftThreshold
+        self.alertsEnabled = alertsEnabled
+        self.alertOnUnbudgeted = alertOnUnbudgeted
+        self.revision = revision
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, monthStart, netSalary, targetShares, currencyCode, categoryDriftThreshold
+        case totalDriftThreshold, alertsEnabled, alertOnUnbudgeted, revision, createdAt, updatedAt
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        monthStart = try container.decode(String.self, forKey: .monthStart)
+        netSalary = try container.decode(Double.self, forKey: .netSalary)
+        targetShares = try container.decode([String: Double].self, forKey: .targetShares)
+        currencyCode = try container.decodeIfPresent(String.self, forKey: .currencyCode) ?? "USD"
+        categoryDriftThreshold = try container.decodeIfPresent(Double.self, forKey: .categoryDriftThreshold) ?? 15
+        totalDriftThreshold = try container.decodeIfPresent(Double.self, forKey: .totalDriftThreshold) ?? 10
+        alertsEnabled = try container.decodeIfPresent(Bool.self, forKey: .alertsEnabled) ?? true
+        alertOnUnbudgeted = try container.decodeIfPresent(Bool.self, forKey: .alertOnUnbudgeted) ?? true
+        revision = try container.decodeIfPresent(Int.self, forKey: .revision) ?? 0
+        createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
+        updatedAt = try container.decodeIfPresent(String.self, forKey: .updatedAt)
     }
 }
 
@@ -244,6 +302,13 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
     public let categoryId: String?
     public let splitMode: ExpenseSplitMode
     public let userSharePercent: Double
+    public let targetType: BudgetTargetType
+    public let incomePercentage: Double?
+    public let thresholdOverride: Double?
+    public let allocationKind: BudgetAllocationKind
+    public let reallocationEligible: Bool
+    public let destinationFinancialGoalId: String?
+    public let destinationPortfolioListId: String?
 
     public init(
         snapshotId: String,
@@ -252,7 +317,14 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
         pillar: BudgetPillar,
         categoryId: String? = nil,
         splitMode: ExpenseSplitMode = .personal,
-        userSharePercent: Double = 100
+        userSharePercent: Double = 100,
+        targetType: BudgetTargetType = .fixed,
+        incomePercentage: Double? = nil,
+        thresholdOverride: Double? = nil,
+        allocationKind: BudgetAllocationKind = .expense,
+        reallocationEligible: Bool = false,
+        destinationFinancialGoalId: String? = nil,
+        destinationPortfolioListId: String? = nil
     ) {
         self.snapshotId = snapshotId
         self.title = title
@@ -261,6 +333,13 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
         self.categoryId = categoryId
         self.splitMode = splitMode
         self.userSharePercent = userSharePercent
+        self.targetType = targetType
+        self.incomePercentage = incomePercentage
+        self.thresholdOverride = thresholdOverride
+        self.allocationKind = allocationKind
+        self.reallocationEligible = reallocationEligible
+        self.destinationFinancialGoalId = destinationFinancialGoalId
+        self.destinationPortfolioListId = destinationPortfolioListId
     }
 
     enum CodingKeys: String, CodingKey {
@@ -271,6 +350,13 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
         case categoryId
         case splitMode
         case userSharePercent
+        case targetType
+        case incomePercentage
+        case thresholdOverride
+        case allocationKind
+        case reallocationEligible
+        case destinationFinancialGoalId
+        case destinationPortfolioListId
     }
 
     public init(from decoder: any Decoder) throws {
@@ -282,6 +368,13 @@ public struct BudgetPlanItemRequest: Codable, Sendable, Equatable {
         categoryId = try container.decodeIfPresent(String.self, forKey: .categoryId)
         splitMode = try container.decodeIfPresent(ExpenseSplitMode.self, forKey: .splitMode) ?? .personal
         userSharePercent = try container.decodeIfPresent(Double.self, forKey: .userSharePercent) ?? 100
+        targetType = try container.decodeIfPresent(BudgetTargetType.self, forKey: .targetType) ?? .fixed
+        incomePercentage = try container.decodeIfPresent(Double.self, forKey: .incomePercentage)
+        thresholdOverride = try container.decodeIfPresent(Double.self, forKey: .thresholdOverride)
+        allocationKind = try container.decodeIfPresent(BudgetAllocationKind.self, forKey: .allocationKind) ?? .expense
+        reallocationEligible = try container.decodeIfPresent(Bool.self, forKey: .reallocationEligible) ?? false
+        destinationFinancialGoalId = try container.decodeIfPresent(String.self, forKey: .destinationFinancialGoalId)
+        destinationPortfolioListId = try container.decodeIfPresent(String.self, forKey: .destinationPortfolioListId)
     }
 }
 
@@ -294,6 +387,13 @@ public struct BudgetPlanItemResponse: Codable, Sendable, Equatable, Identifiable
     public let categoryId: String?
     public let splitMode: ExpenseSplitMode
     public let userSharePercent: Double
+    public let targetType: BudgetTargetType
+    public let incomePercentage: Double?
+    public let thresholdOverride: Double?
+    public let allocationKind: BudgetAllocationKind
+    public let reallocationEligible: Bool
+    public let destinationFinancialGoalId: String?
+    public let destinationPortfolioListId: String?
     public let createdAt: String?
     public let updatedAt: String?
 
@@ -306,6 +406,13 @@ public struct BudgetPlanItemResponse: Codable, Sendable, Equatable, Identifiable
         categoryId: String? = nil,
         splitMode: ExpenseSplitMode = .personal,
         userSharePercent: Double = 100,
+        targetType: BudgetTargetType = .fixed,
+        incomePercentage: Double? = nil,
+        thresholdOverride: Double? = nil,
+        allocationKind: BudgetAllocationKind = .expense,
+        reallocationEligible: Bool = false,
+        destinationFinancialGoalId: String? = nil,
+        destinationPortfolioListId: String? = nil,
         createdAt: String? = nil,
         updatedAt: String? = nil
     ) {
@@ -317,8 +424,42 @@ public struct BudgetPlanItemResponse: Codable, Sendable, Equatable, Identifiable
         self.categoryId = categoryId
         self.splitMode = splitMode
         self.userSharePercent = userSharePercent
+        self.targetType = targetType
+        self.incomePercentage = incomePercentage
+        self.thresholdOverride = thresholdOverride
+        self.allocationKind = allocationKind
+        self.reallocationEligible = reallocationEligible
+        self.destinationFinancialGoalId = destinationFinancialGoalId
+        self.destinationPortfolioListId = destinationPortfolioListId
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, snapshotId, title, plannedAmount, pillar, categoryId, splitMode, userSharePercent
+        case targetType, incomePercentage, thresholdOverride, allocationKind, reallocationEligible
+        case destinationFinancialGoalId, destinationPortfolioListId, createdAt, updatedAt
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        snapshotId = try container.decode(String.self, forKey: .snapshotId)
+        title = try container.decode(String.self, forKey: .title)
+        plannedAmount = try container.decode(Double.self, forKey: .plannedAmount)
+        pillar = try container.decode(BudgetPillar.self, forKey: .pillar)
+        categoryId = try container.decodeIfPresent(String.self, forKey: .categoryId)
+        splitMode = try container.decodeIfPresent(ExpenseSplitMode.self, forKey: .splitMode) ?? .personal
+        userSharePercent = try container.decodeIfPresent(Double.self, forKey: .userSharePercent) ?? 100
+        targetType = try container.decodeIfPresent(BudgetTargetType.self, forKey: .targetType) ?? .fixed
+        incomePercentage = try container.decodeIfPresent(Double.self, forKey: .incomePercentage)
+        thresholdOverride = try container.decodeIfPresent(Double.self, forKey: .thresholdOverride)
+        allocationKind = try container.decodeIfPresent(BudgetAllocationKind.self, forKey: .allocationKind) ?? .expense
+        reallocationEligible = try container.decodeIfPresent(Bool.self, forKey: .reallocationEligible) ?? false
+        destinationFinancialGoalId = try container.decodeIfPresent(String.self, forKey: .destinationFinancialGoalId)
+        destinationPortfolioListId = try container.decodeIfPresent(String.self, forKey: .destinationPortfolioListId)
+        createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
+        updatedAt = try container.decodeIfPresent(String.self, forKey: .updatedAt)
     }
 }
 
@@ -336,6 +477,8 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
     public let foreignAmount: Double?
     public let foreignCurrency: String?
     public let exchangeRate: Double?
+    public let notes: String?
+    public let receiptMetadata: ExpenseReceiptMetadata?
 
     public init(
         title: String,
@@ -348,7 +491,9 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
         userSharePercent: Double = 100,
         foreignAmount: Double? = nil,
         foreignCurrency: String? = nil,
-        exchangeRate: Double? = nil
+        exchangeRate: Double? = nil,
+        notes: String? = nil,
+        receiptMetadata: ExpenseReceiptMetadata? = nil
     ) {
         self.title = title
         self.amount = amount
@@ -361,6 +506,8 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
         self.foreignAmount = foreignAmount
         self.foreignCurrency = foreignCurrency
         self.exchangeRate = exchangeRate
+        self.notes = notes
+        self.receiptMetadata = receiptMetadata
     }
 
     enum CodingKeys: String, CodingKey {
@@ -375,6 +522,8 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
         case foreignAmount
         case foreignCurrency
         case exchangeRate
+        case notes
+        case receiptMetadata
     }
 
     public init(from decoder: any Decoder) throws {
@@ -390,6 +539,8 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
         foreignAmount = try container.decodeIfPresent(Double.self, forKey: .foreignAmount)
         foreignCurrency = try container.decodeIfPresent(String.self, forKey: .foreignCurrency)
         exchangeRate = try container.decodeIfPresent(Double.self, forKey: .exchangeRate)
+        notes = try container.decodeIfPresent(String.self, forKey: .notes)
+        receiptMetadata = try container.decodeIfPresent(ExpenseReceiptMetadata.self, forKey: .receiptMetadata)
     }
 }
 
@@ -406,6 +557,8 @@ public struct ExpenseResponse: Codable, Sendable, Equatable, Identifiable {
     public let foreignAmount: Double?
     public let foreignCurrency: String?
     public let exchangeRate: Double?
+    public let notes: String?
+    public let receiptMetadata: ExpenseReceiptMetadata?
     public let createdAt: String?
     public let updatedAt: String?
 
@@ -422,6 +575,8 @@ public struct ExpenseResponse: Codable, Sendable, Equatable, Identifiable {
         foreignAmount: Double? = nil,
         foreignCurrency: String? = nil,
         exchangeRate: Double? = nil,
+        notes: String? = nil,
+        receiptMetadata: ExpenseReceiptMetadata? = nil,
         createdAt: String? = nil,
         updatedAt: String? = nil
     ) {
@@ -437,6 +592,8 @@ public struct ExpenseResponse: Codable, Sendable, Equatable, Identifiable {
         self.foreignAmount = foreignAmount
         self.foreignCurrency = foreignCurrency
         self.exchangeRate = exchangeRate
+        self.notes = notes
+        self.receiptMetadata = receiptMetadata
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
