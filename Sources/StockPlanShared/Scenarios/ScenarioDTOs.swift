@@ -10,43 +10,6 @@ public enum ScenarioValidationError: Error, Equatable, Sendable {
     case tooManyComparisons
 }
 
-public struct FinancialGoal: Codable, Equatable, Identifiable, Sendable {
-    public let id: String
-    public let name: String
-    public let portfolioListId: String
-    public let targetAmount: Double
-    public let targetDate: String
-    public let baseCurrency: String
-    public let monthlyContribution: Double
-    public let annualContributionGrowth: Double
-    public let inflationAssumption: Double
-    public let createdAt: String?
-    public let updatedAt: String?
-
-    public init(id: String, name: String, portfolioListId: String, targetAmount: Double,
-                targetDate: String, baseCurrency: String, monthlyContribution: Double = 0,
-                annualContributionGrowth: Double = 0, inflationAssumption: Double = 0.02,
-                createdAt: String? = nil, updatedAt: String? = nil) {
-        self.id = id
-        self.name = name
-        self.portfolioListId = portfolioListId
-        self.targetAmount = targetAmount
-        self.targetDate = targetDate
-        self.baseCurrency = baseCurrency
-        self.monthlyContribution = monthlyContribution
-        self.annualContributionGrowth = annualContributionGrowth
-        self.inflationAssumption = inflationAssumption
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
-    }
-
-    public func validate() throws {
-        guard !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw ScenarioValidationError.invalidName }
-        guard baseCurrency.count == 3 else { throw ScenarioValidationError.invalidCurrency }
-        guard targetAmount > 0, monthlyContribution >= 0 else { throw ScenarioValidationError.invalidAmount }
-    }
-}
-
 public struct FactorOverrides: Codable, Equatable, Sendable {
     public let equityBeta: Double?
     public let rateSensitivity: Double?

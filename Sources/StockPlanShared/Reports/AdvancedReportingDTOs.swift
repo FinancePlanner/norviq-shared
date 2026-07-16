@@ -11,6 +11,7 @@ public enum ReportBlockKind: String, Codable, Sendable, CaseIterable {
     case budget
     case insights
     case retirementForecast = "retirement_forecast"
+    case goalProgress = "goal_progress"
     case hypotheticalComparison = "hypothetical_comparison"
     case assumptions
     case customText = "custom_text"
