@@ -28,6 +28,10 @@ public struct ExpenseReceiptMetadata: Codable, Sendable, Equatable {
     public let issuedOn: String?
     public let currency: String?
     public let total: Double?
+    /// Total VAT/tax amount reported on the receipt, when known. Optional so it
+    /// decodes cleanly from receipt_metadata JSON written before this field
+    /// existed (no migration needed — the column is a Codable blob).
+    public let vatTotal: Double?
 
     public init(
         source: ExpenseReceiptSource,
@@ -35,7 +39,8 @@ public struct ExpenseReceiptMetadata: Codable, Sendable, Equatable {
         taxIdentifier: String? = nil,
         issuedOn: String? = nil,
         currency: String? = nil,
-        total: Double? = nil
+        total: Double? = nil,
+        vatTotal: Double? = nil
     ) {
         self.source = source
         self.merchant = merchant
@@ -43,6 +48,7 @@ public struct ExpenseReceiptMetadata: Codable, Sendable, Equatable {
         self.issuedOn = issuedOn
         self.currency = currency
         self.total = total
+        self.vatTotal = vatTotal
     }
 }
 
