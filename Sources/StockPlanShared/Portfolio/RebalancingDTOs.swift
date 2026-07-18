@@ -333,6 +333,11 @@ public struct RebalanceTrade: Codable, Sendable, Equatable, Identifiable {
     public let estimatedCostBasis: Double?
     public let estimatedRealizedGainLoss: Double?
     public let currency: String
+    public let accountId: String?
+    public let instrumentId: String?
+    public let selectedLotIds: [String]?
+    public let sourceOpportunityId: String?
+    public let replacementForInstrumentId: String?
 
     public init(
         symbol: String,
@@ -343,7 +348,12 @@ public struct RebalanceTrade: Codable, Sendable, Equatable, Identifiable {
         estimatedFee: Double,
         estimatedCostBasis: Double? = nil,
         estimatedRealizedGainLoss: Double? = nil,
-        currency: String
+        currency: String,
+        accountId: String? = nil,
+        instrumentId: String? = nil,
+        selectedLotIds: [String]? = nil,
+        sourceOpportunityId: String? = nil,
+        replacementForInstrumentId: String? = nil
     ) {
         self.symbol = symbol
         self.side = side
@@ -354,6 +364,11 @@ public struct RebalanceTrade: Codable, Sendable, Equatable, Identifiable {
         self.estimatedCostBasis = estimatedCostBasis
         self.estimatedRealizedGainLoss = estimatedRealizedGainLoss
         self.currency = currency
+        self.accountId = accountId
+        self.instrumentId = instrumentId
+        self.selectedLotIds = selectedLotIds
+        self.sourceOpportunityId = sourceOpportunityId
+        self.replacementForInstrumentId = replacementForInstrumentId
     }
 }
 

@@ -50,7 +50,10 @@ public enum TaxSupportLevel: String, Codable, Sendable {
 }
 
 public struct TaxRuleCapability: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { "\(jurisdiction.rawValue):\(taxYear):\(instrumentType)" }
+    public var id: String {
+        "\(jurisdiction.rawValue):\(taxYear):\(instrumentType)"
+    }
+
     public let jurisdiction: TaxJurisdiction
     public let taxYear: Int
     public let ruleVersion: String
@@ -550,6 +553,16 @@ public struct TaxOpportunityResponse: Codable, Sendable, Equatable, Identifiable
     public let washSaleWindowEndsAt: String?
     public let warnings: [String]
     public let confidence: Decimal
+    /// Optional to preserve decoding of Tax V1 projection snapshots.
+    public let portfolioId: String?
+    public let priceQuality: TaxPriceQuality?
+    public let pricedAt: String?
+    public let lots: [TaxLotDetail]?
+    public let replacementCandidates: [TaxReplacementCandidate]?
+    public let currentYearTaxReduction: TaxMoney?
+    public let deferredTaxLiability: TaxMoney?
+    public let estimatedTransactionCosts: TaxMoney?
+    public let estimatedAfterCostBenefit: TaxMoney?
 
     public init(
         id: String,
@@ -566,7 +579,16 @@ public struct TaxOpportunityResponse: Codable, Sendable, Equatable, Identifiable
         holdingPeriod: String,
         washSaleWindowEndsAt: String? = nil,
         warnings: [String] = [],
-        confidence: Decimal
+        confidence: Decimal,
+        portfolioId: String? = nil,
+        priceQuality: TaxPriceQuality? = nil,
+        pricedAt: String? = nil,
+        lots: [TaxLotDetail]? = nil,
+        replacementCandidates: [TaxReplacementCandidate]? = nil,
+        currentYearTaxReduction: TaxMoney? = nil,
+        deferredTaxLiability: TaxMoney? = nil,
+        estimatedTransactionCosts: TaxMoney? = nil,
+        estimatedAfterCostBenefit: TaxMoney? = nil
     ) {
         self.id = id
         self.accountId = accountId
@@ -583,6 +605,15 @@ public struct TaxOpportunityResponse: Codable, Sendable, Equatable, Identifiable
         self.washSaleWindowEndsAt = washSaleWindowEndsAt
         self.warnings = warnings
         self.confidence = confidence
+        self.portfolioId = portfolioId
+        self.priceQuality = priceQuality
+        self.pricedAt = pricedAt
+        self.lots = lots
+        self.replacementCandidates = replacementCandidates
+        self.currentYearTaxReduction = currentYearTaxReduction
+        self.deferredTaxLiability = deferredTaxLiability
+        self.estimatedTransactionCosts = estimatedTransactionCosts
+        self.estimatedAfterCostBenefit = estimatedAfterCostBenefit
     }
 }
 
@@ -598,6 +629,9 @@ public struct TaxDashboardResponse: Codable, Sendable, Equatable {
     public let unsupportedValue: TaxMoney
     public let assumptions: [String]
     public let disclaimer: String
+    public let catalogVersion: String?
+    public let taxDrag: TaxDragProjection?
+    public let locationOpportunities: [TaxLocationOpportunity]?
 
     public init(
         generatedAt: String,
@@ -610,7 +644,10 @@ public struct TaxDashboardResponse: Codable, Sendable, Equatable {
         opportunities: [TaxOpportunityResponse],
         unsupportedValue: TaxMoney,
         assumptions: [String],
-        disclaimer: String
+        disclaimer: String,
+        catalogVersion: String? = nil,
+        taxDrag: TaxDragProjection? = nil,
+        locationOpportunities: [TaxLocationOpportunity]? = nil
     ) {
         self.generatedAt = generatedAt
         self.taxYear = taxYear
@@ -623,6 +660,9 @@ public struct TaxDashboardResponse: Codable, Sendable, Equatable {
         self.unsupportedValue = unsupportedValue
         self.assumptions = assumptions
         self.disclaimer = disclaimer
+        self.catalogVersion = catalogVersion
+        self.taxDrag = taxDrag
+        self.locationOpportunities = locationOpportunities
     }
 }
 
@@ -672,6 +712,12 @@ public struct TaxScenarioResponse: Codable, Sendable, Equatable, Identifiable {
     public let estimatedNetBenefit: TaxMoney
     public let warnings: [String]
     public let assumptions: [String]
+    public let currentYearTaxReduction: TaxMoney?
+    public let deferredTaxLiability: TaxMoney?
+    public let estimatedTransactionCosts: TaxMoney?
+    public let goalImpacts: [TaxGoalImpact]?
+    public let selectedReplacements: [String: TaxReplacementCandidate]?
+    public let allocationImpacts: [TaxAllocationImpact]?
 
     public init(
         id: String,
@@ -680,7 +726,13 @@ public struct TaxScenarioResponse: Codable, Sendable, Equatable, Identifiable {
         harvestNow: TaxScenarioColumn,
         estimatedNetBenefit: TaxMoney,
         warnings: [String],
-        assumptions: [String]
+        assumptions: [String],
+        currentYearTaxReduction: TaxMoney? = nil,
+        deferredTaxLiability: TaxMoney? = nil,
+        estimatedTransactionCosts: TaxMoney? = nil,
+        goalImpacts: [TaxGoalImpact]? = nil,
+        selectedReplacements: [String: TaxReplacementCandidate]? = nil,
+        allocationImpacts: [TaxAllocationImpact]? = nil
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -689,6 +741,12 @@ public struct TaxScenarioResponse: Codable, Sendable, Equatable, Identifiable {
         self.estimatedNetBenefit = estimatedNetBenefit
         self.warnings = warnings
         self.assumptions = assumptions
+        self.currentYearTaxReduction = currentYearTaxReduction
+        self.deferredTaxLiability = deferredTaxLiability
+        self.estimatedTransactionCosts = estimatedTransactionCosts
+        self.goalImpacts = goalImpacts
+        self.selectedReplacements = selectedReplacements
+        self.allocationImpacts = allocationImpacts
     }
 }
 
@@ -727,14 +785,33 @@ public struct TaxActionPlanResponse: Codable, Sendable, Equatable, Identifiable 
     public let createdAt: String
     public let steps: [TaxActionStep]
     public let disclaimer: String
+    public let kind: TaxActionPlanKind?
+    public let executionStatus: TaxActionPlanStatus?
+    public let legs: [TaxActionLeg]?
+    public let rebalancingPlanIds: [String]?
 
-    public init(id: String, scenarioId: String, status: String, createdAt: String, steps: [TaxActionStep], disclaimer: String) {
+    public init(
+        id: String,
+        scenarioId: String,
+        status: String,
+        createdAt: String,
+        steps: [TaxActionStep],
+        disclaimer: String,
+        kind: TaxActionPlanKind? = nil,
+        executionStatus: TaxActionPlanStatus? = nil,
+        legs: [TaxActionLeg]? = nil,
+        rebalancingPlanIds: [String]? = nil
+    ) {
         self.id = id
         self.scenarioId = scenarioId
         self.status = status
         self.createdAt = createdAt
         self.steps = steps
         self.disclaimer = disclaimer
+        self.kind = kind
+        self.executionStatus = executionStatus
+        self.legs = legs
+        self.rebalancingPlanIds = rebalancingPlanIds
     }
 }
 
