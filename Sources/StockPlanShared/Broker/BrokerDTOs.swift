@@ -87,6 +87,19 @@ public struct BrokerConnectStartResponse: Codable, Sendable, Equatable {
     }
 }
 
+/// IBKR Norviq Web Service (SOD) credentials — per-user token (`t`) + query ID (`q`).
+public struct BrokerConnectCredentialsRequest: Codable, Sendable, Equatable {
+    public let token: String
+    public let queryId: String
+    public let portfolioListId: String?
+
+    public init(token: String, queryId: String, portfolioListId: String? = nil) {
+        self.token = token
+        self.queryId = queryId
+        self.portfolioListId = portfolioListId
+    }
+}
+
 public struct BrokerSyncStatusResponse: Codable, Sendable, Equatable {
     public let status: String
     public let lastSyncedAt: Date?
