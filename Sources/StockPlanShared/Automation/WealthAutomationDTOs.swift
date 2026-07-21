@@ -708,6 +708,7 @@ public enum NotificationEventKind: String, Codable, CaseIterable, Sendable {
     case watchlistScreen = "watchlist_screen"
     case rebalancing
     case financialGoal = "financial_goal"
+    case thesisWatch = "thesis_watch"
 }
 
 public struct NotificationInboxItem: Codable, Equatable, Identifiable, Sendable {
