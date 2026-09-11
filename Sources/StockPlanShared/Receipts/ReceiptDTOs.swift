@@ -24,6 +24,27 @@ public struct ReceiptVATLine: Codable, Sendable, Equatable {
     }
 }
 
+/// A single purchased line on a receipt.
+///
+/// Only emitted by OCR — fiscal QR codes carry totals and VAT brackets, never
+/// individual articles. `amount` is the line total as printed (quantity already
+/// applied), so a review UI can sum `lineItems` and compare against `total`
+/// without re-multiplying.
+public struct ReceiptLineItem: Codable, Sendable, Equatable {
+    /// Article description as printed on the receipt.
+    public let description: String
+    /// Line total in the receipt's currency, including tax when the receipt is tax-inclusive.
+    public let amount: Double
+    /// Units purchased when the receipt states them. Nil for single-unit or unpriced-per-unit lines.
+    public let quantity: Double?
+
+    public init(description: String, amount: Double, quantity: Double? = nil) {
+        self.description = description
+        self.amount = amount
+        self.quantity = quantity
+    }
+}
+
 /// A pre-filled expense draft extracted from a scanned receipt. The client turns
 /// this into an expense once the user assigns a budget pillar and category — the
 /// draft intentionally carries no pillar/category so scanning never guesses those.
@@ -43,6 +64,10 @@ public struct ReceiptDraft: Codable, Sendable, Equatable {
     public let taxTotal: Double?
     /// Per-bracket VAT breakdown when reported.
     public let vatLines: [ReceiptVATLine]
+    /// Individual purchased articles when OCR could read them. Empty for QR-sourced
+    /// drafts and for receipts whose line items were not legible. The sum of these
+    /// need not equal `total` — see `lineItemsSum` and `lineItemsReconcile`.
+    public let lineItems: [ReceiptLineItem]
     /// Extraction confidence in `0...1`. QR parses are 1.0; OCR is lower.
     public let confidence: Double
     /// Whether this draft came from a QR parse or OCR.
@@ -58,6 +83,7 @@ public struct ReceiptDraft: Codable, Sendable, Equatable {
         taxId: String? = nil,
         taxTotal: Double? = nil,
         vatLines: [ReceiptVATLine] = [],
+        lineItems: [ReceiptLineItem] = [],
         confidence: Double,
         source: ReceiptSource,
         rawPayload: String? = nil
@@ -69,9 +95,49 @@ public struct ReceiptDraft: Codable, Sendable, Equatable {
         self.taxId = taxId
         self.taxTotal = taxTotal
         self.vatLines = vatLines
+        self.lineItems = lineItems
         self.confidence = confidence
         self.source = source
         self.rawPayload = rawPayload
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case merchant, total, currency, date, taxId, taxTotal
+        case vatLines, lineItems, confidence, source, rawPayload
+    }
+
+    /// Decoded leniently on the two collection keys so a client built against a
+    /// newer contract keeps working against an older backend that omits them —
+    /// the synthesized decoder would throw on the missing key instead.
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        merchant = try container.decodeIfPresent(String.self, forKey: .merchant)
+        total = try container.decodeIfPresent(Double.self, forKey: .total)
+        currency = try container.decodeIfPresent(String.self, forKey: .currency)
+        date = try container.decodeIfPresent(String.self, forKey: .date)
+        taxId = try container.decodeIfPresent(String.self, forKey: .taxId)
+        taxTotal = try container.decodeIfPresent(Double.self, forKey: .taxTotal)
+        vatLines = try container.decodeIfPresent([ReceiptVATLine].self, forKey: .vatLines) ?? []
+        lineItems = try container.decodeIfPresent([ReceiptLineItem].self, forKey: .lineItems) ?? []
+        confidence = try container.decode(Double.self, forKey: .confidence)
+        source = try container.decode(ReceiptSource.self, forKey: .source)
+        rawPayload = try container.decodeIfPresent(String.self, forKey: .rawPayload)
+    }
+
+    /// Sum of the extracted line items, or nil when none were read.
+    public var lineItemsSum: Double? {
+        lineItems.isEmpty ? nil : lineItems.reduce(0) { $0 + $1.amount }
+    }
+
+    /// Whether the line items add up to the printed total, within a cent.
+    ///
+    /// Nil when there is nothing to compare (no line items, or no total). A `false`
+    /// means OCR misread at least one figure: show both numbers at review rather
+    /// than silently trusting either, and never split an expense on items that
+    /// don't reconcile.
+    public var lineItemsReconcile: Bool? {
+        guard let sum = lineItemsSum, let total else { return nil }
+        return abs(sum - total) < 0.01
     }
 }
 
