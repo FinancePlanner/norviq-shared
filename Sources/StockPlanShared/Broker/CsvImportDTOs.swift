@@ -16,6 +16,9 @@ public struct CsvImportPreviewItem: Codable, Sendable, Equatable {
     public let notes: String?
     public let existingPositionKind: CsvImportExistingPositionKind
     public let willReplaceExistingImport: Bool
+    /// Extraction confidence in `0...1` for image-sourced rows. Nil for CSV rows,
+    /// which are read exactly rather than inferred.
+    public let confidence: Double?
 
     public init(
         line: Int,
@@ -25,7 +28,8 @@ public struct CsvImportPreviewItem: Codable, Sendable, Equatable {
         buyDate: String? = nil,
         notes: String? = nil,
         existingPositionKind: CsvImportExistingPositionKind = .none,
-        willReplaceExistingImport: Bool = false
+        willReplaceExistingImport: Bool = false,
+        confidence: Double? = nil
     ) {
         self.line = line
         self.symbol = symbol
@@ -35,6 +39,32 @@ public struct CsvImportPreviewItem: Codable, Sendable, Equatable {
         self.notes = notes
         self.existingPositionKind = existingPositionKind
         self.willReplaceExistingImport = willReplaceExistingImport
+        self.confidence = confidence
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case line, symbol, shares, buyPrice, buyDate, notes
+        case existingPositionKind, willReplaceExistingImport, confidence
+    }
+
+    /// Lenient on the fields a client may not send back. The review UI round-trips
+    /// these items as the commit body, and an edited row legitimately carries no
+    /// server-assigned classification yet.
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        line = try container.decode(Int.self, forKey: .line)
+        symbol = try container.decode(String.self, forKey: .symbol)
+        shares = try container.decodeIfPresent(Double.self, forKey: .shares)
+        buyPrice = try container.decodeIfPresent(Double.self, forKey: .buyPrice)
+        buyDate = try container.decodeIfPresent(String.self, forKey: .buyDate)
+        notes = try container.decodeIfPresent(String.self, forKey: .notes)
+        existingPositionKind = try container.decodeIfPresent(
+            CsvImportExistingPositionKind.self, forKey: .existingPositionKind
+        ) ?? .none
+        willReplaceExistingImport = try container.decodeIfPresent(
+            Bool.self, forKey: .willReplaceExistingImport
+        ) ?? false
+        confidence = try container.decodeIfPresent(Double.self, forKey: .confidence)
     }
 }
 
