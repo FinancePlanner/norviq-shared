@@ -82,12 +82,127 @@ public struct PortfolioSummaryResponse: Codable, Sendable, Equatable {
 }
 
 public struct PerformancePoint: Codable, Sendable, Equatable {
+    /// How a point's value was arrived at. `live` was observed on the day it is
+    /// dated; `backfill` was reconstructed afterwards from historical prices and
+    /// is approximate — see the backfill notes on the server.
+    public enum Source {
+        public static let live = "live"
+        public static let backfill = "backfill"
+    }
+
     public let date: String
     public let value: Double
+    public let costBasis: Double?
+    /// `Source.live` / `Source.backfill`. Absent from backends predating snapshots.
+    public let source: String?
 
-    public init(date: String, value: Double) {
+    public init(
+        date: String,
+        value: Double,
+        costBasis: Double? = nil,
+        source: String? = nil
+    ) {
         self.date = date
         self.value = value
+        self.costBasis = costBasis
+        self.source = source
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case date
+        case value
+        case costBasis
+        case source
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        date = try container.decode(String.self, forKey: .date)
+        value = try container.decode(Double.self, forKey: .value)
+        costBasis = try container.decodeIfPresent(Double.self, forKey: .costBasis)
+        source = try container.decodeIfPresent(String.self, forKey: .source)
+    }
+}
+
+/// One period-over-period change, carrying the window it was measured over so a
+/// client can label it truthfully instead of guessing what "period" meant.
+public struct PortfolioChange: Codable, Sendable, Equatable {
+    /// What the change was measured against. Deliberately a `String` rather than
+    /// a Swift enum: clients are pinned to exact package versions, so a new basis
+    /// added by the server must not fail decoding of the whole response.
+    public enum Basis {
+        public static let previousTradingDay = "previousTradingDay"
+        public static let week = "week"
+        public static let month = "month"
+        public static let ytd = "ytd"
+        public static let inception = "inception"
+    }
+
+    /// Fractional, not percentage points: -0.004 is -0.4%.
+    public let percent: Double
+    public let absolute: Double
+    public let fromDate: String
+    public let toDate: String
+    public let basis: String
+
+    public init(
+        percent: Double,
+        absolute: Double,
+        fromDate: String,
+        toDate: String,
+        basis: String
+    ) {
+        self.percent = percent
+        self.absolute = absolute
+        self.fromDate = fromDate
+        self.toDate = toDate
+        self.basis = basis
+    }
+}
+
+/// Changes over the standard windows.
+///
+/// A member is `nil` when there is not enough history to compute it. `nil` is not
+/// zero: render an empty state, never "0.0%". A zero here would claim the
+/// portfolio was flat over a window nobody actually measured.
+public struct PortfolioChanges: Codable, Sendable, Equatable {
+    public let day: PortfolioChange?
+    public let week: PortfolioChange?
+    public let month: PortfolioChange?
+    public let ytd: PortfolioChange?
+    public let sinceInception: PortfolioChange?
+
+    public init(
+        day: PortfolioChange? = nil,
+        week: PortfolioChange? = nil,
+        month: PortfolioChange? = nil,
+        ytd: PortfolioChange? = nil,
+        sinceInception: PortfolioChange? = nil
+    ) {
+        self.day = day
+        self.week = week
+        self.month = month
+        self.ytd = ytd
+        self.sinceInception = sinceInception
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case day
+        case week
+        case month
+        case ytd
+        case sinceInception
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        day = try container.decodeIfPresent(PortfolioChange.self, forKey: .day)
+        week = try container.decodeIfPresent(PortfolioChange.self, forKey: .week)
+        month = try container.decodeIfPresent(PortfolioChange.self, forKey: .month)
+        ytd = try container.decodeIfPresent(PortfolioChange.self, forKey: .ytd)
+        sinceInception = try container.decodeIfPresent(
+            PortfolioChange.self, forKey: .sinceInception
+        )
     }
 }
 
@@ -95,17 +210,32 @@ public struct PortfolioPerformanceResponse: Codable, Sendable, Equatable {
     public let baseCurrency: String
     public let points: [PerformancePoint]
     public let range: String?
+    /// Date of the most recent point, as the server sees it.
+    public let asOf: String?
+    /// Absent when the backend predates snapshots; individual members absent when
+    /// history is too short. See `PortfolioChanges`.
+    public let changes: PortfolioChanges?
 
-    public init(baseCurrency: String, points: [PerformancePoint], range: String? = nil) {
+    public init(
+        baseCurrency: String,
+        points: [PerformancePoint],
+        range: String? = nil,
+        asOf: String? = nil,
+        changes: PortfolioChanges? = nil
+    ) {
         self.baseCurrency = baseCurrency
         self.points = points
         self.range = range
+        self.asOf = asOf
+        self.changes = changes
     }
 
     enum CodingKeys: String, CodingKey {
         case baseCurrency
         case points
         case range
+        case asOf
+        case changes
     }
 
     public init(from decoder: Decoder) throws {
@@ -113,6 +243,8 @@ public struct PortfolioPerformanceResponse: Codable, Sendable, Equatable {
         baseCurrency = try container.decode(String.self, forKey: .baseCurrency)
         points = try container.decode([PerformancePoint].self, forKey: .points)
         range = try container.decodeIfPresent(String.self, forKey: .range)
+        asOf = try container.decodeIfPresent(String.self, forKey: .asOf)
+        changes = try container.decodeIfPresent(PortfolioChanges.self, forKey: .changes)
     }
 }
 
