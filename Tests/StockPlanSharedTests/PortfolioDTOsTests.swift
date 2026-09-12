@@ -219,4 +219,179 @@ struct PortfolioDTOsTests {
 
         #expect(decoded.range == "1Y")
     }
+
+    // MARK: - PortfolioChange Tests
+
+    @Test
+    func portfolioChangeFullRoundTrip() throws {
+        let original = PortfolioChange(
+            percent: -0.004,
+            absolute: -42.5,
+            fromDate: "2024-01-02",
+            toDate: "2024-01-03",
+            basis: PortfolioChange.Basis.previousTradingDay
+        )
+
+        let encoded = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(PortfolioChange.self, from: encoded)
+
+        #expect(decoded == original)
+        #expect(decoded.percent == -0.004)
+        #expect(decoded.absolute == -42.5)
+        #expect(decoded.basis == "previousTradingDay")
+    }
+
+    /// A basis value this client has never heard of must decode, not throw.
+    /// The server is free to add one without stranding pinned clients.
+    @Test
+    func portfolioChangeDecodesUnknownBasis() throws {
+        let json = """
+        {
+            "percent": 0.01,
+            "absolute": 10.0,
+            "fromDate": "2024-01-01",
+            "toDate": "2024-01-02",
+            "basis": "sinceSomeFutureThing"
+        }
+        """.data(using: .utf8)!
+
+        let decoded = try JSONDecoder().decode(PortfolioChange.self, from: json)
+
+        #expect(decoded.basis == "sinceSomeFutureThing")
+    }
+
+    // MARK: - PortfolioChanges Tests
+
+    /// The core guarantee of the contract: a change the server could not compute
+    /// is ABSENT, and must stay absent through decoding. A nil here is what tells
+    /// the UI to render an empty state; a zero would read as "flat" and would be
+    /// a lie of exactly the kind this field exists to prevent.
+    @Test
+    func portfolioChangesOmittedMembersDecodeAsNilNotZero() throws {
+        let json = """
+        {
+            "day": {
+                "percent": -0.004,
+                "absolute": -42.5,
+                "fromDate": "2024-01-02",
+                "toDate": "2024-01-03",
+                "basis": "previousTradingDay"
+            }
+        }
+        """.data(using: .utf8)!
+
+        let decoded = try JSONDecoder().decode(PortfolioChanges.self, from: json)
+
+        #expect(decoded.day?.percent == -0.004)
+        #expect(decoded.week == nil)
+        #expect(decoded.month == nil)
+        #expect(decoded.ytd == nil)
+        #expect(decoded.sinceInception == nil)
+    }
+
+    @Test
+    func portfolioChangesFullRoundTrip() throws {
+        func change(_ basis: String) -> PortfolioChange {
+            PortfolioChange(
+                percent: 0.05,
+                absolute: 500.0,
+                fromDate: "2024-01-01",
+                toDate: "2024-01-31",
+                basis: basis
+            )
+        }
+
+        let original = PortfolioChanges(
+            day: change(PortfolioChange.Basis.previousTradingDay),
+            week: change(PortfolioChange.Basis.week),
+            month: change(PortfolioChange.Basis.month),
+            ytd: change(PortfolioChange.Basis.ytd),
+            sinceInception: change(PortfolioChange.Basis.inception)
+        )
+
+        let encoded = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(PortfolioChanges.self, from: encoded)
+
+        #expect(decoded == original)
+    }
+
+    // MARK: - PerformancePoint provenance
+
+    @Test
+    func performancePointCarriesCostBasisAndSource() throws {
+        let original = PerformancePoint(
+            date: "2024-01-03",
+            value: 10100.0,
+            costBasis: 9000.0,
+            source: PerformancePoint.Source.backfill
+        )
+
+        let encoded = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(PerformancePoint.self, from: encoded)
+
+        #expect(decoded == original)
+        #expect(decoded.costBasis == 9000.0)
+        #expect(decoded.source == "backfill")
+    }
+
+    /// Points from a backend older than this contract carry neither field.
+    @Test
+    func performancePointLegacyDecode() throws {
+        let legacyJSON = """
+        {"date": "2024-01-01", "value": 10000.0}
+        """.data(using: .utf8)!
+
+        let decoded = try JSONDecoder().decode(PerformancePoint.self, from: legacyJSON)
+
+        #expect(decoded.value == 10000.0)
+        #expect(decoded.costBasis == nil)
+        #expect(decoded.source == nil)
+    }
+
+    // MARK: - PortfolioPerformanceResponse with changes
+
+    @Test
+    func portfolioPerformanceResponseCarriesChanges() throws {
+        let original = PortfolioPerformanceResponse(
+            baseCurrency: "USD",
+            points: [PerformancePoint(date: "2024-01-03", value: 10100.0)],
+            range: "1M",
+            asOf: "2024-01-03",
+            changes: PortfolioChanges(
+                day: PortfolioChange(
+                    percent: -0.004,
+                    absolute: -42.5,
+                    fromDate: "2024-01-02",
+                    toDate: "2024-01-03",
+                    basis: PortfolioChange.Basis.previousTradingDay
+                )
+            )
+        )
+
+        let encoded = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(PortfolioPerformanceResponse.self, from: encoded)
+
+        #expect(decoded == original)
+        #expect(decoded.asOf == "2024-01-03")
+        #expect(decoded.changes?.day?.basis == "previousTradingDay")
+        #expect(decoded.changes?.ytd == nil)
+    }
+
+    /// A response from a backend that has no history yet: points may exist while
+    /// every change is absent. Clients must not read that as a flat portfolio.
+    @Test
+    func portfolioPerformanceResponseWithoutChangesDecodes() throws {
+        let json = """
+        {
+            "baseCurrency": "USD",
+            "points": [{"date": "2024-01-01", "value": 10000.0}]
+        }
+        """.data(using: .utf8)!
+
+        let decoded = try JSONDecoder().decode(PortfolioPerformanceResponse.self, from: json)
+
+        #expect(decoded.points.count == 1)
+        #expect(decoded.changes == nil)
+        #expect(decoded.asOf == nil)
+    }
 }
