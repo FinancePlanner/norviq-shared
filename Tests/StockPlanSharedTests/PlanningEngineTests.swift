@@ -318,6 +318,129 @@ struct PlanningEngineTests {
         #expect(reduction < 2_800)
     }
 
+    // MARK: Goal fields
+
+    /// The defaults must reproduce the old behaviour exactly, or every existing goal's
+    /// numbers move the moment these parameters are added.
+    @Test
+    func `omitting the new parameters leaves the closed form untouched`() {
+        let withDefaults = PlanningEngine.futureValue(
+            principal: 100_000, monthlyContribution: 1_000, annualRate: 0.06, months: 120
+        )
+
+        #expect(abs(withDefaults - 341_558.21) < 0.01)
+    }
+
+    @Test
+    func `contribution growth steps once a year, not every month`() {
+        let level = PlanningEngine.futureValue(
+            principal: 0, monthlyContribution: 100, annualRate: 0, months: 24
+        )
+        let growing = PlanningEngine.futureValue(
+            principal: 0, monthlyContribution: 100, annualRate: 0, months: 24,
+            annualContributionGrowthRate: 0.10
+        )
+
+        // First year at 100, second at 110, with no return in play.
+        #expect(abs(level - 2_400) < 0.000_001)
+        #expect(abs(growing - (1_200 + 1_320)) < 0.000_001)
+    }
+
+    @Test
+    func `growing contributions beat level ones over the same horizon`() {
+        let level = PlanningEngine.futureValue(
+            principal: 10_000, monthlyContribution: 400, annualRate: 0.07, months: 240
+        )
+        let growing = PlanningEngine.futureValue(
+            principal: 10_000, monthlyContribution: 400, annualRate: 0.07, months: 240,
+            annualContributionGrowthRate: 0.03
+        )
+
+        #expect(growing > level)
+    }
+
+    @Test
+    func `a target in today's money is larger by the time it is due`() {
+        let carried = PlanningEngine.inflatedTarget(50_000, annualInflationRate: 0.02, months: 240)
+
+        #expect(abs(carried - 50_000 * pow(1.02, 20)) < 0.01)
+    }
+
+    @Test
+    func `a target is unchanged when there is no inflation or no horizon`() {
+        #expect(PlanningEngine.inflatedTarget(50_000, annualInflationRate: 0, months: 240) == 50_000)
+        #expect(PlanningEngine.inflatedTarget(50_000, annualInflationRate: 0.02, months: 0) == 50_000)
+    }
+
+    /// The solve has to actually land on the target, growth and inflation included.
+    @Test
+    func `the required contribution reaches the inflated target`() throws {
+        let required = try PlanningEngine.requiredMonthlyContribution(
+            principal: 10_000, target: 50_000, annualRate: 0.06, months: 120,
+            annualContributionGrowthRate: 0.03, annualInflationRate: 0.02
+        )
+        let reached = PlanningEngine.futureValue(
+            principal: 10_000, monthlyContribution: required, annualRate: 0.06, months: 120,
+            annualContributionGrowthRate: 0.03
+        )
+        let goal = PlanningEngine.inflatedTarget(50_000, annualInflationRate: 0.02, months: 120)
+
+        #expect(abs(reached - goal) < 0.01)
+    }
+
+    @Test
+    func `the required contribution still reaches a level target`() throws {
+        let required = try PlanningEngine.requiredMonthlyContribution(
+            principal: 10_000, target: 50_000, annualRate: 0.06, months: 120
+        )
+        let reached = PlanningEngine.futureValue(
+            principal: 10_000, monthlyContribution: required, annualRate: 0.06, months: 120
+        )
+
+        #expect(abs(reached - 50_000) < 0.01)
+    }
+
+    @Test
+    func `rising contributions lower what the first payment has to be`() throws {
+        let level = try PlanningEngine.requiredMonthlyContribution(
+            principal: 0, target: 100_000, annualRate: 0.06, months: 120
+        )
+        let growing = try PlanningEngine.requiredMonthlyContribution(
+            principal: 0, target: 100_000, annualRate: 0.06, months: 120,
+            annualContributionGrowthRate: 0.05
+        )
+
+        #expect(growing < level)
+    }
+
+    /// A target in today's money is a moving one, so reaching it takes longer.
+    @Test
+    func `an inflating target takes longer to catch`() throws {
+        let level = try #require(PlanningEngine.monthsToTarget(
+            principal: 10_000, target: 50_000, monthlyContribution: 300, annualRate: 0.06
+        ))
+        let inflating = try #require(PlanningEngine.monthsToTarget(
+            principal: 10_000, target: 50_000, monthlyContribution: 300, annualRate: 0.06,
+            annualInflationRate: 0.02
+        ))
+
+        #expect(inflating > level)
+    }
+
+    @Test
+    func `a plan already past its target is there today`() {
+        #expect(PlanningEngine.monthsToTarget(
+            principal: 60_000, target: 50_000, monthlyContribution: 0, annualRate: 0.06
+        ) == 0)
+    }
+
+    @Test
+    func `a target that can never be reached reports no date`() {
+        #expect(PlanningEngine.monthsToTarget(
+            principal: 1_000, target: 50_000, monthlyContribution: 0, annualRate: 0
+        ) == nil)
+    }
+
     // MARK: Cost of life
 
     @Test

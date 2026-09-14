@@ -315,35 +315,89 @@ public enum PlanningEngine {
         pow(1 + annualRate, 1.0 / 12.0) - 1
     }
 
+    /// Future value of a plan.
+    ///
+    /// `annualContributionGrowthRate` steps the contribution once every twelve months, so the
+    /// first year always pays `monthlyContribution`. At zero it takes the closed form; above
+    /// zero it walks the months, because an annual step against monthly compounding has no
+    /// clean closed form. A test pins the two together at zero so they cannot drift apart.
     public static func futureValue(principal: Double, monthlyContribution: Double,
-                                   annualRate: Double, months: Int) -> Double {
+                                   annualRate: Double, months: Int,
+                                   annualContributionGrowthRate: Double = 0) -> Double {
         guard months > 0 else { return principal }
         let rate = monthlyRate(annualRate: annualRate)
-        guard abs(rate) > 0.000_000_001 else {
-            return principal + monthlyContribution * Double(months)
+
+        guard abs(annualContributionGrowthRate) > 0.000_000_001 else {
+            guard abs(rate) > 0.000_000_001 else {
+                return principal + monthlyContribution * Double(months)
+            }
+            let growth = pow(1 + rate, Double(months))
+            return principal * growth + monthlyContribution * ((growth - 1) / rate)
         }
-        let growth = pow(1 + rate, Double(months))
-        return principal * growth + monthlyContribution * ((growth - 1) / rate)
+
+        var balance = principal
+        var contribution = monthlyContribution
+        for month in 1 ... months {
+            balance *= 1 + rate
+            balance += contribution
+            if month % 12 == 0 {
+                contribution *= 1 + annualContributionGrowthRate
+            }
+        }
+        return balance
     }
 
+    /// A target stated in today's money, carried forward to the horizon.
+    ///
+    /// Norviq treats a goal's target as today's buying power: "50,000 in twenty years" means
+    /// 50,000 of what money buys now, so the number to actually hit is larger.
+    public static func inflatedTarget(_ target: Double, annualInflationRate: Double, months: Int) -> Double {
+        guard months > 0, abs(annualInflationRate) > 0.000_000_001 else { return target }
+        return target * pow(1 + annualInflationRate, Double(months) / 12)
+    }
+
+    /// The contribution needed to reach a target, which may itself be inflating.
+    ///
+    /// Future value is linear in the contribution for a fixed growth rate, so the annuity
+    /// factor is recovered by projecting a contribution of exactly 1 with no principal. That
+    /// keeps this exact rather than iterative even when contributions grow.
     public static func requiredMonthlyContribution(principal: Double, target: Double,
-                                                   annualRate: Double, months: Int) throws -> Double {
+                                                   annualRate: Double, months: Int,
+                                                   annualContributionGrowthRate: Double = 0,
+                                                   annualInflationRate: Double = 0) throws -> Double {
         guard months > 0 else { throw GoalPlanningValidationError.invalidHorizon }
+        let goal = inflatedTarget(target, annualInflationRate: annualInflationRate, months: months)
         let rate = monthlyRate(annualRate: annualRate)
-        if abs(rate) <= 0.000_000_001 {
-            return max(0, (target - principal) / Double(months))
-        }
-        let growth = pow(1 + rate, Double(months))
-        return max(0, (target - principal * growth) * rate / (growth - 1))
+        let grown = principal * pow(1 + rate, Double(months))
+
+        let factor = futureValue(
+            principal: 0, monthlyContribution: 1, annualRate: annualRate, months: months,
+            annualContributionGrowthRate: annualContributionGrowthRate
+        )
+        guard factor > 0.000_000_001 else { return 0 }
+        return max(0, (goal - grown) / factor)
     }
 
+    /// How many months until the plan overtakes the target.
+    ///
+    /// When the target is stated in today's money it moves as well, so each month is compared
+    /// against the target as it will stand *that* month rather than against a fixed number.
     public static func monthsToTarget(principal: Double, target: Double, monthlyContribution: Double,
-                                      annualRate: Double, maximumMonths: Int = 1_200) -> Int? {
-        guard target > principal else { return 0 }
+                                      annualRate: Double, maximumMonths: Int = 1_200,
+                                      annualContributionGrowthRate: Double = 0,
+                                      annualInflationRate: Double = 0) -> Int? {
+        if principal >= inflatedTarget(target, annualInflationRate: annualInflationRate, months: 0) {
+            return 0
+        }
         guard monthlyContribution > 0 || annualRate > 0 else { return nil }
-        return (1 ... maximumMonths).first {
-            futureValue(principal: principal, monthlyContribution: monthlyContribution,
-                        annualRate: annualRate, months: $0) >= target
+        return (1 ... maximumMonths).first { month in
+            let goal = inflatedTarget(target, annualInflationRate: annualInflationRate, months: month)
+            let value = futureValue(
+                principal: principal, monthlyContribution: monthlyContribution,
+                annualRate: annualRate, months: month,
+                annualContributionGrowthRate: annualContributionGrowthRate
+            )
+            return value >= goal
         }
     }
 
