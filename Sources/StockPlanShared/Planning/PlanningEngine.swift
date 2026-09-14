@@ -8,6 +8,8 @@ public enum PlanningValidationError: Error, Equatable, Sendable {
     case invalidInflationRate
     case invalidWithdrawalRate
     case invalidAges
+    case invalidScenarioName
+    case missingScenarioInput
 }
 
 // MARK: - Growth projection

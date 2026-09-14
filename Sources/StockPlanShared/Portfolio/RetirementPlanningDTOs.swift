@@ -364,7 +364,8 @@ public struct RetirementProjectionSummary: Codable, Sendable, Equatable {
 
 public struct RetirementProjection: Codable, Sendable, Equatable, Identifiable {
     public let id: String
-    public let portfolioId: String
+    /// `nil` when the projection is user-scoped rather than about one portfolio.
+    public let portfolioId: String?
     public let ruleVersion: String
     public let currency: String
     public let summary: RetirementProjectionSummary
@@ -375,7 +376,7 @@ public struct RetirementProjection: Codable, Sendable, Equatable, Identifiable {
 
     public init(
         id: String,
-        portfolioId: String,
+        portfolioId: String? = nil,
         ruleVersion: String,
         currency: String,
         summary: RetirementProjectionSummary,
