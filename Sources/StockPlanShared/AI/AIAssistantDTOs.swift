@@ -100,17 +100,21 @@ public struct AIAssistantTurnResponse: Codable, Sendable, Equatable {
     public let conversationId: String
     public let message: AIMessageResponse
     public let pendingAction: AIPendingActionResponse?
+    /// Present when this turn wrote a position memo. The message text stays a one-line card.
+    public let memo: PositionMemoCard?
 
     public init(
         kind: AIAssistantTurnKind,
         conversationId: String,
         message: AIMessageResponse,
-        pendingAction: AIPendingActionResponse?
+        pendingAction: AIPendingActionResponse?,
+        memo: PositionMemoCard? = nil
     ) {
         self.kind = kind
         self.conversationId = conversationId
         self.message = message
         self.pendingAction = pendingAction
+        self.memo = memo
     }
 }
 
