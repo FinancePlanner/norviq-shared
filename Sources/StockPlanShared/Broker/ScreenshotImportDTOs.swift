@@ -61,10 +61,34 @@ public struct ScreenshotImportCommitRequest: Codable, Sendable, Equatable {
     public let provider: String
     public let portfolioListId: String?
     public let items: [CsvImportPreviewItem]
+    /// Permission to absorb holdings the import did not create.
+    ///
+    /// An import only ever replaces rows it owns, so a symbol the user added by
+    /// hand would otherwise end up beside the imported one — two AMDs in one
+    /// list. The preview already reports those collisions as
+    /// `existingPositionKind`, so the client can ask before setting this.
+    /// Absent or false, a commit that would collide is refused rather than
+    /// silently overwriting a position the user typed in themselves.
+    public let confirmMergeExisting: Bool
 
-    public init(provider: String, portfolioListId: String? = nil, items: [CsvImportPreviewItem]) {
+    public init(
+        provider: String,
+        portfolioListId: String? = nil,
+        items: [CsvImportPreviewItem],
+        confirmMergeExisting: Bool = false
+    ) {
         self.provider = provider
         self.portfolioListId = portfolioListId
         self.items = items
+        self.confirmMergeExisting = confirmMergeExisting
+    }
+
+    // Older clients do not send the flag; absent means "not confirmed".
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        provider = try container.decode(String.self, forKey: .provider)
+        portfolioListId = try container.decodeIfPresent(String.self, forKey: .portfolioListId)
+        items = try container.decode([CsvImportPreviewItem].self, forKey: .items)
+        confirmMergeExisting = try container.decodeIfPresent(Bool.self, forKey: .confirmMergeExisting) ?? false
     }
 }
