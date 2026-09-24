@@ -15,15 +15,55 @@ public struct AIConversationSummaryResponse: Codable, Sendable, Equatable {
     }
 }
 
+/// Why an assistant message exists. `reply` answers something the user sent;
+/// `proactive` was posted by the server on its own (a standing task, a daily
+/// tip) and is rendered with a caption from `sourceLabel`.
+public enum AIMessageOrigin: String, Codable, Sendable {
+    case reply
+    case proactive
+}
+
 public struct AIMessageResponse: Codable, Sendable, Equatable {
     public let id: String
     public let conversationId: String
     public let role: AIAssistantRole
     public let content: String
     public let createdAt: String
-    public init(id: String, conversationId: String, role: AIAssistantRole, content: String, createdAt: String) {
+    /// Absent on servers older than 5.12.0 and on user messages; clients treat
+    /// a missing value as `reply`.
+    public let origin: AIMessageOrigin?
+    /// Caption shown above a proactive bubble, e.g. "Standing task", "Daily tip".
+    public let sourceLabel: String?
+
+    public init(
+        id: String,
+        conversationId: String,
+        role: AIAssistantRole,
+        content: String,
+        createdAt: String,
+        origin: AIMessageOrigin? = nil,
+        sourceLabel: String? = nil
+    ) {
         self.id = id; self.conversationId = conversationId; self.role = role
         self.content = content; self.createdAt = createdAt
+        self.origin = origin; self.sourceLabel = sourceLabel
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, conversationId, role, content, createdAt, origin, sourceLabel
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        conversationId = try container.decode(String.self, forKey: .conversationId)
+        role = try container.decode(AIAssistantRole.self, forKey: .role)
+        content = try container.decode(String.self, forKey: .content)
+        createdAt = try container.decode(String.self, forKey: .createdAt)
+        // Lenient: an origin this client does not know yet reads as absent
+        // rather than failing the whole conversation.
+        origin = (try? container.decodeIfPresent(String.self, forKey: .origin)).flatMap(AIMessageOrigin.init(rawValue:))
+        sourceLabel = try container.decodeIfPresent(String.self, forKey: .sourceLabel)
     }
 }
 
@@ -90,6 +130,23 @@ public struct AIPendingActionResponse: Codable, Sendable, Equatable {
     }
 }
 
+/// A standing task the assistant offers to create. Travels with a pending
+/// action whose `toolName` is `create_watch`; confirming that action (the
+/// existing confirm/cancel routes) creates the watch.
+public struct AIWatchProposalResponse: Codable, Sendable, Equatable {
+    public let title: String
+    /// Human schedule, e.g. "Every day at 8:00" or "Every hour".
+    public let scheduleHuman: String
+    public let intervalMinutes: Int
+    /// What the assistant will check on each run.
+    public let spec: String
+
+    public init(title: String, scheduleHuman: String, intervalMinutes: Int, spec: String) {
+        self.title = title; self.scheduleHuman = scheduleHuman
+        self.intervalMinutes = intervalMinutes; self.spec = spec
+    }
+}
+
 public enum AIAssistantTurnKind: String, Codable, Sendable {
     case message
     case confirmationRequired = "confirmation_required"
@@ -102,19 +159,24 @@ public struct AIAssistantTurnResponse: Codable, Sendable, Equatable {
     public let pendingAction: AIPendingActionResponse?
     /// Present when this turn wrote a position memo. The message text stays a one-line card.
     public let memo: PositionMemoCard?
+    /// Present when the turn proposes a standing task. `pendingAction` is then
+    /// the `create_watch` action to confirm or cancel.
+    public let watchProposal: AIWatchProposalResponse?
 
     public init(
         kind: AIAssistantTurnKind,
         conversationId: String,
         message: AIMessageResponse,
         pendingAction: AIPendingActionResponse?,
-        memo: PositionMemoCard? = nil
+        memo: PositionMemoCard? = nil,
+        watchProposal: AIWatchProposalResponse? = nil
     ) {
         self.kind = kind
         self.conversationId = conversationId
         self.message = message
         self.pendingAction = pendingAction
         self.memo = memo
+        self.watchProposal = watchProposal
     }
 }
 
