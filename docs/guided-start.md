@@ -37,7 +37,12 @@ position is stored.
 
 - On sign-in, a client reads onboarding state. If `funnelCompletedAt` is null,
   it opens the funnel **at `funnelStep`** (or the first step if null) and emits
-  `onboarding_funnel_resumed` when `funnelStep` was non-null.
+  `onboarding_funnel_resumed` when `funnelStep` was non-null — at most once per
+  session on both platforms. iOS guards it once per app session. Web settles it
+  on the session's first read of an unfinished funnel, defers it while the
+  PostHog capture-once slot is taken (e.g. by `user_logged_in`) so a later
+  request emits it, and never emits it for a session that signed up or found
+  no stored step.
 - Web: `internal/onboarding/gate.go` and `RequireOnboardingComplete` read this
   instead of the session keys. The session keeps a copy for the request only.
 - iOS: `ContentView` reads this instead of the per-user `UserDefaults` flags.
@@ -104,7 +109,12 @@ failure must not fail the user's action.
 | `firstBudgetAt` | `BudgetController.createSnapshot` / `updateSnapshot`, only when `netSalary > 0` — in the controller, never in `ExpensesService` | `ensureCurrentMonthRollover` / `ensureSnapshotExists` (runs on every `GET /v1/budget/snapshots`), budgeting-engine clone |
 | `firstGoalAt` | `GoalPlanningController.create` (`POST /v1/financial-goals`) | `POST /v1/goals` (focus-point goals, a different feature); `ScenarioController.createGoal` is unrouted |
 
-Crypto holdings do not count toward `add_holding`.
+Crypto holdings do not count toward `add_holding`. The backend latches
+`firstHoldingAt` only when the created, inserted, or updated holding has
+`category != crypto` (`AssetCategory.countsTowardAddHolding`); a bulk create or
+broker commit latches when at least one such row is non-crypto. CSV and
+screenshot imports store `category = stock`, so they always count. The launch
+backfill applies the same rule in SQL.
 
 After the user acts, poll `GET /v1/onboarding` at 1s, 2s, 4s, 8s, then every
 10s, giving up after 5 minutes (emit `step_timed_out` and close the step
@@ -121,7 +131,7 @@ quietly). A local success signal triggers an immediate poll.
 
 Any latch field in a PATCH is rejected with 400.
 
-Response shape (`OnboardingStateDTO` in `StockPlanShared/UserProfile/`):
+Response shape (`OnboardingStateDTO` in `StockPlanShared/Onboarding/`):
 
 ```
 funnelStep            String?
@@ -184,7 +194,9 @@ Every target is on another page or tab.
 
 ## Spotlight rules
 
-- The hole passes touches through; the control being taught stays usable.
+- Nothing is blocked, on web or iOS: the scrim ignores touches everywhere, not
+  only in the hole, so the page keeps scrolling and the control being taught
+  stays usable. Only the bubble takes touches.
 - **No anchor, no dim.** If the target has not reported a frame, show the bubble
   without a scrim rather than a dim with nothing to tap.
 - Not modal to assistive technology. Focus moves to the step's line when it
@@ -209,8 +221,10 @@ guided_start_completed         (none)
 onboarding_funnel_resumed      step
 ```
 
-`card_shown` fires once per app session. `completed` fires after the completed
-card has been seen, not when the last latch flips. Existing funnel events keep
+`card_shown` fires once per app session. `completed` fires when the wizard
+reaches its finished state (the completed card is showing), not when the last
+latch flips on the server. `dismissed` fires only after the dismissal PATCH
+succeeds, on both platforms. Existing funnel events keep
 their names.
 
 ## Launch migration
@@ -221,7 +235,7 @@ One migration creates `onboarding_state` and backfills every existing user:
 INSERT INTO onboarding_state (user_id, first_holding_at, first_budget_at, first_goal_at,
                               funnel_completed_at, guided_start_dismissed_at)
 SELECT u.id,
-       (SELECT min(s.created_at) FROM stocks s WHERE s.user_id = u.id),
+       (SELECT min(s.created_at) FROM stocks s WHERE s.user_id = u.id AND s.category <> 'crypto'),
        (SELECT min(b.created_at) FROM budget_snapshots b WHERE b.user_id = u.id AND b.net_salary > 0),
        (SELECT min(g.created_at) FROM financial_goals g WHERE g.user_id = u.id),
        now(), now()
