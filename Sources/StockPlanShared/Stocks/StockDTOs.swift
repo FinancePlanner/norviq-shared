@@ -145,6 +145,8 @@ public enum WatchlistStatus: String, Codable, Sendable, CaseIterable {
     case waiting
     case ready
     case archived
+    /// The pilot this item was mirrored from has sold it. Set only by pilot follows.
+    case exited
 }
 
 public struct WatchlistItemRequest: Codable, Sendable, Equatable {
