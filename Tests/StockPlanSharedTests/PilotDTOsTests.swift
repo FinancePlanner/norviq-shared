@@ -25,4 +25,12 @@ struct PilotDTOsTests {
         let decoded = try JSONDecoder().decode([WatchlistStatus].self, from: Data("[\"exited\"]".utf8))
         #expect(decoded == [.exited])
     }
+
+    @Test("an unknown watchlist status decodes as active, so a newer server never breaks an older client")
+    func unknownStatusIsActive() throws {
+        let decoded = try JSONDecoder().decode([WatchlistStatus].self, from: Data("[\"something_new\", \"exited\", \"ready\"]".utf8))
+        #expect(decoded == [.active, .exited, .ready])
+        let encoded = try String(decoding: JSONEncoder().encode([WatchlistStatus.exited]), as: UTF8.self)
+        #expect(encoded == "[\"exited\"]")
+    }
 }

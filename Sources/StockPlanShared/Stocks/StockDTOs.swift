@@ -147,6 +147,13 @@ public enum WatchlistStatus: String, Codable, Sendable, CaseIterable {
     case archived
     /// The pilot this item was mirrored from has sold it. Set only by pilot follows.
     case exited
+
+    /// Lenient: a status this build does not know decodes as `.active`, so a
+    /// server that adds a status never breaks decoding a whole watchlist.
+    public init(from decoder: any Decoder) throws {
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = WatchlistStatus(rawValue: raw) ?? .active
+    }
 }
 
 public struct WatchlistItemRequest: Codable, Sendable, Equatable {
