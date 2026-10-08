@@ -46,14 +46,26 @@ struct ArticlesDTOsTests {
             status: .published, source: .web,
             publishedAt: Date(timeIntervalSince1970: 1_790_000_000), editedAt: nil
         )
-        let detail = ArticleDetail(article: summary, bodyMarkdown: "Body", disclosure: "No position", viewerUpvoted: true, viewerIsAuthor: false)
+        let detail = ArticleDetail(
+            article: summary,
+            bodyMarkdown: "Body",
+            disclosure: "No position",
+            viewerUpvoted: true,
+            viewerIsAuthor: false
+        )
         let decoded = try decoder.decode(ArticleDetail.self, from: encoder.encode(detail))
         #expect(decoded == detail)
     }
 
     @Test("unknown status and source decode as .unknown so a newer server never breaks an older client")
     func unknownEnums() throws {
-        #expect(try decoder.decode([ArticleStatus].self, from: Data("[\"archived\",\"hidden\"]".utf8)) == [.unknown, .hidden])
-        #expect(try decoder.decode([ArticleSource].self, from: Data("[\"telegram\",\"discord\"]".utf8)) == [.unknown, .discord])
+        #expect(try decoder.decode([ArticleStatus].self, from: Data("[\"archived\",\"hidden\"]".utf8)) == [
+            .unknown,
+            .hidden,
+        ])
+        #expect(try decoder.decode([ArticleSource].self, from: Data("[\"telegram\",\"discord\"]".utf8)) == [
+            .unknown,
+            .discord,
+        ])
     }
 }

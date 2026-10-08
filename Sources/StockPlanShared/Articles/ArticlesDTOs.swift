@@ -91,7 +91,13 @@ public struct ArticleDetail: Codable, Sendable, Equatable {
     public let viewerUpvoted: Bool
     public let viewerIsAuthor: Bool
 
-    public init(article: ArticleSummary, bodyMarkdown: String, disclosure: String, viewerUpvoted: Bool, viewerIsAuthor: Bool) {
+    public init(
+        article: ArticleSummary,
+        bodyMarkdown: String,
+        disclosure: String,
+        viewerUpvoted: Bool,
+        viewerIsAuthor: Bool
+    ) {
         self.article = article
         self.bodyMarkdown = bodyMarkdown
         self.disclosure = disclosure
