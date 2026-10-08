@@ -77,7 +77,10 @@ public struct ProjectionAssumptions: Codable, Sendable, Equatable {
 
 /// One row of the year-by-year projection table. `yearIndex` 0 is today.
 public struct ProjectionYear: Codable, Sendable, Equatable, Identifiable {
-    public var id: Int { yearIndex }
+    public var id: Int {
+        yearIndex
+    }
+
     public let yearIndex: Int
     public let contributedThisYear: Double
     public let cumulativeContributions: Double
@@ -128,7 +131,10 @@ public struct ProjectionResult: Codable, Sendable, Equatable {
 }
 
 public struct SensitivityPoint: Codable, Sendable, Equatable, Identifiable {
-    public var id: Double { annualReturnRate }
+    public var id: Double {
+        annualReturnRate
+    }
+
     public let annualReturnRate: Double
     public let endingValueNominal: Double
     public let endingValueReal: Double
@@ -206,7 +212,9 @@ public struct RetirementNeedInput: Codable, Sendable, Equatable {
         self.expectedAnnualReturn = expectedAnnualReturn
     }
 
-    public var yearsToRetirement: Int { max(0, retirementAge - currentAge) }
+    public var yearsToRetirement: Int {
+        max(0, retirementAge - currentAge)
+    }
 
     public func validate() throws {
         guard currentAge >= 18, currentAge < 100 else { throw PlanningValidationError.invalidAges }
@@ -235,7 +243,10 @@ public struct RetirementNeedInput: Codable, Sendable, Equatable {
 
 /// One year of the retirement depletion run.
 public struct DepletionYear: Codable, Sendable, Equatable, Identifiable {
-    public var id: Int { age }
+    public var id: Int {
+        age
+    }
+
     public let age: Int
     public let annualSpending: Double
     public let endingBalance: Double
@@ -274,7 +285,9 @@ public struct RetirementNeed: Codable, Sendable, Equatable {
         self.shortfallAge = shortfallAge
     }
 
-    public var lastsToLongevity: Bool { shortfallAge == nil }
+    public var lastsToLongevity: Bool {
+        shortfallAge == nil
+    }
 }
 
 /// The exact lever. A calculator that only reports a gap is forgettable; this says what to do
@@ -298,7 +311,9 @@ public struct PlanLever: Codable, Sendable, Equatable {
         self.spendingReductionMonthly = spendingReductionMonthly
     }
 
-    public var isOnTrack: Bool { gap <= 0 }
+    public var isOnTrack: Bool {
+        gap <= 0
+    }
 }
 
 // MARK: - Engine
@@ -321,9 +336,13 @@ public enum PlanningEngine {
     /// first year always pays `monthlyContribution`. At zero it takes the closed form; above
     /// zero it walks the months, because an annual step against monthly compounding has no
     /// clean closed form. A test pins the two together at zero so they cannot drift apart.
-    public static func futureValue(principal: Double, monthlyContribution: Double,
-                                   annualRate: Double, months: Int,
-                                   annualContributionGrowthRate: Double = 0) -> Double {
+    public static func futureValue(
+        principal: Double,
+        monthlyContribution: Double,
+        annualRate: Double,
+        months: Int,
+        annualContributionGrowthRate: Double = 0
+    ) -> Double {
         guard months > 0 else { return principal }
         let rate = monthlyRate(annualRate: annualRate)
 
@@ -361,10 +380,14 @@ public enum PlanningEngine {
     /// Future value is linear in the contribution for a fixed growth rate, so the annuity
     /// factor is recovered by projecting a contribution of exactly 1 with no principal. That
     /// keeps this exact rather than iterative even when contributions grow.
-    public static func requiredMonthlyContribution(principal: Double, target: Double,
-                                                   annualRate: Double, months: Int,
-                                                   annualContributionGrowthRate: Double = 0,
-                                                   annualInflationRate: Double = 0) throws -> Double {
+    public static func requiredMonthlyContribution(
+        principal: Double,
+        target: Double,
+        annualRate: Double,
+        months: Int,
+        annualContributionGrowthRate: Double = 0,
+        annualInflationRate: Double = 0
+    ) throws -> Double {
         guard months > 0 else { throw GoalPlanningValidationError.invalidHorizon }
         let goal = inflatedTarget(target, annualInflationRate: annualInflationRate, months: months)
         let rate = monthlyRate(annualRate: annualRate)
@@ -382,10 +405,15 @@ public enum PlanningEngine {
     ///
     /// When the target is stated in today's money it moves as well, so each month is compared
     /// against the target as it will stand *that* month rather than against a fixed number.
-    public static func monthsToTarget(principal: Double, target: Double, monthlyContribution: Double,
-                                      annualRate: Double, maximumMonths: Int = 1_200,
-                                      annualContributionGrowthRate: Double = 0,
-                                      annualInflationRate: Double = 0) -> Int? {
+    public static func monthsToTarget(
+        principal: Double,
+        target: Double,
+        monthlyContribution: Double,
+        annualRate: Double,
+        maximumMonths: Int = 1200,
+        annualContributionGrowthRate: Double = 0,
+        annualInflationRate: Double = 0
+    ) -> Int? {
         if principal >= inflatedTarget(target, annualInflationRate: annualInflationRate, months: 0) {
             return 0
         }

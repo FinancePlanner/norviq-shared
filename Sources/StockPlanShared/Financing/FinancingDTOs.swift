@@ -201,7 +201,10 @@ public struct FinancingSimulationRequest: Codable, Sendable, Equatable {
 }
 
 public struct FinancingProjectionResponse: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { "\(planId ?? offerId)-\(installmentNumber)" }
+    public var id: String {
+        "\(planId ?? offerId)-\(installmentNumber)"
+    }
+
     public let planId: String?
     public let offerId: String
     public let installmentNumber: Int
@@ -307,7 +310,10 @@ public struct FinancingAffordabilityAssessment: Codable, Sendable, Equatable {
 }
 
 public struct FinancingOfferSimulationResponse: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { offer.id }
+    public var id: String {
+        offer.id
+    }
+
     public let offer: FinancingOfferTerms
     public let monthlyPayment: Double
     public let totalLoanPayments: Double
@@ -459,7 +465,10 @@ public struct FinancingExpenseMatchResponse: Codable, Sendable, Equatable, Ident
 }
 
 public struct FinancingMatchCandidateResponse: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { "\(planId)-\(installmentNumber)-\(expenseId)" }
+    public var id: String {
+        "\(planId)-\(installmentNumber)-\(expenseId)"
+    }
+
     public let planId: String
     public let planTitle: String
     public let installmentNumber: Int
@@ -468,7 +477,15 @@ public struct FinancingMatchCandidateResponse: Codable, Sendable, Equatable, Ide
     public let score: Double
     public let reasons: [String]
 
-    public init(planId: String, planTitle: String, installmentNumber: Int, dueDate: String, expenseId: String, score: Double, reasons: [String]) {
+    public init(
+        planId: String,
+        planTitle: String,
+        installmentNumber: Int,
+        dueDate: String,
+        expenseId: String,
+        score: Double,
+        reasons: [String]
+    ) {
         self.planId = planId
         self.planTitle = planTitle
         self.installmentNumber = installmentNumber

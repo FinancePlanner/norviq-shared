@@ -1,6 +1,5 @@
 import Foundation
 import Testing
-
 @testable import StockPlanShared
 
 @Test func authLoginRequestRoundTripJSON() throws {
@@ -80,10 +79,10 @@ import Testing
 }
 
 @Test func apiEnvelopeRoundTripJSON() throws {
-    let auth = AuthResponse(
+    let auth = try AuthResponse(
         token: "jwt-token",
-        userId: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
-        expiresIn: 604800,
+        userId: #require(UUID(uuidString: "00000000-0000-0000-0000-000000000001")),
+        expiresIn: 604_800,
         refreshToken: "refresh-token",
         refreshExpiresIn: 2_592_000,
         username: "valid_user",
@@ -100,10 +99,10 @@ import Testing
 }
 
 @Test func stockPlanSharedDecoderDecodesAuthResponseEncodedAsReferenceDateNumber() throws {
-    let payload = AuthResponse(
+    let payload = try AuthResponse(
         token: "jwt-token",
-        userId: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
-        expiresIn: 604800,
+        userId: #require(UUID(uuidString: "00000000-0000-0000-0000-000000000001")),
+        expiresIn: 604_800,
         refreshToken: "refresh-token",
         refreshExpiresIn: 2_592_000,
         username: "valid_user",
@@ -167,9 +166,11 @@ import Testing
 @Test func bulkStockRequestRoundTripJSON() throws {
     let payload = BulkStockRequest(stocks: [
         StockRequest(
-            symbol: "AAPL", shares: 10.5, buyPrice: 150.25, buyDate: "2026-01-10", notes: "First"),
+            symbol: "AAPL", shares: 10.5, buyPrice: 150.25, buyDate: "2026-01-10", notes: "First"
+        ),
         StockRequest(
-            symbol: "MSFT", shares: 5, buyPrice: 300.00, buyDate: "2026-02-15", notes: nil)
+            symbol: "MSFT", shares: 5, buyPrice: 300.00, buyDate: "2026-02-15", notes: nil
+        ),
     ])
 
     let encoded = try JSONEncoder().encode(payload)
@@ -187,9 +188,10 @@ import Testing
                 index: 0,
                 stock: StockResponse(
                     id: "id-1", symbol: "AAPL", shares: 10.5, buyPrice: 150.25,
-                    buyDate: "2026-01-10", notes: nil, createdAt: "2026-01-10T00:00:00Z")
+                    buyDate: "2026-01-10", notes: nil, createdAt: "2026-01-10T00:00:00Z"
+                )
             ),
-            BulkStockResultItem(index: 1, error: "Invalid buyDate. Expected YYYY-MM-DD.")
+            BulkStockResultItem(index: 1, error: "Invalid buyDate. Expected YYYY-MM-DD."),
         ]
     )
 
@@ -292,7 +294,7 @@ import Testing
                 expenses: 2000,
                 net: 1000,
                 savingsRate: 33.33
-            )
+            ),
         ]
     )
 
@@ -313,7 +315,7 @@ import Testing
         recommendedSavings: 320,
         detailPayload: [
             "planned": "1800.00",
-            "actual": "2120.00"
+            "actual": "2120.00",
         ]
     )
 
@@ -388,7 +390,7 @@ import Testing
                 badge: "Best value",
                 isCurrent: false,
                 changeKind: "upgrade"
-            )
+            ),
         ],
         features: [
             BillingFeatureDTO(
@@ -400,7 +402,7 @@ import Testing
                 limit: nil,
                 used: nil,
                 remaining: nil
-            )
+            ),
         ],
         usage: [
             BillingUsageDTO(
@@ -409,7 +411,7 @@ import Testing
                 limit: 10,
                 remaining: 8,
                 periodStart: periodStart
-            )
+            ),
         ],
         generatedAt: generatedAt
     )

@@ -1,6 +1,5 @@
 import Foundation
 import Testing
-
 @testable import StockPlanShared
 
 @Test func chartBuilderCatalogHasUniqueKeys() {
@@ -43,7 +42,8 @@ import Testing
 }
 
 @Test func chartBuilderLabelGeneration() {
-    #expect(ChartBuilderMetricCatalog.label(for: "netCashProvidedByOperatingActivities") == "Net Cash from Operating Activities")
+    #expect(ChartBuilderMetricCatalog
+        .label(for: "netCashProvidedByOperatingActivities") == "Net Cash from Operating Activities")
     #expect(ChartBuilderMetricCatalog.label(for: "eps") == "EPS")
     #expect(ChartBuilderMetricCatalog.label(for: "tenYRevenueGrowthPerShare") == "10Y Revenue Growth per Share")
     #expect(ChartBuilderMetricCatalog.label(for: "totalStockholdersEquity") == "Total Stockholders Equity")
@@ -54,7 +54,7 @@ import Testing
     let response = ChartBuilderResponse(
         period: .ttm,
         periods: [
-            ChartBuilderPeriod(label: "TTM Q3 2024", fiscalYear: "2024", fiscalPeriod: "Q3", endDate: "2024-09-28")
+            ChartBuilderPeriod(label: "TTM Q3 2024", fiscalYear: "2024", fiscalPeriod: "Q3", endDate: "2024-09-28"),
         ],
         series: [
             ChartBuilderSeries(
@@ -70,7 +70,7 @@ import Testing
                     totalChangePercent: 2.977,
                     cagr: 0.039
                 )
-            )
+            ),
         ],
         companies: [ChartBuilderCompany(symbol: "AAPL", name: "Apple Inc.", currency: "USD")]
     )

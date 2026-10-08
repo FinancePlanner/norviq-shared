@@ -1,13 +1,12 @@
 import Foundation
 import Testing
-
 @testable import StockPlanShared
 
 @Suite("Fiscal Receipt QR Parser")
 struct FiscalReceiptQRParserTests {
     private let parser = FiscalReceiptQRParser()
 
-    // A representative Portuguese AT simplified-invoice payload.
+    /// A representative Portuguese AT simplified-invoice payload.
     private let sampleAT =
         "A:509442013*B:123456789*C:PT*D:FS*E:N*F:20260712*G:FS 01P2026/1234"
             + "*H:CSDF7T5H-1234*I1:PT*I7:12.20*I8:2.80*N:2.80*O:15.00*Q:kZ5X*R:9999"

@@ -3,8 +3,8 @@ import Foundation
 // MARK: - Inflation Snapshot (primary response for /v1/macro/inflation/current)
 
 public struct InflationSnapshotResponse: Codable, Sendable, Equatable {
-    public let country: String          // "US", "BR", "PT", "EA"
-    public let currency: String         // "USD", "BRL", "EUR"
+    public let country: String // "US", "BR", "PT", "EA"
+    public let currency: String // "USD", "BRL", "EUR"
     public let asOf: String
     public let updatedAt: String
     public let source: String
@@ -53,7 +53,7 @@ public struct InflationGaugeDTO: Codable, Sendable, Equatable {
     public let unit: String // "percent"
 
     // Nowflation-specific
-    public let colVariant: Double?        // Cost-of-Living variant
+    public let colVariant: Double? // Cost-of-Living variant
     public let cumulativeSinceBase: Double?
     public let basePeriod: String?
 
@@ -83,13 +83,15 @@ public struct InflationGaugeDTO: Codable, Sendable, Equatable {
 // MARK: - Component Breakdown
 
 public struct InflationComponentDTO: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { category }
+    public var id: String {
+        category
+    }
 
     public let category: String
     public let ourYoY: Double
     public let blsYoY: Double?
     public let cpiWeight: Double?
-    public let contributionBps: Double?   // optional impact in basis points
+    public let contributionBps: Double? // optional impact in basis points
 
     public init(
         category: String,
@@ -109,7 +111,9 @@ public struct InflationComponentDTO: Codable, Sendable, Equatable, Identifiable 
 // MARK: - Top Movers (Utilities, Food, Shelter emphasis)
 
 public struct TopMoverDTO: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { category }
+    public var id: String {
+        category
+    }
 
     public let category: String
     public let changeYoY: Double
@@ -161,7 +165,7 @@ public struct NextPrintDTO: Codable, Sendable, Equatable {
 public struct MacroSeriesPoint: Codable, Sendable, Equatable {
     public let date: String
     public let value: Double
-    public let series: String   // "nowflation_cpi", "official_cpi", "pce", etc.
+    public let series: String // "nowflation_cpi", "official_cpi", "pce", etc.
 
     public init(date: String, value: Double, series: String) {
         self.date = date

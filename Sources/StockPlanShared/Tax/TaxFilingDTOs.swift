@@ -10,7 +10,14 @@ public struct FilingPackSectionDTO: Codable, Sendable, Equatable {
     public let totals: [String: Decimal]
     public let notes: [String]
 
-    public init(id: String, title: String, columns: [String], rows: [[String]], totals: [String: Decimal], notes: [String]) {
+    public init(
+        id: String,
+        title: String,
+        columns: [String],
+        rows: [[String]],
+        totals: [String: Decimal],
+        notes: [String]
+    ) {
         self.id = id
         self.title = title
         self.columns = columns

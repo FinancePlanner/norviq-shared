@@ -6,11 +6,11 @@ import Foundation
 public struct MacroIndicatorDTO: Codable, Sendable, Equatable {
     public let name: String
     public let value: Double
-    public let unit: String            // "percent"
-    public let asOf: String            // "yyyy-MM-dd"
+    public let unit: String // "percent"
+    public let asOf: String // "yyyy-MM-dd"
     public let previousValue: Double?
     public let changeFromPrevious: Double?
-    public let source: String          // e.g. "FRED:PCEPILFE"
+    public let source: String // e.g. "FRED:PCEPILFE"
 
     public init(
         name: String,
@@ -33,8 +33,8 @@ public struct MacroIndicatorDTO: Codable, Sendable, Equatable {
 
 /// Probability of a rate move at a FOMC meeting.
 public struct RateMoveOddsDTO: Codable, Sendable, Equatable {
-    public let move: String            // "hold" | "cut25" | "hike25" | ...
-    public let probability: Double     // 0...1
+    public let move: String // "hold" | "cut25" | "hike25" | ...
+    public let probability: Double // 0...1
     public let source: String?
 
     public init(move: String, probability: Double, source: String? = nil) {
@@ -46,7 +46,7 @@ public struct RateMoveOddsDTO: Codable, Sendable, Equatable {
 
 /// Upcoming FOMC meeting metadata.
 public struct FOMCMeetingDTO: Codable, Sendable, Equatable {
-    public let startDate: String       // "yyyy-MM-dd"
+    public let startDate: String // "yyyy-MM-dd"
     public let endDate: String
     public let daysRemaining: Int
     public let hasPressConference: Bool?
@@ -73,16 +73,16 @@ public struct FedWatchResponse: Codable, Sendable, Equatable {
     public let updatedAt: String
     public let source: String
     public let corePCE: MacroIndicatorDTO
-    public let fedTarget: Double               // 2.0
-    public let distanceToTarget: Double        // corePCE - fedTarget (pp)
+    public let fedTarget: Double // 2.0
+    public let distanceToTarget: Double // corePCE - fedTarget (pp)
     public let trimmedMeanCPI: MacroIndicatorDTO?
     public let treasury2Y: MacroIndicatorDTO?
     public let treasury10Y: MacroIndicatorDTO?
-    public let spread10Y2Y: Double?            // pp
+    public let spread10Y2Y: Double? // pp
     public let real10Y: MacroIndicatorDTO?
     public let breakeven10Y: MacroIndicatorDTO?
     public let nextFOMC: FOMCMeetingDTO?
-    public let stance: String?                 // "restrictive" | "neutral" | "accommodative"
+    public let stance: String? // "restrictive" | "neutral" | "accommodative"
     public let notes: String?
 
     public init(

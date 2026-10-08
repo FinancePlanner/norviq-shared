@@ -212,9 +212,9 @@ public struct HouseholdPartnerProfileRequest: Codable, Sendable, Equatable {
 // MARK: - Budget Snapshot
 
 public struct BudgetSnapshotRequest: Codable, Sendable, Equatable {
-    public let monthStart: String  // YYYY-MM-DD
+    public let monthStart: String // YYYY-MM-DD
     public let netSalary: Double
-    public let targetShares: [String: Double]  // String key representation of BudgetPillar
+    public let targetShares: [String: Double] // String key representation of BudgetPillar
     public let currencyCode: String?
     public let categoryDriftThreshold: Double?
     public let totalDriftThreshold: Double?
@@ -244,7 +244,7 @@ public struct BudgetSnapshotRequest: Codable, Sendable, Equatable {
 
 public struct BudgetSnapshotResponse: Codable, Sendable, Equatable, Identifiable {
     public let id: String
-    public let monthStart: String  // YYYY-MM-DD
+    public let monthStart: String // YYYY-MM-DD
     public let netSalary: Double
     public let targetShares: [String: Double]
     public let currencyCode: String
@@ -483,7 +483,7 @@ public struct ExpenseRequest: Codable, Sendable, Equatable {
     public let title: String
     public let amount: Double
     public let pillar: BudgetPillar
-    public let occurredOn: String  // YYYY-MM-DD
+    public let occurredOn: String // YYYY-MM-DD
     public let linkedPlanItemId: String?
     public let categoryId: String?
     public let splitMode: ExpenseSplitMode
@@ -563,7 +563,7 @@ public struct ExpenseResponse: Codable, Sendable, Equatable, Identifiable {
     public let title: String
     public let amount: Double
     public let pillar: BudgetPillar
-    public let occurredOn: String  // YYYY-MM-DD
+    public let occurredOn: String // YYYY-MM-DD
     public let linkedPlanItemId: String?
     public let categoryId: String?
     public let splitMode: ExpenseSplitMode
@@ -635,7 +635,7 @@ public struct PillarPlanningSummaryResponse: Codable, Sendable, Equatable {
 }
 
 public struct BudgetMonthSummaryResponse: Codable, Sendable, Equatable {
-    public let monthStart: String  // YYYY-MM-DD
+    public let monthStart: String // YYYY-MM-DD
     public let planned: Double
     public let actual: Double
     public let salary: Double
@@ -715,7 +715,10 @@ public struct BudgetYearSummaryResponse: Codable, Sendable, Equatable {
 }
 
 public struct ReportsCashFlowPointResponse: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { monthStart }
+    public var id: String {
+        monthStart
+    }
+
     public let monthStart: String
     public let income: Double
     public let expenses: Double

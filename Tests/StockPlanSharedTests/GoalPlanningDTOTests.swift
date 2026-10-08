@@ -1,6 +1,6 @@
 import Foundation
-@testable import StockPlanShared
 import Testing
+@testable import StockPlanShared
 
 struct GoalPlanningDTOTests {
     @Test(arguments: FinancialGoalRiskProfile.allCases)
@@ -13,7 +13,7 @@ struct GoalPlanningDTOTests {
     func `future value uses effective monthly compounding and end of month contributions`() {
         let value = GoalProjectionCalculator.futureValue(
             principal: 100_000,
-            monthlyContribution: 1_000,
+            monthlyContribution: 1000,
             annualRate: 0.06,
             months: 120
         )
@@ -24,14 +24,14 @@ struct GoalPlanningDTOTests {
     @Test
     func `zero return calculation has a stable linear branch`() throws {
         #expect(GoalProjectionCalculator.futureValue(
-            principal: 10_000,
+            principal: 10000,
             monthlyContribution: 500,
             annualRate: 0,
             months: 24
-        ) == 22_000)
+        ) == 22000)
         #expect(try GoalProjectionCalculator.requiredMonthlyContribution(
-            principal: 10_000,
-            target: 22_000,
+            principal: 10000,
+            target: 22000,
             annualRate: 0,
             months: 24
         ) == 500)

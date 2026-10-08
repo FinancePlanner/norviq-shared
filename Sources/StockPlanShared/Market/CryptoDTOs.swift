@@ -3,7 +3,10 @@ import Foundation
 // MARK: - Cryptocurrency List
 
 public struct CryptoAssetResponse: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { symbol }
+    public var id: String {
+        symbol
+    }
+
     public let symbol: String
     public let name: String
     public let exchange: String?
@@ -31,7 +34,10 @@ public struct CryptoAssetResponse: Codable, Sendable, Equatable, Identifiable {
 // MARK: - Full Cryptocurrency Quote
 
 public struct CryptoQuoteResponse: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { symbol }
+    public var id: String {
+        symbol
+    }
+
     public let symbol: String
     public let name: String
     public let price: Double
@@ -92,7 +98,10 @@ public struct CryptoQuoteResponse: Codable, Sendable, Equatable, Identifiable {
 // MARK: - Cryptocurrency Short Quote
 
 public struct CryptoQuoteShortResponse: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { symbol }
+    public var id: String {
+        symbol
+    }
+
     public let symbol: String
     public let price: Double
     public let change: Double
@@ -114,7 +123,10 @@ public struct CryptoQuoteShortResponse: Codable, Sendable, Equatable, Identifiab
 // MARK: - Historical Light Chart (EOD)
 
 public struct CryptoHistoricalLightPoint: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { "\(symbol)-\(date)" }
+    public var id: String {
+        "\(symbol)-\(date)"
+    }
+
     public let symbol: String
     public let date: String
     public let price: Double
@@ -136,7 +148,10 @@ public struct CryptoHistoricalLightPoint: Codable, Sendable, Equatable, Identifi
 // MARK: - Historical Full Chart (EOD)
 
 public struct CryptoHistoricalFullPoint: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { "\(symbol)-\(date)" }
+    public var id: String {
+        "\(symbol)-\(date)"
+    }
+
     public let symbol: String
     public let date: String
     public let open: Double
@@ -176,7 +191,10 @@ public struct CryptoHistoricalFullPoint: Codable, Sendable, Equatable, Identifia
 // MARK: - Intraday Historical Point (1min, 5min, 1hour)
 
 public struct CryptoHistoricalPoint: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { date }
+    public var id: String {
+        date
+    }
+
     public let date: String
     public let open: Double?
     public let low: Double?

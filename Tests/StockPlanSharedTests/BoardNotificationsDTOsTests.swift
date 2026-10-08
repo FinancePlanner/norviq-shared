@@ -1,6 +1,6 @@
 import Foundation
-@testable import StockPlanShared
 import Testing
+@testable import StockPlanShared
 
 @Suite("Board notification DTOs")
 struct BoardNotificationsDTOsTests {

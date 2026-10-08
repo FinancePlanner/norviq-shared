@@ -1,6 +1,5 @@
 import Foundation
 import Testing
-
 @testable import StockPlanShared
 
 @Test func personalInflationResponseRoundTripsJSON() throws {
@@ -14,11 +13,11 @@ import Testing
         personalRate: 3.4,
         officialRate: 2.8,
         difference: 0.6,
-        averageMonthlySpend: 2_400,
+        averageMonthlySpend: 2400,
         estimatedAnnualImpact: 979.2,
         coveragePercent: 82.5,
-        mappedSpend: 23_760,
-        totalSpend: 28_800,
+        mappedSpend: 23760,
+        totalSpend: 28800,
         expenseCount: 132,
         method: "expense_weighted_cpi_v1",
         source: "User expenses + FRED/BLS",
@@ -26,12 +25,12 @@ import Testing
             PersonalInflationComponentDTO(
                 category: "Groceries",
                 macroCategory: "Food at Home",
-                spend: 7_200,
+                spend: 7200,
                 weight: 30.3,
                 inflationRate: 3.8,
                 contribution: 1.15,
                 expenseCount: 52
-            )
+            ),
         ]
     )
 

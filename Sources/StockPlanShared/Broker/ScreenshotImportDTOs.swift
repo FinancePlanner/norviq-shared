@@ -83,7 +83,7 @@ public struct ScreenshotImportCommitRequest: Codable, Sendable, Equatable {
         self.confirmMergeExisting = confirmMergeExisting
     }
 
-    // Older clients do not send the flag; absent means "not confirmed".
+    /// Older clients do not send the flag; absent means "not confirmed".
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         provider = try container.decode(String.self, forKey: .provider)

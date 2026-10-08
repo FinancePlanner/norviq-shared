@@ -7,12 +7,12 @@ import Foundation
 /// (US BLS APU series); index-only sources (Eurostat COICOP) populate
 /// `changeYoY` and leave `latestPrice` nil.
 public struct MacroItemDTO: Codable, Sendable, Equatable, Identifiable {
-    public let id: String              // "eggs", "milk", "gasoline", ...
+    public let id: String // "eggs", "milk", "gasoline", ...
     public let name: String
     public let emoji: String?
     public let country: String
     public let currency: String
-    public let unit: String            // "USD per dozen", "percent", ...
+    public let unit: String // "USD per dozen", "percent", ...
     public let latestPrice: Double?
     public let changeYoY: Double?
     public let changeMoM: Double?

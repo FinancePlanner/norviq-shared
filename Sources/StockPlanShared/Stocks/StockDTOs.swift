@@ -120,7 +120,7 @@ public struct StockResponse: Codable, Sendable, Equatable, Identifiable {
     public let notes: String?
     public let category: AssetCategory
     public let portfolioListId: String?
-    public let createdAt: String  // ISO8601 timestamp for pagination
+    public let createdAt: String // ISO8601 timestamp for pagination
 
     public init(
         id: String, symbol: String, shares: Double, buyPrice: Double, buyDate: String,
@@ -390,7 +390,10 @@ public struct StockHistory: Codable, Sendable, Equatable {
 }
 
 public struct StockNews: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { url }
+    public var id: String {
+        url
+    }
+
     public let title: String
     public let url: String
     public let date: String
@@ -422,6 +425,7 @@ public struct StockNews: Codable, Sendable, Equatable, Identifiable {
 }
 
 // MARK: - Bulk Import
+
 public struct BulkStockRequest: Codable, Sendable, Equatable {
     public let stocks: [StockRequest]
 

@@ -1,6 +1,5 @@
 import Foundation
 import Testing
-
 @testable import StockPlanShared
 
 @Suite("Portfolio DTOs")
@@ -11,14 +10,14 @@ struct PortfolioDTOsTests {
     func portfolioSummaryResponseFullRoundTrip() throws {
         let original = PortfolioSummaryResponse(
             baseCurrency: "USD",
-            totalValue: 100000.0,
+            totalValue: 100_000.0,
             totalCost: 90000.0,
             unrealizedPnl: 10000.0,
             realizedPnl: 5000.0,
             cashBalance: 15000.0,
             allocation: [
                 AllocationItem(symbol: "AAPL", value: 40000.0, currency: "USD"),
-                AllocationItem(symbol: "GOOGL", value: 60000.0, currency: "USD")
+                AllocationItem(symbol: "GOOGL", value: 60000.0, currency: "USD"),
             ],
             dayChange: 250.0,
             dayChangePercent: 0.25,
@@ -52,7 +51,7 @@ struct PortfolioDTOsTests {
         let decoded = try JSONDecoder().decode(PortfolioSummaryResponse.self, from: legacyJSON)
 
         #expect(decoded.baseCurrency == "USD")
-        #expect(decoded.totalValue == 100000.0)
+        #expect(decoded.totalValue == 100_000.0)
         #expect(decoded.dayChange == nil)
         #expect(decoded.dayChangePercent == nil)
         #expect(decoded.unrealizedPnlPercent == nil)
@@ -168,7 +167,7 @@ struct PortfolioDTOsTests {
         let points = [
             PerformancePoint(date: "2024-01-01", value: 10000.0),
             PerformancePoint(date: "2024-01-02", value: 10250.0),
-            PerformancePoint(date: "2024-01-03", value: 10100.0)
+            PerformancePoint(date: "2024-01-03", value: 10100.0),
         ]
 
         let original = PortfolioPerformanceResponse(

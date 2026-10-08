@@ -7,7 +7,10 @@ public enum SpendToUnitsSource: String, Codable, Sendable, CaseIterable {
 }
 
 public struct SpendToUnitsCategory: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { title }
+    public var id: String {
+        title
+    }
+
     public let title: String
     public let overspendAmount: Double
     public let units: Double?

@@ -46,7 +46,9 @@ public struct ChartMetricDescriptor: Codable, Sendable, Equatable, Identifiable 
     public let aggregation: ChartMetricAggregation
     public let supportsTTM: Bool
 
-    public var id: String { key }
+    public var id: String {
+        key
+    }
 
     public init(
         key: String,
@@ -84,6 +86,7 @@ public enum ChartBuilderMetricCatalog {
 
     // MARK: - Catalog definition
 
+    // swiftlint:disable:next function_body_length — one flat catalogue literal.
     private static func buildCatalog() -> [ChartMetricDescriptor] {
         var metrics: [ChartMetricDescriptor] = []
 
@@ -109,6 +112,7 @@ public enum ChartBuilderMetricCatalog {
         }
 
         // MARK: Income statement (source: IncomeStatementResponse)
+
         for key in [
             "revenue", "costOfRevenue", "grossProfit",
             "researchAndDevelopmentExpenses", "generalAndAdministrativeExpenses",
@@ -130,6 +134,7 @@ public enum ChartBuilderMetricCatalog {
         add("weightedAverageShsOutDil", .incomeStatement, .shares, .pointInTime)
 
         // MARK: Balance sheet (source: BalanceSheetStatementResponse) — all point-in-time
+
         for key in [
             "cashAndCashEquivalents", "shortTermInvestments", "cashAndShortTermInvestments",
             "netReceivables", "accountsReceivables", "otherReceivables",
@@ -153,6 +158,7 @@ public enum ChartBuilderMetricCatalog {
         }
 
         // MARK: Cash flow (source: CashFlowStatementResponse) — all flows.
+
         // netIncome is served from the income statement; working-capital deltas
         // get `changeIn*` keys to avoid colliding with balance-sheet levels.
         for key in [
@@ -176,8 +182,9 @@ public enum ChartBuilderMetricCatalog {
         }
 
         // MARK: Ratios (source: RatiosResponse) — point-in-period, not summable.
+
         // Margins recomputable from TTM income components support TTM.
-        let ttmRecomputableMargins: Set<String> = [
+        let ttmRecomputableMargins: Set = [
             "grossProfitMargin", "ebitMargin", "ebitdaMargin",
             "operatingProfitMargin", "pretaxProfitMargin", "netProfitMargin",
         ]
@@ -216,6 +223,7 @@ public enum ChartBuilderMetricCatalog {
         }
 
         // MARK: Growth (source: FinancialGrowthResponse) — period-over-period percentages.
+
         for key in [
             "revenueGrowth", "grossProfitGrowth", "ebitgrowth", "operatingIncomeGrowth",
             "netIncomeGrowth", "epsgrowth", "epsdilutedGrowth",
@@ -241,6 +249,7 @@ public enum ChartBuilderMetricCatalog {
         }
 
         // MARK: Derived
+
         add("fcfMargin", .derived, .percent, .ratio, ttm: true, label: "FCF Margin")
         add("fcfPerShare", .derived, .perShare, .ratio, ttm: false, label: "FCF Per Share")
 
@@ -291,7 +300,9 @@ public enum ChartBuilderMetricCatalog {
     ]
 
     static func label(for key: String) -> String {
-        if let override = labelOverrides[key] { return override }
+        if let override = labelOverrides[key] {
+            return override
+        }
 
         var working = key
         var prefix = ""
@@ -313,14 +324,20 @@ public enum ChartBuilderMetricCatalog {
                 current.append(character)
             }
         }
-        if !current.isEmpty { words.append(current) }
+        if !current.isEmpty {
+            words.append(current)
+        }
 
-        let lowercaseWords: Set<String> = ["and", "of", "to", "per", "on", "from", "in"]
-        let acronyms: Set<String> = ["cf", "fcf", "ocf", "ebt"]
+        let lowercaseWords: Set = ["and", "of", "to", "per", "on", "from", "in"]
+        let acronyms: Set = ["cf", "fcf", "ocf", "ebt"]
         let titled = words.enumerated().map { index, word -> String in
             let lowered = word.lowercased()
-            if acronyms.contains(lowered) { return lowered.uppercased() }
-            if index > 0, lowercaseWords.contains(lowered) { return lowered }
+            if acronyms.contains(lowered) {
+                return lowered.uppercased()
+            }
+            if index > 0, lowercaseWords.contains(lowered) {
+                return lowered
+            }
             return word.prefix(1).uppercased() + word.dropFirst()
         }
         return prefix + titled.joined(separator: " ")

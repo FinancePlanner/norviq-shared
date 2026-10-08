@@ -1,6 +1,5 @@
 import Foundation
 import Testing
-
 @testable import StockPlanShared
 
 @Suite("Receipt line items")

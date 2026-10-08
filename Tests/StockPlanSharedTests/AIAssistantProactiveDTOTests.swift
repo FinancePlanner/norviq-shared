@@ -38,7 +38,7 @@ struct AIAssistantProactiveDTOTests {
     @Test("A reply without a caption encodes without the optional keys")
     func encodingOmitsNil() throws {
         let message = AIMessageResponse(id: "a", conversationId: "c", role: .assistant, content: "x", createdAt: "t")
-        let text = String(decoding: try JSONEncoder().encode(message), as: UTF8.self)
+        let text = try String(decoding: JSONEncoder().encode(message), as: UTF8.self)
         #expect(!text.contains("origin"))
         #expect(!text.contains("sourceLabel"))
     }
@@ -53,9 +53,30 @@ struct AIAssistantProactiveDTOTests {
         let turn = AIAssistantTurnResponse(
             kind: .confirmationRequired,
             conversationId: "c",
-            message: AIMessageResponse(id: "m", conversationId: "c", role: .assistant, content: "Want me to?", createdAt: "t", origin: .reply),
-            pendingAction: AIPendingActionResponse(id: "p", conversationId: "c", toolName: "create_watch", summary: "s", arguments: "{}", status: .pending, expiresAt: "t", createdAt: "t"),
-            watchProposal: AIWatchProposalResponse(title: "Watch NVDA", scheduleHuman: "Every hour", intervalMinutes: 60, spec: "Tell me when NVDA drops below 100")
+            message: AIMessageResponse(
+                id: "m",
+                conversationId: "c",
+                role: .assistant,
+                content: "Want me to?",
+                createdAt: "t",
+                origin: .reply
+            ),
+            pendingAction: AIPendingActionResponse(
+                id: "p",
+                conversationId: "c",
+                toolName: "create_watch",
+                summary: "s",
+                arguments: "{}",
+                status: .pending,
+                expiresAt: "t",
+                createdAt: "t"
+            ),
+            watchProposal: AIWatchProposalResponse(
+                title: "Watch NVDA",
+                scheduleHuman: "Every hour",
+                intervalMinutes: 60,
+                spec: "Tell me when NVDA drops below 100"
+            )
         )
         let decoded = try JSONDecoder().decode(AIAssistantTurnResponse.self, from: JSONEncoder().encode(turn))
         #expect(decoded == turn)

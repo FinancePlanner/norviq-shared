@@ -1,6 +1,6 @@
 import Foundation
-@testable import StockPlanShared
 import Testing
+@testable import StockPlanShared
 
 @Suite("Boards DTOs")
 struct BoardsDTOsTests {
@@ -45,8 +45,20 @@ struct BoardsDTOsTests {
             revokedAt: nil
         )
         for status in [
-            CommunityViewerStatus(username: "fernando", isAdmin: false, guidelinesAccepted: true, hasUsername: true, activeSanction: sanction),
-            CommunityViewerStatus(username: nil, isAdmin: true, guidelinesAccepted: false, hasUsername: false, activeSanction: nil),
+            CommunityViewerStatus(
+                username: "fernando",
+                isAdmin: false,
+                guidelinesAccepted: true,
+                hasUsername: true,
+                activeSanction: sanction
+            ),
+            CommunityViewerStatus(
+                username: nil,
+                isAdmin: true,
+                guidelinesAccepted: false,
+                hasUsername: false,
+                activeSanction: nil
+            ),
         ] {
             let data = try JSONEncoder.stockPlanShared.encode(status)
             #expect(try JSONDecoder.stockPlanShared.decode(CommunityViewerStatus.self, from: data) == status)

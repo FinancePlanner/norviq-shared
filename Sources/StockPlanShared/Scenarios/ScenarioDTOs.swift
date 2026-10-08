@@ -34,9 +34,18 @@ public struct HoldingRiskProfile: Codable, Equatable, Identifiable, Sendable {
     public let convexity: Double?
     public let factorOverrides: FactorOverrides?
 
-    public init(id: String, holdingId: String, assetCategory: AssetCategory, sector: String? = nil,
-                region: String? = nil, benchmarkProxy: String? = nil, manualValue: Double? = nil,
-                duration: Double? = nil, convexity: Double? = nil, factorOverrides: FactorOverrides? = nil) {
+    public init(
+        id: String,
+        holdingId: String,
+        assetCategory: AssetCategory,
+        sector: String? = nil,
+        region: String? = nil,
+        benchmarkProxy: String? = nil,
+        manualValue: Double? = nil,
+        duration: Double? = nil,
+        convexity: Double? = nil,
+        factorOverrides: FactorOverrides? = nil
+    ) {
         self.id = id
         self.holdingId = holdingId
         self.assetCategory = assetCategory
@@ -80,8 +89,16 @@ public struct ScenarioSnapshotHolding: Codable, Equatable, Identifiable, Sendabl
     public let valueInBaseCurrency: Double
     public let riskProfile: HoldingRiskProfile
 
-    public init(id: String, instrumentKey: String, symbol: String, quantity: Double, price: Double,
-                currency: String, valueInBaseCurrency: Double, riskProfile: HoldingRiskProfile) {
+    public init(
+        id: String,
+        instrumentKey: String,
+        symbol: String,
+        quantity: Double,
+        price: Double,
+        currency: String,
+        valueInBaseCurrency: Double,
+        riskProfile: HoldingRiskProfile
+    ) {
         self.id = id
         self.instrumentKey = instrumentKey
         self.symbol = symbol
@@ -103,9 +120,16 @@ public struct PortfolioScenarioSnapshot: Codable, Equatable, Identifiable, Senda
     public let warnings: [ScenarioDataWarning]
     public let createdAt: String
 
-    public init(id: String, portfolioListId: String, baseCurrency: String, valuationTimestamp: String,
-                holdings: [ScenarioSnapshotHolding], fxRates: [String: Double],
-                warnings: [ScenarioDataWarning] = [], createdAt: String) {
+    public init(
+        id: String,
+        portfolioListId: String,
+        baseCurrency: String,
+        valuationTimestamp: String,
+        holdings: [ScenarioSnapshotHolding],
+        fxRates: [String: Double],
+        warnings: [ScenarioDataWarning] = [],
+        createdAt: String
+    ) {
         self.id = id
         self.portfolioListId = portfolioListId
         self.baseCurrency = baseCurrency
@@ -117,19 +141,26 @@ public struct PortfolioScenarioSnapshot: Codable, Equatable, Identifiable, Senda
     }
 }
 
-public enum ScenarioKind: String, Codable, CaseIterable, Sendable { case historical, custom, monteCarlo = "monte_carlo" }
-public enum RecoveryModel: String, Codable, CaseIterable, Sendable { case none, linear, meanReverting = "mean_reverting" }
-public enum MonteCarloDistribution: String, Codable, CaseIterable, Sendable { case blockBootstrap = "block_bootstrap", normal, studentT = "student_t" }
+public enum ScenarioKind: String, Codable, CaseIterable,
+    Sendable { case historical, custom, monteCarlo = "monte_carlo" }
+public enum RecoveryModel: String, Codable, CaseIterable,
+    Sendable { case none, linear, meanReverting = "mean_reverting" }
+public enum MonteCarloDistribution: String, Codable, CaseIterable,
+    Sendable { case blockBootstrap = "block_bootstrap", normal, studentT = "student_t" }
 
 public struct HistoricalScenarioConfiguration: Codable, Equatable, Sendable {
     public let catalogId: String
-    public init(catalogId: String) { self.catalogId = catalogId }
+    public init(catalogId: String) {
+        self.catalogId = catalogId
+    }
 }
 
 public struct PercentageShock: Codable, Equatable, Sendable {
     public let target: String
     public let percentage: Double
-    public init(target: String, percentage: Double) { self.target = target; self.percentage = percentage }
+    public init(target: String, percentage: Double) {
+        self.target = target; self.percentage = percentage
+    }
 }
 
 public struct CustomScenarioConfiguration: Codable, Equatable, Sendable {
@@ -143,10 +174,17 @@ public struct CustomScenarioConfiguration: Codable, Equatable, Sendable {
     public let horizonMonths: Int
     public let recovery: RecoveryModel
 
-    public init(holdingShocks: [PercentageShock] = [], sectorShocks: [PercentageShock] = [],
-                regionShocks: [PercentageShock] = [], currencyShocks: [PercentageShock] = [],
-                assetClassShocks: [PercentageShock] = [], parallelRateShiftBps: Double = 0,
-                volatilityMultiplier: Double = 1, horizonMonths: Int, recovery: RecoveryModel = .none) {
+    public init(
+        holdingShocks: [PercentageShock] = [],
+        sectorShocks: [PercentageShock] = [],
+        regionShocks: [PercentageShock] = [],
+        currencyShocks: [PercentageShock] = [],
+        assetClassShocks: [PercentageShock] = [],
+        parallelRateShiftBps: Double = 0,
+        volatilityMultiplier: Double = 1,
+        horizonMonths: Int,
+        recovery: RecoveryModel = .none
+    ) {
         self.holdingShocks = holdingShocks; self.sectorShocks = sectorShocks
         self.regionShocks = regionShocks; self.currencyShocks = currencyShocks
         self.assetClassShocks = assetClassShocks; self.parallelRateShiftBps = parallelRateShiftBps
@@ -166,11 +204,18 @@ public struct MonteCarloConfiguration: Codable, Equatable, Sendable {
     public let inflation: Double
     public let monthlyContribution: Double
 
-    public init(distribution: MonteCarloDistribution = .blockBootstrap, pathCount: Int = 10_000,
-                horizonMonths: Int, degreesOfFreedom: Double? = nil, bootstrapBlockMonths: Int = 6,
-                expectedReturns: [String: Double] = [:], volatilities: [String: Double] = [:],
-                correlations: [String: Double] = [:], inflation: Double = 0.02,
-                monthlyContribution: Double = 0) {
+    public init(
+        distribution: MonteCarloDistribution = .blockBootstrap,
+        pathCount: Int = 10000,
+        horizonMonths: Int,
+        degreesOfFreedom: Double? = nil,
+        bootstrapBlockMonths: Int = 6,
+        expectedReturns: [String: Double] = [:],
+        volatilities: [String: Double] = [:],
+        correlations: [String: Double] = [:],
+        inflation: Double = 0.02,
+        monthlyContribution: Double = 0
+    ) {
         self.distribution = distribution; self.pathCount = pathCount; self.horizonMonths = horizonMonths
         self.degreesOfFreedom = degreesOfFreedom; self.bootstrapBlockMonths = bootstrapBlockMonths
         self.expectedReturns = expectedReturns; self.volatilities = volatilities; self.correlations = correlations
@@ -188,29 +233,46 @@ public enum ScenarioConfiguration: Codable, Equatable, Sendable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         switch try container.decode(ScenarioKind.self, forKey: .type) {
-        case .historical: self = .historical(try container.decode(HistoricalScenarioConfiguration.self, forKey: .historical))
-        case .custom: self = .custom(try container.decode(CustomScenarioConfiguration.self, forKey: .custom))
-        case .monteCarlo: self = .monteCarlo(try container.decode(MonteCarloConfiguration.self, forKey: .monteCarlo))
+        case .historical: self = try .historical(container.decode(
+                HistoricalScenarioConfiguration.self,
+                forKey: .historical
+            ))
+        case .custom: self = try .custom(container.decode(CustomScenarioConfiguration.self, forKey: .custom))
+        case .monteCarlo: self = try .monteCarlo(container.decode(MonteCarloConfiguration.self, forKey: .monteCarlo))
         }
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
-        case .historical(let value): try container.encode(ScenarioKind.historical, forKey: .type); try container.encode(value, forKey: .historical)
-        case .custom(let value): try container.encode(ScenarioKind.custom, forKey: .type); try container.encode(value, forKey: .custom)
-        case .monteCarlo(let value): try container.encode(ScenarioKind.monteCarlo, forKey: .type); try container.encode(value, forKey: .monteCarlo)
+        case let .historical(value): try container.encode(ScenarioKind.historical, forKey: .type); try container.encode(
+                value,
+                forKey: .historical
+            )
+        case let .custom(value): try container.encode(ScenarioKind.custom, forKey: .type); try container.encode(
+                value,
+                forKey: .custom
+            )
+        case let .monteCarlo(value): try container.encode(ScenarioKind.monteCarlo, forKey: .type); try container.encode(
+                value,
+                forKey: .monteCarlo
+            )
         }
     }
 
     public func validate() throws {
         switch self {
         case .historical: break
-        case .custom(let value): guard (1...120).contains(value.horizonMonths) else { throw ScenarioValidationError.invalidHorizon }
-        case .monteCarlo(let value):
-            guard (1...600).contains(value.horizonMonths) else { throw ScenarioValidationError.invalidHorizon }
-            guard (1...50_000).contains(value.pathCount) else { throw ScenarioValidationError.invalidPathCount }
-            if value.distribution == .studentT, (value.degreesOfFreedom ?? 0) <= 2 { throw ScenarioValidationError.invalidDegreesOfFreedom }
+        case let .custom(value): guard (1 ... 120).contains(value.horizonMonths)
+            else { throw ScenarioValidationError.invalidHorizon }
+        case let .monteCarlo(value):
+            guard (1 ... 600).contains(value.horizonMonths) else { throw ScenarioValidationError.invalidHorizon }
+            guard (1 ... 50000).contains(value.pathCount) else { throw ScenarioValidationError.invalidPathCount }
+            if value.distribution == .studentT,
+               (value.degreesOfFreedom ?? 0) <= 2
+            {
+                throw ScenarioValidationError.invalidDegreesOfFreedom
+            }
         }
     }
 }
@@ -225,15 +287,24 @@ public struct ScenarioDefinition: Codable, Equatable, Identifiable, Sendable {
     public let createdAt: String
     public let updatedAt: String
 
-    public init(id: String, name: String, portfolioListId: String, financialGoalId: String? = nil,
-                configuration: ScenarioConfiguration, isSaved: Bool = true, createdAt: String, updatedAt: String) {
+    public init(
+        id: String,
+        name: String,
+        portfolioListId: String,
+        financialGoalId: String? = nil,
+        configuration: ScenarioConfiguration,
+        isSaved: Bool = true,
+        createdAt: String,
+        updatedAt: String
+    ) {
         self.id = id; self.name = name; self.portfolioListId = portfolioListId
         self.financialGoalId = financialGoalId; self.configuration = configuration
         self.isSaved = isSaved; self.createdAt = createdAt; self.updatedAt = updatedAt
     }
 }
 
-public enum ScenarioRunState: String, Codable, CaseIterable, Sendable { case queued, running, completed, failed, cancelled }
+public enum ScenarioRunState: String, Codable, CaseIterable,
+    Sendable { case queued, running, completed, failed, cancelled }
 
 public struct ScenarioRun: Codable, Equatable, Identifiable, Sendable {
     public let id: String
@@ -249,10 +320,20 @@ public struct ScenarioRun: Codable, Equatable, Identifiable, Sendable {
     public let startedAt: String?
     public let completedAt: String?
 
-    public init(id: String, scenarioId: String, snapshotId: String, state: ScenarioRunState,
-                progress: Double, seed: UInt64, engineVersion: String, catalogVersion: String,
-                errorMessage: String? = nil, createdAt: String, startedAt: String? = nil,
-                completedAt: String? = nil) {
+    public init(
+        id: String,
+        scenarioId: String,
+        snapshotId: String,
+        state: ScenarioRunState,
+        progress: Double,
+        seed: UInt64,
+        engineVersion: String,
+        catalogVersion: String,
+        errorMessage: String? = nil,
+        createdAt: String,
+        startedAt: String? = nil,
+        completedAt: String? = nil
+    ) {
         self.id = id; self.scenarioId = scenarioId; self.snapshotId = snapshotId; self.state = state
         self.progress = progress; self.seed = seed; self.engineVersion = engineVersion
         self.catalogVersion = catalogVersion; self.errorMessage = errorMessage
@@ -263,7 +344,9 @@ public struct ScenarioRun: Codable, Equatable, Identifiable, Sendable {
 public struct ScenarioValuePoint: Codable, Equatable, Sendable {
     public let elapsedMonths: Int
     public let value: Double
-    public init(elapsedMonths: Int, value: Double) { self.elapsedMonths = elapsedMonths; self.value = value }
+    public init(elapsedMonths: Int, value: Double) {
+        self.elapsedMonths = elapsedMonths; self.value = value
+    }
 }
 
 public struct ScenarioPercentilePoint: Codable, Equatable, Sendable {
@@ -274,7 +357,8 @@ public struct ScenarioPercentilePoint: Codable, Equatable, Sendable {
     public let p75: Double
     public let p90: Double
     public init(elapsedMonths: Int, p10: Double, p25: Double, p50: Double, p75: Double, p90: Double) {
-        self.elapsedMonths = elapsedMonths; self.p10 = p10; self.p25 = p25; self.p50 = p50; self.p75 = p75; self.p90 = p90
+        self.elapsedMonths = elapsedMonths; self.p10 = p10; self.p25 = p25; self.p50 = p50; self.p75 = p75; self
+            .p90 = p90
     }
 }
 
@@ -282,7 +366,9 @@ public struct ScenarioContribution: Codable, Equatable, Sendable {
     public let key: String
     public let amount: Double
     public let percentagePoints: Double
-    public init(key: String, amount: Double, percentagePoints: Double) { self.key = key; self.amount = amount; self.percentagePoints = percentagePoints }
+    public init(key: String, amount: Double, percentagePoints: Double) {
+        self.key = key; self.amount = amount; self.percentagePoints = percentagePoints
+    }
 }
 
 public struct ScenarioResult: Codable, Equatable, Identifiable, Sendable {
@@ -312,14 +398,26 @@ public struct ScenarioResult: Codable, Equatable, Identifiable, Sendable {
     /// Spending reduction needed to free cash for the contribution delta (null if unknown).
     public let expenseImpactMonthly: Double?
 
-    public init(id: String, runId: String, timeline: [ScenarioValuePoint], percentileBands: [ScenarioPercentilePoint] = [],
-                maximumDrawdown: Double, goalProbability: Double? = nil, expectedShortfall: Double? = nil,
-                holdingContributions: [ScenarioContribution] = [], classContributions: [ScenarioContribution] = [],
-                assumptions: [String: Double] = [:], warnings: [ScenarioDataWarning] = [],
-                endingValue: Double? = nil, portfolioChangePercent: Double? = nil,
-                goalDelayMonths: Double? = nil, requiredMonthlyContribution: Double? = nil,
-                contributionDelta: Double? = nil, recoveryMonths: Double? = nil,
-                expenseImpactMonthly: Double? = nil) {
+    public init(
+        id: String,
+        runId: String,
+        timeline: [ScenarioValuePoint],
+        percentileBands: [ScenarioPercentilePoint] = [],
+        maximumDrawdown: Double,
+        goalProbability: Double? = nil,
+        expectedShortfall: Double? = nil,
+        holdingContributions: [ScenarioContribution] = [],
+        classContributions: [ScenarioContribution] = [],
+        assumptions: [String: Double] = [:],
+        warnings: [ScenarioDataWarning] = [],
+        endingValue: Double? = nil,
+        portfolioChangePercent: Double? = nil,
+        goalDelayMonths: Double? = nil,
+        requiredMonthlyContribution: Double? = nil,
+        contributionDelta: Double? = nil,
+        recoveryMonths: Double? = nil,
+        expenseImpactMonthly: Double? = nil
+    ) {
         self.id = id; self.runId = runId; self.timeline = timeline; self.percentileBands = percentileBands
         self.maximumDrawdown = maximumDrawdown; self.goalProbability = goalProbability
         self.expectedShortfall = expectedShortfall; self.holdingContributions = holdingContributions
@@ -334,7 +432,7 @@ public struct ScenarioResult: Codable, Equatable, Identifiable, Sendable {
 public struct ScenarioComparison: Codable, Equatable, Sendable {
     public let results: [ScenarioResult]
     public init(results: [ScenarioResult]) throws {
-        guard (1...4).contains(results.count) else { throw ScenarioValidationError.tooManyComparisons }
+        guard (1 ... 4).contains(results.count) else { throw ScenarioValidationError.tooManyComparisons }
         self.results = results
     }
 }

@@ -108,7 +108,16 @@ public struct AITipResponse: Codable, Sendable, Equatable {
     public let actionPath: String?
     public let createdAt: String
     public let expiresAt: String
-    public init(id: String, kind: String, title: String, body: String, importance: Int, actionPath: String?, createdAt: String, expiresAt: String) {
+    public init(
+        id: String,
+        kind: String,
+        title: String,
+        body: String,
+        importance: Int,
+        actionPath: String?,
+        createdAt: String,
+        expiresAt: String
+    ) {
         self.id = id; self.kind = kind; self.title = title; self.body = body; self.importance = importance
         self.actionPath = actionPath; self.createdAt = createdAt; self.expiresAt = expiresAt
     }
@@ -123,7 +132,16 @@ public struct AIPendingActionResponse: Codable, Sendable, Equatable {
     public let status: AIActionStatus
     public let expiresAt: String
     public let createdAt: String
-    public init(id: String, conversationId: String?, toolName: String, summary: String, arguments: String, status: AIActionStatus, expiresAt: String, createdAt: String) {
+    public init(
+        id: String,
+        conversationId: String?,
+        toolName: String,
+        summary: String,
+        arguments: String,
+        status: AIActionStatus,
+        expiresAt: String,
+        createdAt: String
+    ) {
         self.id = id; self.conversationId = conversationId; self.toolName = toolName
         self.summary = summary; self.arguments = arguments; self.status = status
         self.expiresAt = expiresAt; self.createdAt = createdAt

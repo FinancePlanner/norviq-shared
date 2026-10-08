@@ -142,15 +142,18 @@ public struct FinancialGoalInput: Codable, Equatable, Sendable {
         }
         guard baseCurrency.count == 3 else { throw ScenarioValidationError.invalidCurrency }
         guard targetAmount.isFinite, startingCapital.isFinite, monthlyContribution.isFinite,
-              targetAmount > 0, startingCapital >= 0, monthlyContribution >= 0 else {
+              targetAmount > 0, startingCapital >= 0, monthlyContribution >= 0
+        else {
             throw ScenarioValidationError.invalidAmount
         }
         guard annualContributionGrowth.isFinite, inflationAssumption.isFinite,
               (-1 ... 1).contains(annualContributionGrowth), (-1 ... 1).contains(inflationAssumption),
-              expectedAnnualReturn.map({ $0.isFinite && (-0.5 ... 0.5).contains($0) }) ?? true else {
+              expectedAnnualReturn.map({ $0.isFinite && (-0.5 ... 0.5).contains($0) }) ?? true
+        else {
             throw ScenarioValidationError.invalidAmount
         }
-        guard portfolioAllocations.allSatisfy({ (0 < $0.allocationPercentage) && $0.allocationPercentage <= 100 }) else {
+        guard portfolioAllocations.allSatisfy({ ($0.allocationPercentage > 0) && $0.allocationPercentage <= 100 })
+        else {
             throw GoalPlanningValidationError.invalidAllocation
         }
     }
@@ -265,8 +268,14 @@ public struct FinancialGoal: Codable, Equatable, Identifiable, Sendable {
         expectedAnnualReturn = try values.decodeIfPresent(Double.self, forKey: .expectedAnnualReturn)
             ?? riskProfile.defaultAnnualReturn
         status = try values.decodeIfPresent(FinancialGoalStatus.self, forKey: .status) ?? .active
-        portfolioAllocations = try values.decodeIfPresent([GoalPortfolioAllocation].self, forKey: .portfolioAllocations) ?? []
-        expenseCategoryLinks = try values.decodeIfPresent([GoalExpenseCategoryLink].self, forKey: .expenseCategoryLinks) ?? []
+        portfolioAllocations = try values.decodeIfPresent(
+            [GoalPortfolioAllocation].self,
+            forKey: .portfolioAllocations
+        ) ?? []
+        expenseCategoryLinks = try values.decodeIfPresent(
+            [GoalExpenseCategoryLink].self,
+            forKey: .expenseCategoryLinks
+        ) ?? []
         createdAt = try values.decodeIfPresent(String.self, forKey: .createdAt)
         updatedAt = try values.decodeIfPresent(String.self, forKey: .updatedAt)
     }
@@ -292,7 +301,14 @@ public struct GoalContribution: Codable, Equatable, Identifiable, Sendable {
     public let note: String?
     public let createdAt: String
 
-    public init(id: String, goalId: String, amount: Double, occurredAt: String, note: String? = nil, createdAt: String) {
+    public init(
+        id: String,
+        goalId: String,
+        amount: Double,
+        occurredAt: String,
+        note: String? = nil,
+        createdAt: String
+    ) {
         self.id = id
         self.goalId = goalId
         self.amount = amount
@@ -303,7 +319,10 @@ public struct GoalContribution: Codable, Equatable, Identifiable, Sendable {
 }
 
 public struct GoalTrajectoryPoint: Codable, Equatable, Identifiable, Sendable {
-    public var id: String { date }
+    public var id: String {
+        date
+    }
+
     public let date: String
     public let plannedValue: Double
     public let actualValue: Double?
@@ -392,8 +411,14 @@ public struct GoalOverview: Codable, Equatable, Sendable {
     public let activeGoalLimit: Int?
     public let isPro: Bool
 
-    public init(items: [GoalOverviewItem], totalCurrentValue: Double, totalTargetAmount: Double,
-                activeGoalCount: Int, activeGoalLimit: Int?, isPro: Bool) {
+    public init(
+        items: [GoalOverviewItem],
+        totalCurrentValue: Double,
+        totalTargetAmount: Double,
+        activeGoalCount: Int,
+        activeGoalLimit: Int?,
+        isPro: Bool
+    ) {
         self.items = items
         self.totalCurrentValue = totalCurrentValue
         self.totalTargetAmount = totalTargetAmount
@@ -437,9 +462,18 @@ public struct GoalSuggestion: Codable, Equatable, Identifiable, Sendable {
     public let status: GoalSuggestionStatus
     public let createdAt: String
 
-    public init(id: String, goalId: String, kind: GoalSuggestionKind, title: String, explanation: String,
-                monthlyAmount: Double? = nil, allocationPercentage: Double? = nil,
-                estimatedMonthsChanged: Int? = nil, status: GoalSuggestionStatus = .proposed, createdAt: String) {
+    public init(
+        id: String,
+        goalId: String,
+        kind: GoalSuggestionKind,
+        title: String,
+        explanation: String,
+        monthlyAmount: Double? = nil,
+        allocationPercentage: Double? = nil,
+        estimatedMonthsChanged: Int? = nil,
+        status: GoalSuggestionStatus = .proposed,
+        createdAt: String
+    ) {
         self.id = id
         self.goalId = goalId
         self.kind = kind
@@ -460,8 +494,13 @@ public struct GoalAdjustmentDraft: Codable, Equatable, Identifiable, Sendable {
     public let payload: [String: String]
     public let createdAt: String
 
-    public init(id: String, suggestionId: String, destination: GoalAdjustmentDestination,
-                payload: [String: String], createdAt: String) {
+    public init(
+        id: String,
+        suggestionId: String,
+        destination: GoalAdjustmentDestination,
+        payload: [String: String],
+        createdAt: String
+    ) {
         self.id = id
         self.suggestionId = suggestionId
         self.destination = destination
@@ -477,8 +516,13 @@ public struct GoalTemplate: Codable, Equatable, Identifiable, Sendable {
     public let suggestedYears: Int
     public let riskProfile: FinancialGoalRiskProfile
 
-    public init(id: String, name: String, goalType: FinancialGoalType,
-                suggestedYears: Int, riskProfile: FinancialGoalRiskProfile) {
+    public init(
+        id: String,
+        name: String,
+        goalType: FinancialGoalType,
+        suggestedYears: Int,
+        riskProfile: FinancialGoalRiskProfile
+    ) {
         self.id = id
         self.name = name
         self.goalType = goalType

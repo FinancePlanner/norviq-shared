@@ -1,6 +1,6 @@
 import Foundation
-@testable import StockPlanShared
 import Testing
+@testable import StockPlanShared
 
 struct AdvancedReportingDTOsTests {
     @Test(arguments: ReportBlockKind.allCases)

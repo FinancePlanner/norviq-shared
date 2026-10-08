@@ -20,7 +20,7 @@ public struct FiscalReceiptQRParser: Sendable {
     }
 
     public static let defaultFormats: [any FiscalQRFormat] = [
-        PortugalATFiscalQRFormat()
+        PortugalATFiscalQRFormat(),
     ]
 
     /// Parse a decoded QR string. Returns nil when no registered format matches.

@@ -5,8 +5,8 @@ import Foundation
 public enum BadgeType: String, Codable, Sendable, CaseIterable {
     case firstPurchase = "first_purchase"
     case newsReader = "news_reader"
-    case investor = "investor"
-    case saver = "saver"
+    case investor
+    case saver
     case frugalFun = "frugal_fun"
     case spendingDetox = "spending_detox"
     case growthMindset = "growth_mindset"
@@ -40,17 +40,19 @@ public struct EarnedTierInfo: Codable, Sendable, Equatable {
 // MARK: - Badge Progress Response
 
 public struct BadgeProgressResponse: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { type.rawValue }
+    public var id: String {
+        type.rawValue
+    }
 
     public let type: BadgeType
     public let title: String
     public let description: String
-    public let iconName: String        // SF Symbol placeholder
+    public let iconName: String // SF Symbol placeholder
     public let currentTier: BadgeTier? // nil if no tier earned yet
-    public let nextTier: BadgeTier?    // nil if gold already earned
-    public let progress: Double        // 0.0 – 1.0 toward next tier
-    public let currentCount: Int       // raw progress value
-    public let targetCount: Int        // target for next tier
+    public let nextTier: BadgeTier? // nil if gold already earned
+    public let progress: Double // 0.0 – 1.0 toward next tier
+    public let currentCount: Int // raw progress value
+    public let targetCount: Int // target for next tier
     public let earnedTiers: [EarnedTierInfo]
 
     public init(

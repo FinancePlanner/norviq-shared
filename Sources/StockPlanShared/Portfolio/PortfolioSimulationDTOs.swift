@@ -9,7 +9,9 @@ public enum PortfolioSimulationMode: String, Codable, Sendable, Equatable, CaseI
 }
 
 public struct PortfolioSimulationLeg: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { symbol }
+    public var id: String {
+        symbol
+    }
 
     public let symbol: String
     public let displayName: String?
@@ -169,7 +171,9 @@ public struct PortfolioSimulationListResponse: Codable, Sendable, Equatable {
 
 /// One position's move between the current portfolio and the simulated target.
 public struct PortfolioSimulationDiffRow: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { symbol }
+    public var id: String {
+        symbol
+    }
 
     public let symbol: String
     public let currentBasisPoints: Int

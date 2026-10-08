@@ -16,7 +16,10 @@ public enum PilotFollowStatus: String, Codable, Sendable, CaseIterable {
 }
 
 public struct PilotSummary: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { slug }
+    public var id: String {
+        slug
+    }
+
     public let slug: String
     public let displayName: String
     public let kind: PilotKind
@@ -26,7 +29,14 @@ public struct PilotSummary: Codable, Sendable, Equatable, Identifiable {
     public let updatedAt: String?
     public let holdingsCount: Int
 
-    public init(slug: String, displayName: String, kind: PilotKind, chamber: String?, updatedAt: String?, holdingsCount: Int) {
+    public init(
+        slug: String,
+        displayName: String,
+        kind: PilotKind,
+        chamber: String?,
+        updatedAt: String?,
+        holdingsCount: Int
+    ) {
         self.slug = slug
         self.displayName = displayName
         self.kind = kind
@@ -60,7 +70,16 @@ public struct PilotDisclosureItem: Codable, Sendable, Equatable {
     /// 13F period such as `2026Q2`; nil for politicians.
     public let period: String?
 
-    public init(symbol: String, side: String, instrument: String, transactionDate: String?, disclosureDate: String?, amountMin: Double?, amountMax: Double?, period: String?) {
+    public init(
+        symbol: String,
+        side: String,
+        instrument: String,
+        transactionDate: String?,
+        disclosureDate: String?,
+        amountMin: Double?,
+        amountMax: Double?,
+        period: String?
+    ) {
         self.symbol = symbol
         self.side = side
         self.instrument = instrument
@@ -81,7 +100,13 @@ public struct PilotDetail: Codable, Sendable, Equatable {
     /// Plain-language reporting-lag and pricing disclaimer for this pilot kind.
     public let lagNote: String
 
-    public init(pilot: PilotSummary, weights: [PilotWeight], skippedPuts: Int, recentDisclosures: [PilotDisclosureItem], lagNote: String) {
+    public init(
+        pilot: PilotSummary,
+        weights: [PilotWeight],
+        skippedPuts: Int,
+        recentDisclosures: [PilotDisclosureItem],
+        lagNote: String
+    ) {
         self.pilot = pilot
         self.weights = weights
         self.skippedPuts = skippedPuts
@@ -100,7 +125,13 @@ public struct PilotFollowCreateRequest: Codable, Sendable, Equatable {
     /// Required for portfolio targets; ignored for watchlists.
     public let startingCapital: Double?
 
-    public init(pilotSlug: String, targetKind: PilotFollowTargetKind, portfolioListId: String?, watchlistListId: String?, startingCapital: Double?) {
+    public init(
+        pilotSlug: String,
+        targetKind: PilotFollowTargetKind,
+        portfolioListId: String?,
+        watchlistListId: String?,
+        startingCapital: Double?
+    ) {
         self.pilotSlug = pilotSlug
         self.targetKind = targetKind
         self.portfolioListId = portfolioListId
@@ -130,7 +161,18 @@ public struct PilotFollowResponse: Codable, Sendable, Equatable, Identifiable {
     public let appliedVersion: Int
     public let createdAt: String
 
-    public init(id: String, pilot: PilotSummary, targetKind: PilotFollowTargetKind, portfolioListId: String?, watchlistListId: String?, startingCapital: Double?, currency: String, status: PilotFollowStatus, appliedVersion: Int, createdAt: String) {
+    public init(
+        id: String,
+        pilot: PilotSummary,
+        targetKind: PilotFollowTargetKind,
+        portfolioListId: String?,
+        watchlistListId: String?,
+        startingCapital: Double?,
+        currency: String,
+        status: PilotFollowStatus,
+        appliedVersion: Int,
+        createdAt: String
+    ) {
         self.id = id
         self.pilot = pilot
         self.targetKind = targetKind
@@ -155,7 +197,16 @@ public struct PilotFollowEventResponse: Codable, Sendable, Equatable, Identifiab
     public let pricedAt: String
     public let note: String?
 
-    public init(id: String, bookVersion: Int, kind: String, symbol: String, quantity: Double?, price: Double?, pricedAt: String, note: String?) {
+    public init(
+        id: String,
+        bookVersion: Int,
+        kind: String,
+        symbol: String,
+        quantity: Double?,
+        price: Double?,
+        pricedAt: String,
+        note: String?
+    ) {
         self.id = id
         self.bookVersion = bookVersion
         self.kind = kind

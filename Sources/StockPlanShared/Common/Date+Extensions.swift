@@ -1,7 +1,7 @@
 import Foundation
 
-extension DateFormatter {
-    public static let iso8601WithFractionalSeconds: DateFormatter = {
+public extension DateFormatter {
+    static let iso8601WithFractionalSeconds: DateFormatter = {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -10,7 +10,7 @@ extension DateFormatter {
         return formatter
     }()
 
-    public static let iso8601Standard: DateFormatter = {
+    static let iso8601Standard: DateFormatter = {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -19,7 +19,7 @@ extension DateFormatter {
         return formatter
     }()
 
-    public static let yyyyMMdd: DateFormatter = {
+    static let yyyyMMdd: DateFormatter = {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -30,12 +30,12 @@ extension DateFormatter {
 }
 
 public enum SharedDateDecoder {
-    // Formatters are expensive to build and safe to share for parsing, so
-    // they're created once per process instead of once per Date field.
-    // ISO8601DateFormatter is documented thread-safe but isn't annotated
-    // Sendable in the SDK, hence `nonisolated(unsafe)`. Never mutate these
-    // after construction.
-    nonisolated(unsafe) static let iso8601: ISO8601DateFormatter = ISO8601DateFormatter()
+    /// Formatters are expensive to build and safe to share for parsing, so
+    /// they're created once per process instead of once per Date field.
+    /// ISO8601DateFormatter is documented thread-safe but isn't annotated
+    /// Sendable in the SDK, hence `nonisolated(unsafe)`. Never mutate these
+    /// after construction.
+    nonisolated(unsafe) static let iso8601: ISO8601DateFormatter = .init()
 
     nonisolated(unsafe) static let iso8601Fractional: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
@@ -56,7 +56,10 @@ public enum SharedDateDecoder {
         return nil
     }
 
-    public static func decodeDate<K: CodingKey>(from container: KeyedDecodingContainer<K>, forKey key: K) throws -> Date {
+    public static func decodeDate<K: CodingKey>(
+        from container: KeyedDecodingContainer<K>,
+        forKey key: K
+    ) throws -> Date {
         if let stringValue = try? container.decode(String.self, forKey: key) {
             if let parsed = parseDateString(stringValue) {
                 return parsed
@@ -112,17 +115,17 @@ public enum SharedDateDecoder {
     }
 }
 
-extension JSONDecoder {
+public extension JSONDecoder {
     /// Shared, process-wide decoder configured for the StockPlan API.
     ///
     /// This is a single cached instance: do **not** mutate it. Callers that
     /// need a differently-configured decoder must start from
     /// ``makeStockPlanShared()`` instead.
-    public static let stockPlanShared: JSONDecoder = makeStockPlanShared()
+    static let stockPlanShared: JSONDecoder = makeStockPlanShared()
 
     /// Builds a fresh decoder with the StockPlan configuration. Use this when
     /// you intend to customise strategies on the returned instance.
-    public static func makeStockPlanShared() -> JSONDecoder {
+    static func makeStockPlanShared() -> JSONDecoder {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .custom { decoder in
@@ -132,14 +135,14 @@ extension JSONDecoder {
     }
 }
 
-extension JSONEncoder {
+public extension JSONEncoder {
     /// Shared, process-wide encoder configured for the StockPlan API.
     /// Single cached instance: do **not** mutate it; use
     /// ``makeStockPlanShared()`` for a customisable copy.
-    public static let stockPlanShared: JSONEncoder = makeStockPlanShared()
+    static let stockPlanShared: JSONEncoder = makeStockPlanShared()
 
     /// Builds a fresh encoder with the StockPlan configuration.
-    public static func makeStockPlanShared() -> JSONEncoder {
+    static func makeStockPlanShared() -> JSONEncoder {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         encoder.dateEncodingStrategy = .iso8601

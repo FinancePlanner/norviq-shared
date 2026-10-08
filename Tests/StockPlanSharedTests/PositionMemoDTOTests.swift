@@ -16,7 +16,13 @@ struct PositionMemoDTOTests {
 
     @Test("A memo card round-trips")
     func cardRoundTrip() throws {
-        let card = PositionMemoCard(id: "abc", symbol: "GRAB", title: "GRAB memo", verdict: "Q would not add.", bookmarked: false)
+        let card = PositionMemoCard(
+            id: "abc",
+            symbol: "GRAB",
+            title: "GRAB memo",
+            verdict: "Q would not add.",
+            bookmarked: false
+        )
         let data = try JSONEncoder().encode(card)
         let decoded = try JSONDecoder().decode(PositionMemoCard.self, from: data)
         #expect(decoded == card)

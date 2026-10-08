@@ -1,6 +1,6 @@
 import Foundation
-@testable import StockPlanShared
 import Testing
+@testable import StockPlanShared
 
 @Suite("Wealth automation contracts")
 struct WealthAutomationDTOTests {

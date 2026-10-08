@@ -13,7 +13,10 @@ public enum AIInsightKind: String, Codable, Sendable, Equatable, CaseIterable {
 
 /// A single labelled metric surfaced on an insight card.
 public struct AIInsightHighlight: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { label }
+    public var id: String {
+        label
+    }
+
     public let label: String
     public let value: String
     /// Optional direction indicator: "up", "down", or "flat".

@@ -68,7 +68,9 @@ public struct PersonalInflationResponse: Codable, Sendable, Equatable {
 }
 
 public struct PersonalInflationComponentDTO: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { category }
+    public var id: String {
+        category
+    }
 
     public let category: String
     public let macroCategory: String

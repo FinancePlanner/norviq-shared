@@ -448,7 +448,13 @@ public struct WatchlistScreenMatch: Codable, Equatable, Identifiable, Sendable {
     public let isNew: Bool
     public let conditionResults: [ScreenConditionResult]
 
-    public init(id: String, symbol: String, name: String? = nil, isNew: Bool, conditionResults: [ScreenConditionResult]) {
+    public init(
+        id: String,
+        symbol: String,
+        name: String? = nil,
+        isNew: Bool,
+        conditionResults: [ScreenConditionResult]
+    ) {
         self.id = id
         self.symbol = symbol
         self.name = name

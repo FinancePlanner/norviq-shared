@@ -1,3 +1,4 @@
+// swiftlint:disable file_length — DTO catalogue; splitting is a separate refactor.
 import Foundation
 
 public struct StockDetailsResponse: Codable, Sendable, Equatable {
@@ -50,7 +51,6 @@ public struct QuoteResponse: Codable, Sendable, Equatable {
         previousClose: Double? = nil,
         timestamp: Double
     ) {
-
         self.symbol = symbol
         self.currency = currency
         self.currentPrice = currentPrice
@@ -88,7 +88,7 @@ public struct CompanyProfileResponse: Codable, Sendable, Equatable {
     public let shareOutstanding: Double?
     public let ticker: String?
     public let weburl: String?
-    public let lastUpdated: String?  // ISO8601 timestamp for caching
+    public let lastUpdated: String? // ISO8601 timestamp for caching
 
     public init(
         country: String?,
@@ -131,8 +131,7 @@ public struct PriceBarResponse: Codable, Sendable, Equatable {
     public let close: Double
     public let volume: Int?
 
-    public init(date: String, open: Double, high: Double, low: Double, close: Double, volume: Int?)
-    {
+    public init(date: String, open: Double, high: Double, low: Double, close: Double, volume: Int?) {
         self.date = date
         self.open = open
         self.high = high
@@ -231,11 +230,11 @@ public enum BasicFinancialMetricValue: Codable, Sendable, Equatable {
         var container = encoder.singleValueContainer()
 
         switch self {
-        case .number(let value):
+        case let .number(value):
             try container.encode(value)
-        case .string(let value):
+        case let .string(value):
             try container.encode(value)
-        case .bool(let value):
+        case let .bool(value):
             try container.encode(value)
         case .null:
             try container.encodeNil()
@@ -495,7 +494,7 @@ public struct BalanceSheetStatementResponse: Codable, Sendable, Equatable {
     public let otherPayables: Double?
     public let accruedExpenses: Double?
     public let shortTermDebt: Double?
-    public let capitalLeaseOblationsCurrent: Double?          // fixed typo in your original
+    public let capitalLeaseOblationsCurrent: Double? // fixed typo in your original
     public let taxPayables: Double?
     public let deferredRevenue: Double?
     public let otherCurrentLiabilities: Double?

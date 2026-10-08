@@ -155,7 +155,10 @@ public struct BudgetDriftDashboard: Codable, Sendable, Equatable {
 }
 
 public struct BudgetDisciplineMonth: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { monthStart }
+    public var id: String {
+        monthStart
+    }
+
     public let monthStart: String
     public let score: Double?
     public let compliant: Bool?
@@ -379,7 +382,13 @@ public struct BudgetTemplateResponse: Codable, Sendable, Equatable, Identifiable
     public let createdAt: String?
     public let updatedAt: String?
 
-    public init(id: String, name: String, items: [BudgetTemplateItem], createdAt: String? = nil, updatedAt: String? = nil) {
+    public init(
+        id: String,
+        name: String,
+        items: [BudgetTemplateItem],
+        createdAt: String? = nil,
+        updatedAt: String? = nil
+    ) {
         self.id = id
         self.name = name
         self.items = items

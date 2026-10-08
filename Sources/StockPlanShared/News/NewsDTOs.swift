@@ -8,7 +8,14 @@ public struct NewsItemRequest: Codable, Sendable, Equatable {
     public let summary: String?
     public let publishedAt: String?
 
-    public init(symbol: String, headline: String, source: String?, url: String?, summary: String?, publishedAt: String?) {
+    public init(
+        symbol: String,
+        headline: String,
+        source: String?,
+        url: String?,
+        summary: String?,
+        publishedAt: String?
+    ) {
         self.symbol = symbol
         self.headline = headline
         self.source = source

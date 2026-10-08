@@ -88,7 +88,9 @@ public enum SpreadsheetImportRowStatus: String, Codable, Sendable, Equatable {
     }
 
     /// Whether this row would be written as-is.
-    public var isImportable: Bool { self == .ok }
+    public var isImportable: Bool {
+        self == .ok
+    }
 }
 
 // MARK: - Structure

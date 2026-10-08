@@ -60,7 +60,12 @@ public struct PublicPortfolioShareResponse: Codable, Sendable, Equatable {
     public let holdings: [PortfolioShareHolding]
     public let otherWeightPercent: Double?
 
-    public init(asOf: String, totals: PortfolioShareTotals, holdings: [PortfolioShareHolding], otherWeightPercent: Double?) {
+    public init(
+        asOf: String,
+        totals: PortfolioShareTotals,
+        holdings: [PortfolioShareHolding],
+        otherWeightPercent: Double?
+    ) {
         self.asOf = asOf
         self.totals = totals
         self.holdings = holdings

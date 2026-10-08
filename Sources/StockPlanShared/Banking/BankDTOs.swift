@@ -37,7 +37,14 @@ public struct BankAccountResponse: Codable, Sendable, Equatable {
     public let type: String?
     public let balance: Double?
 
-    public init(id: String, name: String, mask: String? = nil, currency: String? = nil, type: String? = nil, balance: Double? = nil) {
+    public init(
+        id: String,
+        name: String,
+        mask: String? = nil,
+        currency: String? = nil,
+        type: String? = nil,
+        balance: Double? = nil
+    ) {
         self.id = id
         self.name = name
         self.mask = mask
@@ -80,7 +87,7 @@ public struct BankTransactionResponse: Codable, Sendable, Equatable {
     public let accountId: String
     public let amount: Double
     public let currency: String?
-    public let date: String  // YYYY-MM-DD
+    public let date: String // YYYY-MM-DD
     public let merchant: String?
     public let descriptionText: String?
     public let pending: Bool
@@ -129,7 +136,12 @@ public struct BankLinkSessionResponse: Codable, Sendable, Equatable {
     public let hostedURL: String?
     public let expiration: Date?
 
-    public init(provider: BankProviderKind, linkToken: String? = nil, hostedURL: String? = nil, expiration: Date? = nil) {
+    public init(
+        provider: BankProviderKind,
+        linkToken: String? = nil,
+        hostedURL: String? = nil,
+        expiration: Date? = nil
+    ) {
         self.provider = provider
         self.linkToken = linkToken
         self.hostedURL = hostedURL

@@ -249,7 +249,10 @@ public struct PortfolioPerformanceResponse: Codable, Sendable, Equatable {
 }
 
 public struct PortfolioSectorHoldingContribution: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { symbol }
+    public var id: String {
+        symbol
+    }
+
     public let symbol: String
     public let value: Double
     public let weightPercent: Double
@@ -262,7 +265,10 @@ public struct PortfolioSectorHoldingContribution: Codable, Sendable, Equatable, 
 }
 
 public struct PortfolioSectorExposureItem: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { sector }
+    public var id: String {
+        sector
+    }
+
     public let sector: String
     public let value: Double
     public let weightPercent: Double
@@ -316,7 +322,10 @@ public struct PortfolioSectorExposureResponse: Codable, Sendable, Equatable {
 }
 
 public struct SectorGainItem: Codable, Sendable, Equatable, Identifiable {
-    public var id: String { sector }
+    public var id: String {
+        sector
+    }
+
     public let sector: String
     public let marketValue: Double
     public let costBasis: Double
@@ -536,7 +545,13 @@ public struct DividendProjectedItem: Codable, Sendable, Equatable {
     public let amountPerShare: Double
     public let projectedTotal: Double
 
-    public init(symbol: String, exDividendDate: String, paymentDate: String, amountPerShare: Double, projectedTotal: Double) {
+    public init(
+        symbol: String,
+        exDividendDate: String,
+        paymentDate: String,
+        amountPerShare: Double,
+        projectedTotal: Double
+    ) {
         self.symbol = symbol
         self.exDividendDate = exDividendDate
         self.paymentDate = paymentDate
@@ -560,7 +575,11 @@ public struct PortfolioDividendsResponse: Codable, Sendable, Equatable {
     public let upcomingDividends: [DividendProjectedItem]
     public let monthlyBreakdown: [DividendMonthlyBreakdown]
 
-    public init(annualProjectedIncome: Double, upcomingDividends: [DividendProjectedItem], monthlyBreakdown: [DividendMonthlyBreakdown]) {
+    public init(
+        annualProjectedIncome: Double,
+        upcomingDividends: [DividendProjectedItem],
+        monthlyBreakdown: [DividendMonthlyBreakdown]
+    ) {
         self.annualProjectedIncome = annualProjectedIncome
         self.upcomingDividends = upcomingDividends
         self.monthlyBreakdown = monthlyBreakdown

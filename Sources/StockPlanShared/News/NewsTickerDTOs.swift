@@ -11,7 +11,14 @@ public struct NewsTickerItem: Codable, Sendable, Equatable, Identifiable {
     public let sourceUrl: String?
     public let publishedAt: String
 
-    public init(id: String, title: String, url: String?, source: String, sourceUrl: String? = nil, publishedAt: String) {
+    public init(
+        id: String,
+        title: String,
+        url: String?,
+        source: String,
+        sourceUrl: String? = nil,
+        publishedAt: String
+    ) {
         self.id = id
         self.title = title
         self.url = url
