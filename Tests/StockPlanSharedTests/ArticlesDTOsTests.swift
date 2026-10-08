@@ -5,16 +5,16 @@ import Testing
 @Suite("ArticlesDTOs")
 struct ArticlesDTOsTests {
     private var encoder: JSONEncoder {
-        let e = JSONEncoder()
-        e.dateEncodingStrategy = .iso8601
-        e.outputFormatting = .sortedKeys
-        return e
+        let jsonEncoder = JSONEncoder()
+        jsonEncoder.dateEncodingStrategy = .iso8601
+        jsonEncoder.outputFormatting = .sortedKeys
+        return jsonEncoder
     }
 
     private var decoder: JSONDecoder {
-        let d = JSONDecoder()
-        d.dateDecodingStrategy = .iso8601
-        return d
+        let jsonDecoder = JSONDecoder()
+        jsonDecoder.dateDecodingStrategy = .iso8601
+        return jsonDecoder
     }
 
     @Test("write request round-trips with camelCase keys")
@@ -59,13 +59,9 @@ struct ArticlesDTOsTests {
 
     @Test("unknown status and source decode as .unknown so a newer server never breaks an older client")
     func unknownEnums() throws {
-        #expect(try decoder.decode([ArticleStatus].self, from: Data("[\"archived\",\"hidden\"]".utf8)) == [
-            .unknown,
-            .hidden,
-        ])
-        #expect(try decoder.decode([ArticleSource].self, from: Data("[\"telegram\",\"discord\"]".utf8)) == [
-            .unknown,
-            .discord,
-        ])
+        let statuses = try decoder.decode([ArticleStatus].self, from: Data("[\"archived\",\"hidden\"]".utf8))
+        let sources = try decoder.decode([ArticleSource].self, from: Data("[\"telegram\",\"discord\"]".utf8))
+        #expect(statuses == [.unknown, .hidden])
+        #expect(sources == [.unknown, .discord])
     }
 }
