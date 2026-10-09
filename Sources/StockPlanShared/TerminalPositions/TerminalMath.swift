@@ -143,6 +143,7 @@ public enum AutobuyMath {
 
     /// Active rows only; rows without a monthly equivalent are skipped.
     public static func monthlyTotal(
+        // swiftlint:disable:next large_tuple
         _ items: [(amount: Double, cadence: AutobuyCadence, percent: Double?, active: Bool)]
     ) -> Double {
         items.reduce(0) { total, item in

@@ -8,7 +8,7 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `AMZN: 10T cap on 11B shares is 909.09 and a 1M target needs 1100 shares`() throws {
+    func `aMZN: 10T cap on 11B shares is 909.09 and a 1M target needs 1100 shares`() throws {
         let result = try success(TerminalScenarioInput(
             terminalShareCount: 11_000_000_000, terminalMarketCap: 10_000_000_000_000, valueWanted: 1_000_000
         ))
@@ -17,7 +17,7 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `VG: 12.5B cap on 200M shares is 62.5 and a 500k target needs 8000 shares`() throws {
+    func `vG: 12.5B cap on 200M shares is 62.5 and a 500k target needs 8000 shares`() throws {
         let result = try success(TerminalScenarioInput(
             terminalShareCount: 200_000_000, terminalMarketCap: 12_500_000_000, valueWanted: 500_000
         ))
@@ -26,7 +26,7 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `SOFI: 150B cap on 1.75B shares is 85.714 and a 250k target needs 2916.67 shares`() throws {
+    func `sOFI: 150B cap on 1.75B shares is 85.714 and a 250k target needs 2916.67 shares`() throws {
         let result = try success(TerminalScenarioInput(
             terminalShareCount: 1_750_000_000, terminalMarketCap: 150_000_000_000, valueWanted: 250_000
         ))
@@ -35,7 +35,7 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `Owning 750 of 1100 needed is 68.18% progress, 350 still needed`() throws {
+    func `owning 750 of 1100 needed is 68.18% progress, 350 still needed`() throws {
         let result = try success(TerminalScenarioInput(
             terminalShareCount: 11_000_000_000, terminalMarketCap: 10_000_000_000_000,
             valueWanted: 1_000_000, sharesOwned: 750, currentSharePrice: 200
@@ -47,7 +47,7 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `Owning more than needed caps still-needed at zero`() throws {
+    func `owning more than needed caps still-needed at zero`() throws {
         let result = try success(TerminalScenarioInput(
             terminalShareCount: 200_000_000, terminalMarketCap: 12_500_000_000, valueWanted: 500_000, sharesOwned: 9000
         ))
@@ -57,7 +57,7 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `A zero target needs zero shares and reports zero progress`() throws {
+    func `a zero target needs zero shares and reports zero progress`() throws {
         let result = try success(TerminalScenarioInput(
             terminalShareCount: 200_000_000, terminalMarketCap: 12_500_000_000, valueWanted: 0, sharesOwned: 10
         ))
@@ -66,7 +66,7 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `No current price means no capital at today's price`() throws {
+    func `no current price means no capital at today's price`() throws {
         let result = try success(TerminalScenarioInput(
             terminalShareCount: 200_000_000, terminalMarketCap: 12_500_000_000, valueWanted: 500_000
         ))
@@ -74,7 +74,7 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `Guardrails: non-positive share count or market cap never divides`() {
+    func `guardrails: non-positive share count or market cap never divides`() {
         #expect(TerminalMath.evaluate(TerminalScenarioInput(
             terminalShareCount: 0, terminalMarketCap: 1, valueWanted: 1
         )) == .failure(.shareCountNotPositive))
@@ -90,14 +90,14 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `Round down to whole shares is display-only floor`() {
+    func `round down to whole shares is display-only floor`() {
         #expect(TerminalMath.wholeShares(2916.6667) == 2916)
         #expect(TerminalMath.wholeShares(-3) == 0)
         #expect(TerminalMath.wholeShares(.infinity) == 0)
     }
 
     @Test
-    func `Monthly equivalents follow the cadence`() {
+    func `monthly equivalents follow the cadence`() {
         #expect(abs((AutobuyMath.monthlyEquivalent(amount: 50, cadence: .weekly, percent: nil) ?? 0) - 216.6666667) <
             1e-6)
         #expect(abs((AutobuyMath.monthlyEquivalent(amount: 100, cadence: .biweekly, percent: nil) ?? 0) - 216.6666667) <
@@ -111,7 +111,7 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `Monthly total counts active rows with a known equivalent`() {
+    func `monthly total counts active rows with a known equivalent`() {
         let total = AutobuyMath.monthlyTotal([
             (amount: 50, cadence: .weekly, percent: nil, active: true),
             (amount: 275, cadence: .bimonthly, percent: nil, active: true),
@@ -122,20 +122,20 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `Unknown cadence strings decode as unknown`() throws {
+    func `unknown cadence strings decode as unknown`() throws {
         let decoded = try JSONDecoder().decode([AutobuyCadence].self, from: Data(#"["weekly","fortnightly"]"#.utf8))
         #expect(decoded == [.weekly, .unknown])
     }
 
     @Test
-    func `Derived price overflow to infinity is invalid, not a success`() {
+    func `derived price overflow to infinity is invalid, not a success`() {
         #expect(TerminalMath.evaluate(TerminalScenarioInput(
             terminalShareCount: 1e-300, terminalMarketCap: 1e300, valueWanted: 1
         )) == .failure(.invalidNumber))
     }
 
     @Test
-    func `Intermediate product overflow does not fail a representable ratio`() throws {
+    func `intermediate product overflow does not fail a representable ratio`() throws {
         let result = try success(TerminalScenarioInput(
             terminalShareCount: 1e200, terminalMarketCap: 1e250, valueWanted: 1e200
         ))
@@ -144,7 +144,7 @@ struct TerminalMathTests {
     }
 
     @Test
-    func `Huge weekly amount that overflows monthly equivalent is unknown and skipped in the total`() {
+    func `huge weekly amount that overflows monthly equivalent is unknown and skipped in the total`() {
         #expect(AutobuyMath.monthlyEquivalent(amount: 1e308, cadence: .weekly, percent: nil) == nil)
         let total = AutobuyMath.monthlyTotal([
             (amount: 1e308, cadence: .weekly, percent: nil, active: true),
