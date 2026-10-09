@@ -72,17 +72,28 @@ public enum TerminalMath {
         guard input.terminalMarketCap > 0 else { return .failure(.marketCapNotPositive) }
         guard input.valueWanted >= 0, input.sharesOwned >= 0 else { return .failure(.invalidNumber) }
 
+        // Dividing by the terminal price (rather than multiplying valueWanted by the
+        // share count first) avoids an intermediate overflow; the value is the same.
         let terminalSharePrice = input.terminalMarketCap / input.terminalShareCount
-        let sharesNeeded = input.valueWanted * input.terminalShareCount / input.terminalMarketCap
+        let sharesNeeded = input.valueWanted == 0 ? 0 : input.valueWanted / terminalSharePrice
         let sharesStillNeeded = max(0, sharesNeeded - input.sharesOwned)
         let capital = input.currentSharePrice.flatMap { $0 > 0 ? sharesNeeded * $0 : nil }
+        let progress = sharesNeeded == 0 ? 0 : input.sharesOwned / sharesNeeded
+        let gapValueAtTerminal = sharesStillNeeded * terminalSharePrice
+
+        // Derived values can still overflow or underflow to inf/nan even when every input is
+        // finite. Such a result must fail here, not reach the JSON encoder downstream.
+        let derived = [terminalSharePrice, sharesNeeded, progress, sharesStillNeeded, gapValueAtTerminal]
+            + [capital].compactMap(\.self)
+        guard derived.allSatisfy(\.isFinite) else { return .failure(.invalidNumber) }
+
         return .success(TerminalScenarioResult(
             terminalSharePrice: terminalSharePrice,
             sharesNeeded: sharesNeeded,
             capitalAtTodayPrice: capital,
-            progress: sharesNeeded == 0 ? 0 : input.sharesOwned / sharesNeeded,
+            progress: progress,
             sharesStillNeeded: sharesStillNeeded,
-            gapValueAtTerminal: sharesStillNeeded * terminalSharePrice
+            gapValueAtTerminal: gapValueAtTerminal
         ))
     }
 
@@ -114,16 +125,20 @@ public enum AutobuyMath {
     /// percentOfContribution uses `amount` as the monthly base: base × percent.
     public static func monthlyEquivalent(amount: Double, cadence: AutobuyCadence, percent: Double?) -> Double? {
         guard amount.isFinite, amount >= 0 else { return nil }
+        let monthly: Double?
         switch cadence {
-        case .weekly: return amount * 52 / 12
-        case .biweekly: return amount * 26 / 12
-        case .bimonthly: return amount * 6 / 12
-        case .monthly: return amount
+        case .weekly: monthly = amount * 52 / 12
+        case .biweekly: monthly = amount * 26 / 12
+        case .bimonthly: monthly = amount * 6 / 12
+        case .monthly: monthly = amount
         case .percentOfContribution:
             guard let percent, percent.isFinite, percent > 0, amount > 0 else { return nil }
-            return amount * percent
-        case .unknown: return nil
+            monthly = amount * percent
+        case .unknown: monthly = nil
         }
+        // A huge amount can overflow to inf during the multiplication; treat that as unknown.
+        guard let monthly, monthly.isFinite else { return nil }
+        return monthly
     }
 
     /// Active rows only; rows without a monthly equivalent are skipped.

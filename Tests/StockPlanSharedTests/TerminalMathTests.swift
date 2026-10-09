@@ -126,4 +126,30 @@ struct TerminalMathTests {
         let decoded = try JSONDecoder().decode([AutobuyCadence].self, from: Data(#"["weekly","fortnightly"]"#.utf8))
         #expect(decoded == [.weekly, .unknown])
     }
+
+    @Test
+    func `Derived price overflow to infinity is invalid, not a success`() {
+        #expect(TerminalMath.evaluate(TerminalScenarioInput(
+            terminalShareCount: 1e-300, terminalMarketCap: 1e300, valueWanted: 1
+        )) == .failure(.invalidNumber))
+    }
+
+    @Test
+    func `Intermediate product overflow does not fail a representable ratio`() throws {
+        let result = try success(TerminalScenarioInput(
+            terminalShareCount: 1e200, terminalMarketCap: 1e250, valueWanted: 1e200
+        ))
+        #expect(result.sharesNeeded.isFinite)
+        #expect(abs(result.sharesNeeded - 1e150) / 1e150 < 1e-9)
+    }
+
+    @Test
+    func `Huge weekly amount that overflows monthly equivalent is unknown and skipped in the total`() {
+        #expect(AutobuyMath.monthlyEquivalent(amount: 1e308, cadence: .weekly, percent: nil) == nil)
+        let total = AutobuyMath.monthlyTotal([
+            (amount: 1e308, cadence: .weekly, percent: nil, active: true),
+            (amount: 300, cadence: .monthly, percent: nil, active: true),
+        ])
+        #expect(total == 300)
+    }
 }
