@@ -23,7 +23,14 @@ struct MarketBriefDTOsTests {
                     id: "eu_open",
                     title: "Abertura europeia negativa",
                     tone: .down,
-                    rows: [MarketBriefQuoteRow(symbol: "^GDAXI", flag: "🇩🇪", name: "DAX", level: "25.032", changePercent: "0,77%", direction: .down)]
+                    rows: [MarketBriefQuoteRow(
+                        symbol: "^GDAXI",
+                        flag: "🇩🇪",
+                        name: "DAX",
+                        level: "25.032",
+                        changePercent: "0,77%",
+                        direction: .down
+                    )]
                 ),
             ],
             items: [MarketBriefItem(kind: .highlight, text: "O tom é risk-off.", tickers: [], sourceUrl: nil)],
