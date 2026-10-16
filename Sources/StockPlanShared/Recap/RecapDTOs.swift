@@ -170,8 +170,13 @@ public struct RecapOutroSlide: Codable, Sendable, Equatable {
     }
 }
 
-/// Wire shape follows `ScenarioConfiguration`: `{"type": "<case>", "<case>": {payload}}`.
-/// Multi-word cases use snake_case for both the discriminator and the payload key.
+/// Wire shape: `{"type": "<case>", "payload": {...}}`.
+///
+/// The payload sits under one fixed key with no underscores, so it survives
+/// every key strategy the house coders use (`.convertFromSnakeCase` in
+/// `JSONDecoder.stockPlanShared`, underscore normalization in the backend
+/// decoder). Multi-word `type` values are snake_case (`top_tickers`,
+/// `missed_you`); they are values, not keys, so no strategy rewrites them.
 public enum RecapSlide: Codable, Sendable, Equatable {
     case intro(RecapIntroSlide)
     case streak(RecapStreakSlide)
@@ -189,8 +194,10 @@ public enum RecapSlide: Codable, Sendable, Equatable {
     /// Money slides: hidden from share surfaces.
     public var isPrivate: Bool {
         switch self {
-        case .growth, .dividends, .goals: true
-        default: false
+        case .growth, .dividends, .goals:
+            true
+        case .intro, .streak, .topTickers, .trades, .research, .badges, .personality, .missedYou, .outro:
+            false
         }
     }
 
@@ -211,35 +218,24 @@ public enum RecapSlide: Codable, Sendable, Equatable {
 
     private enum CodingKeys: String, CodingKey {
         case type
-        case intro
-        case streak
-        case topTickers = "top_tickers"
-        case trades
-        case research
-        case growth
-        case dividends
-        case goals
-        case badges
-        case personality
-        case missedYou = "missed_you"
-        case outro
+        case payload
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         switch try container.decode(Kind.self, forKey: .type) {
-        case .intro: self = try .intro(container.decode(RecapIntroSlide.self, forKey: .intro))
-        case .streak: self = try .streak(container.decode(RecapStreakSlide.self, forKey: .streak))
-        case .topTickers: self = try .topTickers(container.decode(RecapTopTickersSlide.self, forKey: .topTickers))
-        case .trades: self = try .trades(container.decode(RecapTradesSlide.self, forKey: .trades))
-        case .research: self = try .research(container.decode(RecapResearchSlide.self, forKey: .research))
-        case .growth: self = try .growth(container.decode(RecapGrowthSlide.self, forKey: .growth))
-        case .dividends: self = try .dividends(container.decode(RecapDividendsSlide.self, forKey: .dividends))
-        case .goals: self = try .goals(container.decode(RecapGoalsSlide.self, forKey: .goals))
-        case .badges: self = try .badges(container.decode(RecapBadgesSlide.self, forKey: .badges))
-        case .personality: self = try .personality(container.decode(RecapPersonalitySlide.self, forKey: .personality))
-        case .missedYou: self = try .missedYou(container.decode(RecapMissedYouSlide.self, forKey: .missedYou))
-        case .outro: self = try .outro(container.decode(RecapOutroSlide.self, forKey: .outro))
+        case .intro: self = try .intro(container.decode(RecapIntroSlide.self, forKey: .payload))
+        case .streak: self = try .streak(container.decode(RecapStreakSlide.self, forKey: .payload))
+        case .topTickers: self = try .topTickers(container.decode(RecapTopTickersSlide.self, forKey: .payload))
+        case .trades: self = try .trades(container.decode(RecapTradesSlide.self, forKey: .payload))
+        case .research: self = try .research(container.decode(RecapResearchSlide.self, forKey: .payload))
+        case .growth: self = try .growth(container.decode(RecapGrowthSlide.self, forKey: .payload))
+        case .dividends: self = try .dividends(container.decode(RecapDividendsSlide.self, forKey: .payload))
+        case .goals: self = try .goals(container.decode(RecapGoalsSlide.self, forKey: .payload))
+        case .badges: self = try .badges(container.decode(RecapBadgesSlide.self, forKey: .payload))
+        case .personality: self = try .personality(container.decode(RecapPersonalitySlide.self, forKey: .payload))
+        case .missedYou: self = try .missedYou(container.decode(RecapMissedYouSlide.self, forKey: .payload))
+        case .outro: self = try .outro(container.decode(RecapOutroSlide.self, forKey: .payload))
         }
     }
 
@@ -248,40 +244,40 @@ public enum RecapSlide: Codable, Sendable, Equatable {
         switch self {
         case let .intro(value):
             try container.encode(Kind.intro, forKey: .type)
-            try container.encode(value, forKey: .intro)
+            try container.encode(value, forKey: .payload)
         case let .streak(value):
             try container.encode(Kind.streak, forKey: .type)
-            try container.encode(value, forKey: .streak)
+            try container.encode(value, forKey: .payload)
         case let .topTickers(value):
             try container.encode(Kind.topTickers, forKey: .type)
-            try container.encode(value, forKey: .topTickers)
+            try container.encode(value, forKey: .payload)
         case let .trades(value):
             try container.encode(Kind.trades, forKey: .type)
-            try container.encode(value, forKey: .trades)
+            try container.encode(value, forKey: .payload)
         case let .research(value):
             try container.encode(Kind.research, forKey: .type)
-            try container.encode(value, forKey: .research)
+            try container.encode(value, forKey: .payload)
         case let .growth(value):
             try container.encode(Kind.growth, forKey: .type)
-            try container.encode(value, forKey: .growth)
+            try container.encode(value, forKey: .payload)
         case let .dividends(value):
             try container.encode(Kind.dividends, forKey: .type)
-            try container.encode(value, forKey: .dividends)
+            try container.encode(value, forKey: .payload)
         case let .goals(value):
             try container.encode(Kind.goals, forKey: .type)
-            try container.encode(value, forKey: .goals)
+            try container.encode(value, forKey: .payload)
         case let .badges(value):
             try container.encode(Kind.badges, forKey: .type)
-            try container.encode(value, forKey: .badges)
+            try container.encode(value, forKey: .payload)
         case let .personality(value):
             try container.encode(Kind.personality, forKey: .type)
-            try container.encode(value, forKey: .personality)
+            try container.encode(value, forKey: .payload)
         case let .missedYou(value):
             try container.encode(Kind.missedYou, forKey: .type)
-            try container.encode(value, forKey: .missedYou)
+            try container.encode(value, forKey: .payload)
         case let .outro(value):
             try container.encode(Kind.outro, forKey: .type)
-            try container.encode(value, forKey: .outro)
+            try container.encode(value, forKey: .payload)
         }
     }
 }
