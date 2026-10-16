@@ -32,14 +32,56 @@ struct RecapDTOsTests {
     }
 
     @Test
-    func `slide wire shape uses snake case type and sibling key`() throws {
+    func `every slide case round trips through the house decoder`() throws {
+        let data = try JSONEncoder().encode(Self.samples)
+        let decoded = try JSONDecoder.stockPlanShared.decode([RecapSlide].self, from: data)
+        #expect(decoded == Self.samples)
+    }
+
+    @Test
+    func `every slide case round trips through a snake case encoder and the house decoder`() throws {
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        for sample in Self.samples {
+            let decoded = try JSONDecoder.stockPlanShared.decode(RecapSlide.self, from: encoder.encode(sample))
+            #expect(decoded == sample)
+        }
+        let houseDecoded = try JSONDecoder.stockPlanShared.decode(
+            [RecapSlide].self,
+            from: JSONEncoder.makeStockPlanShared().encode(Self.samples)
+        )
+        #expect(houseDecoded == Self.samples)
+    }
+
+    @Test
+    func `slide wire shape uses snake case type and a fixed payload key`() throws {
         let slide = RecapSlide.topTickers(RecapTopTickersSlide(tickers: [RecapTickerStat(symbol: "AAPL", touches: 3)]))
         let data = try JSONEncoder().encode(slide)
         let object = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        #expect(Set(object.keys) == ["type", "payload"])
         #expect(object["type"] as? String == "top_tickers")
-        let payload = try #require(object["top_tickers"] as? [String: Any])
+        let payload = try #require(object["payload"] as? [String: Any])
         let tickers = try #require(payload["tickers"] as? [[String: Any]])
         #expect(tickers[0]["symbol"] as? String == "AAPL")
+    }
+
+    @Test
+    func `payload field names are camel case on the wire with default keys`() throws {
+        let slide = RecapSlide.streak(RecapStreakSlide(longestStreakDays: 7, activeDays: 12))
+        let object = try #require(
+            JSONSerialization.jsonObject(with: JSONEncoder().encode(slide)) as? [String: Any]
+        )
+        #expect(object["type"] as? String == "streak")
+        let payload = try #require(object["payload"] as? [String: Any])
+        #expect(payload["longestStreakDays"] as? Int == 7)
+        #expect(payload["activeDays"] as? Int == 12)
+    }
+
+    @Test
+    func `missed you slide decodes from the snake case wire with the house decoder`() throws {
+        let json = Data(#"{"type":"missed_you","payload":{"best_streak_days":9,"total_badges":4}}"#.utf8)
+        let decoded = try JSONDecoder.stockPlanShared.decode(RecapSlide.self, from: json)
+        #expect(decoded == .missedYou(RecapMissedYouSlide(bestStreakDays: 9, totalBadges: 4)))
     }
 
     @Test
