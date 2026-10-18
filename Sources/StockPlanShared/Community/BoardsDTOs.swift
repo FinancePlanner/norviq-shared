@@ -18,6 +18,13 @@ public enum BoardPostSort: String, Codable, CaseIterable, Sendable {
     case active
 }
 
+/// What a Norviq-written daily post is about. Member posts leave this unset.
+public enum BoardAITopic: String, Codable, CaseIterable, Sendable {
+    case stock
+    case index
+    case news
+}
+
 /// Global, admin-issued. A mute leaves the boards readable; a ban hides them.
 public enum CommunitySanctionKind: String, Codable, CaseIterable, Sendable {
     case mute
@@ -73,10 +80,34 @@ public struct BoardSummary: Codable, Sendable, Equatable, Identifiable {
 public struct BoardListResponse: Codable, Sendable, Equatable {
     public let items: [BoardSummary]
     public let nextCursor: String?
+    /// The latest Norviq daily post, on the first page only. Nil when none
+    /// has been published, or when this page is a later cursor page.
+    public let dailyPost: BoardPostSummary?
 
-    public init(items: [BoardSummary], nextCursor: String?) {
+    public init(items: [BoardSummary], nextCursor: String?, dailyPost: BoardPostSummary? = nil) {
         self.items = items
         self.nextCursor = nextCursor
+        self.dailyPost = dailyPost
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        items = try container.decode([BoardSummary].self, forKey: .items)
+        nextCursor = try container.decodeIfPresent(String.self, forKey: .nextCursor)
+        dailyPost = try container.decodeIfPresent(BoardPostSummary.self, forKey: .dailyPost)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(items, forKey: .items)
+        try container.encodeIfPresent(nextCursor, forKey: .nextCursor)
+        try container.encodeIfPresent(dailyPost, forKey: .dailyPost)
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case items
+        case nextCursor
+        case dailyPost
     }
 }
 
@@ -121,6 +152,10 @@ public struct BoardPostSummary: Codable, Sendable, Equatable, Identifiable {
     public let viewerHasVoted: Bool
     /// Comments added since the viewer last opened the post; nil if never opened.
     public let newCommentCount: Int?
+    /// True when Norviq wrote the post. Missing on older payloads, which are
+    /// member posts.
+    public let aiGenerated: Bool
+    public let aiTopic: BoardAITopic?
 
     public init(
         id: UUID,
@@ -137,7 +172,9 @@ public struct BoardPostSummary: Codable, Sendable, Equatable, Identifiable {
         participantCount: Int,
         viewCount: Int,
         viewerHasVoted: Bool,
-        newCommentCount: Int?
+        newCommentCount: Int?,
+        aiGenerated: Bool = false,
+        aiTopic: BoardAITopic? = nil
     ) {
         self.id = id
         self.boardSlug = boardSlug
@@ -154,6 +191,74 @@ public struct BoardPostSummary: Codable, Sendable, Equatable, Identifiable {
         self.viewCount = viewCount
         self.viewerHasVoted = viewerHasVoted
         self.newCommentCount = newCommentCount
+        self.aiGenerated = aiGenerated
+        self.aiTopic = aiTopic
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        boardSlug = try container.decode(String.self, forKey: .boardSlug)
+        kind = try container.decode(BoardPostKind.self, forKey: .kind)
+        title = try container.decode(String.self, forKey: .title)
+        url = try container.decodeIfPresent(String.self, forKey: .url)
+        domain = try container.decodeIfPresent(String.self, forKey: .domain)
+        tags = try container.decodeIfPresent([String].self, forKey: .tags) ?? []
+        authorUsername = try container.decodeIfPresent(String.self, forKey: .authorUsername)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        score = try container.decode(Int.self, forKey: .score)
+        commentCount = try container.decode(Int.self, forKey: .commentCount)
+        participantCount = try container.decode(Int.self, forKey: .participantCount)
+        viewCount = try container.decode(Int.self, forKey: .viewCount)
+        viewerHasVoted = try container.decodeIfPresent(Bool.self, forKey: .viewerHasVoted) ?? false
+        newCommentCount = try container.decodeIfPresent(Int.self, forKey: .newCommentCount)
+        aiGenerated = try container.decodeIfPresent(Bool.self, forKey: .aiGenerated) ?? false
+        if let raw = try container.decodeIfPresent(String.self, forKey: .aiTopic) {
+            aiTopic = BoardAITopic(rawValue: raw)
+        } else {
+            aiTopic = nil
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(boardSlug, forKey: .boardSlug)
+        try container.encode(kind, forKey: .kind)
+        try container.encode(title, forKey: .title)
+        try container.encodeIfPresent(url, forKey: .url)
+        try container.encodeIfPresent(domain, forKey: .domain)
+        try container.encode(tags, forKey: .tags)
+        try container.encodeIfPresent(authorUsername, forKey: .authorUsername)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(score, forKey: .score)
+        try container.encode(commentCount, forKey: .commentCount)
+        try container.encode(participantCount, forKey: .participantCount)
+        try container.encode(viewCount, forKey: .viewCount)
+        try container.encode(viewerHasVoted, forKey: .viewerHasVoted)
+        try container.encodeIfPresent(newCommentCount, forKey: .newCommentCount)
+        try container.encode(aiGenerated, forKey: .aiGenerated)
+        try container.encodeIfPresent(aiTopic, forKey: .aiTopic)
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case boardSlug
+        case kind
+        case title
+        case url
+        case domain
+        case tags
+        case authorUsername
+        case createdAt
+        case score
+        case commentCount
+        case participantCount
+        case viewCount
+        case viewerHasVoted
+        case newCommentCount
+        case aiGenerated
+        case aiTopic
     }
 }
 
