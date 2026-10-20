@@ -356,7 +356,10 @@ public struct GroupNotificationSettingsRequest: Codable, Sendable, Equatable {
 // MARK: - Members
 
 public struct GroupMember: Codable, Sendable, Equatable, Identifiable {
-    public var id: UUID { userId }
+    public var id: UUID {
+        userId
+    }
+
     public let userId: UUID
     public let username: String?
     public let displayName: String?
