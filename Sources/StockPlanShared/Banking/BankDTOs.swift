@@ -1,10 +1,12 @@
 import Foundation
 
 /// Aggregator behind a bank connection. Kept provider-agnostic so the clients
-/// never hardcode a vendor — the backend picks Plaid (US) or GoCardless (EU).
+/// never hardcode a vendor — the backend picks Plaid (US) or a hosted-redirect
+/// aggregator (GoCardless or Enable Banking, EU).
 public enum BankProviderKind: String, Codable, Sendable, CaseIterable {
     case plaid
     case gocardless
+    case enablebanking
 }
 
 /// Lifecycle of a bank connection.
