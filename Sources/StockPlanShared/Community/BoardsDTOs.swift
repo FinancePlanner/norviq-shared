@@ -468,6 +468,10 @@ public struct BoardReportItem: Codable, Sendable, Equatable, Identifiable {
     public let reason: BoardReportReason
     public let note: String?
     public let createdAt: Date
+    /// Set for a reported group message; the board fields are nil then.
+    public let groupId: UUID?
+    public let groupMessageId: UUID?
+    public let groupName: String?
 
     public init(
         id: UUID,
@@ -479,8 +483,14 @@ public struct BoardReportItem: Codable, Sendable, Equatable, Identifiable {
         targetAuthorUsername: String?,
         reason: BoardReportReason,
         note: String?,
-        createdAt: Date
+        createdAt: Date,
+        groupId: UUID? = nil,
+        groupMessageId: UUID? = nil,
+        groupName: String? = nil
     ) {
+        self.groupId = groupId
+        self.groupMessageId = groupMessageId
+        self.groupName = groupName
         self.id = id
         self.reporterUsername = reporterUsername
         self.postId = postId
