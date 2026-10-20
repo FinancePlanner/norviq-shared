@@ -59,7 +59,12 @@ struct GroupsDTOsTests {
             id: UUID(), groupId: UUID(), channelId: UUID(), seq: 7, clientMessageId: "c-1",
             authorId: UUID(), authorUsername: "bo", body: nil, isDeleted: true, createdAt: Self.now
         )
-        let event = GroupRealtimeEvent(type: .messageCreated, groupId: message.groupId, channelId: message.channelId, message: message)
+        let event = GroupRealtimeEvent(
+            type: .messageCreated,
+            groupId: message.groupId,
+            channelId: message.channelId,
+            message: message
+        )
         let data = try JSONEncoder.stockPlanShared.encode(event)
         let decoded = try JSONDecoder.stockPlanShared.decode(GroupRealtimeEvent.self, from: data)
         #expect(decoded == event)
